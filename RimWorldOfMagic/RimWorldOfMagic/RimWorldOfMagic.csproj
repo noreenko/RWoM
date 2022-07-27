@@ -135,6 +135,8 @@
     <Compile Include="CompAbilityUserExtensions.cs" />
     <Compile Include="Enchantment\HediffComp_WinterChill.cs" />
     <Compile Include="Enchantment\Verb_WeaponWintersFury.cs" />
+    <Compile Include="TraitIconMap.cs" />
+    <Compile Include="Utils\SimpleCache.cs" />
     <Compile Include="Power.cs" />
     <Compile Include="Weapon\FlyingObject_FreezingWinds.cs" />
     <Compile Include="Skyfaller_Hail.cs" />
