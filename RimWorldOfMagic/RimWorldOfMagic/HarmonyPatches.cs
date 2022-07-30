@@ -6149,12 +6149,7 @@ namespace TorannMagic
         {
             public static bool Prefix()
             {
-                bool inFlight = ModOptions.Constants.GetPawnInFlight();
-                if (inFlight)
-                {
-                    return false;
-                }
-                return true;
+                return !ModOptions.Constants.GetPawnInFlight();
             }
         }
 
