@@ -5,6 +5,7 @@ using Verse;
 using UnityEngine;
 using AbilityUser;
 using System.Linq;
+using TorannMagic.Extensions;
 
 
 namespace TorannMagic
@@ -33,34 +34,38 @@ namespace TorannMagic
                     }
 
                     Pawn targetPawn = target as Pawn;
-                    if(verVal > 1 && Rand.Chance(.4f) && targetPawn != null)
+                    if (targetPawn != null)
                     {
-                        if(TM_Calc.IsMagicUser(targetPawn))
+                        if(verVal > 1 && Rand.Chance(.4f))
                         {
-                            CompAbilityUserMagic compMagic = targetPawn.TryGetComp<CompAbilityUserMagic>();
-                            float manaDrain = Mathf.Clamp(compMagic.Mana.CurLevel, 0, .25f);
-                            this.CasterPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD).Severity += (manaDrain * 100);
-                            compMagic.Mana.CurLevel -= manaDrain;
+                            if(TM_Calc.IsMagicUser(targetPawn))
+                            {
+                                CompAbilityUserMagic compMagic = targetPawn.GetCompAbilityUserMagic();
+                                float manaDrain = Mathf.Clamp(compMagic.Mana.CurLevel, 0, .25f);
+                                this.CasterPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD).Severity += (manaDrain * 100);
+                                compMagic.Mana.CurLevel -= manaDrain;
 
+                            }
+                            else if(TM_Calc.IsMightUser(targetPawn))
+                            {
+                                CompAbilityUserMight compMight = targetPawn.GetCompAbilityUserMight();
+                                float staminaDrain = Mathf.Clamp(compMight.Stamina.CurLevel, 0, .25f);
+                                this.CasterPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD).Severity += (staminaDrain * 100);
+                                compMight.Stamina.CurLevel -= staminaDrain;
+                            }
                         }
-                        else if(TM_Calc.IsMightUser(targetPawn))
+                        if(verVal > 2 && Rand.Chance(.1f))
                         {
-                            CompAbilityUserMight compMight = targetPawn.TryGetComp<CompAbilityUserMight>();
-                            float staminaDrain = Mathf.Clamp(compMight.Stamina.CurLevel, 0, .25f);
-                            this.CasterPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD).Severity += (staminaDrain * 100);
-                            compMight.Stamina.CurLevel -= staminaDrain;
+                            IEnumerable<BodyPartRecord> rangeOfParts = (targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.BloodPumpingSource).Concat(
+                                targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.BloodFiltrationSource).Concat(
+                                    targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.BreathingPathway).Concat(
+                                        targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.SightSource)))));
+
+                            hitPart = rangeOfParts.RandomElement();
+                            dmgNum = Mathf.RoundToInt(dmgNum * 1.4f);
                         }
                     }
-                    if(verVal > 2 && Rand.Chance(.1f) && targetPawn != null)
-                    {
-                        IEnumerable<BodyPartRecord> rangeOfParts = (targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.BloodPumpingSource).Concat(
-                            targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.BloodFiltrationSource).Concat(
-                                targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.BreathingPathway).Concat(
-                                    targetPawn.RaceProps.body.GetPartsWithTag(BodyPartTagDefOf.SightSource)))));
 
-                        hitPart = rangeOfParts.RandomElement();
-                        dmgNum = Mathf.RoundToInt(dmgNum * 1.4f);
-                    }
                     //DamageInfo dinfo2 = new DamageInfo(TMDamageDefOf.DamageDefOf.TM_TigerStrike, dmgNum, 0, (float)-1, this.CasterPawn, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
                     TM_Action.DamageEntities(target, hitPart, dmgNum, dmgType, this.CasterPawn);
                     Vector3 strikeEndVec = this.currentTarget.CenterVector3;
@@ -100,7 +105,7 @@ namespace TorannMagic
 
         public int GetAttackDmg(Pawn pawn)
         {
-            CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
             //MightPowerSkill pwr = comp.MightData.MightPowerSkill_TigerStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_TigerStrike_pwr");
             //MightPowerSkill ver = comp.MightData.MightPowerSkill_TigerStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_TigerStrike_ver");
             //verVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_TigerStrike, "TM_TigerStrike", "_ver", true);

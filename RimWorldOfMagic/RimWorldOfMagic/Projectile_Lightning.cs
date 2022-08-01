@@ -5,6 +5,7 @@ using Verse;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using TorannMagic.Extensions;
 using Verse.Sound;
 
 namespace TorannMagic
@@ -63,7 +64,7 @@ namespace TorannMagic
             GenClamor.DoClamor(this, 2f, ClamorDefOf.Ability);
             if (!t.DestroyedOrNull() && t is Pawn pawn)
             {
-                CompAbilityUserMagic comp = pawn.TryGetComp<CompAbilityUserMagic>();
+                CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
                 if (comp != null && comp.MagicData != null)
                 {
                     //pwrVal = TM_Calc.GetMagicSkillLevel(p, comp.MagicData.MagicPowerSkill_ChainLightning, "TM_ChainLightning", "_pwr", true);

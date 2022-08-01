@@ -8,6 +8,7 @@ using Verse;
 using Verse.AI;
 using RimWorld;
 using AbilityUser;
+using TorannMagic.Extensions;
 using TorannMagic.TMDefs;
 using TorannMagic.Golems;
 
@@ -822,7 +823,7 @@ namespace TorannMagic.AutoCast
                 if (!inCombat && jobTarget != null && jobTarget.Thing != null)
                 {
                     Pawn transferPawn = jobTarget.Thing as Pawn;
-                    CompAbilityUserMagic tComp = transferPawn.GetComp<CompAbilityUserMagic>();
+                    CompAbilityUserMagic tComp = transferPawn.GetCompAbilityUserMagic();
                     if (reverse)
                     {                        
                         if(casterComp.Mana.CurLevel >= .3f || tComp.Mana.CurLevel <= .9f)
@@ -1047,7 +1048,7 @@ namespace TorannMagic.AutoCast
                 LocalTargetInfo jobTarget = TM_Calc.FindNearbyMage(caster, (int)(abilitydef.MainVerb.range * 1.5f), false);
                 if (jobTarget != null && jobTarget.Thing is Pawn targetPawn && (jobTarget.Cell - caster.Position).LengthHorizontal < (abilitydef.MainVerb.range * 1.5f))
                 {
-                    CompAbilityUserMagic targetPawnComp = targetPawn.GetComp<CompAbilityUserMagic>();
+                    CompAbilityUserMagic targetPawnComp = targetPawn.GetCompAbilityUserMagic();
                     if (targetPawn.CurJobDef.joyKind != null || targetPawn.CurJobDef == JobDefOf.Wait_Wander || targetPawn.CurJobDef == JobDefOf.GotoWander)
                     {
                         if (targetPawn.IsColonist && targetPawnComp.MagicUserLevel < casterComp.MagicUserLevel && caster.relations.OpinionOf(targetPawn) >= 0)
@@ -1080,7 +1081,7 @@ namespace TorannMagic.AutoCast
                 LocalTargetInfo jobTarget = TM_Calc.FindNearbyFighter(caster, (int)(abilitydef.MainVerb.range * 1.5f), false);
                 if (jobTarget != null && jobTarget.Thing is Pawn targetPawn && (jobTarget.Cell - caster.Position).LengthHorizontal < (abilitydef.MainVerb.range * 1.5f))
                 {
-                    CompAbilityUserMight targetPawnComp = targetPawn.GetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight targetPawnComp = targetPawn.GetCompAbilityUserMight();
                     if ((targetPawn.CurJobDef.joyKind != null && targetPawn.CurJobDef != TorannMagicDefOf.JobDriver_TM_Meditate) || targetPawn.CurJobDef == JobDefOf.Wait_Wander || targetPawn.CurJobDef == JobDefOf.GotoWander)
                     {
                         if (targetPawn.IsColonist && targetPawnComp.MightUserLevel < casterComp.MightUserLevel && caster.relations.OpinionOf(targetPawn) >= 0)

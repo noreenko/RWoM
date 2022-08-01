@@ -6,6 +6,7 @@ using RimWorld;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -20,7 +21,7 @@ namespace TorannMagic
             base.Tick();
             if(Find.TickManager.TicksGame % 2 == 0 && daggerCount > 0 && this.launcher is Pawn caster)
             {
-                CompAbilityUserMight comp = caster.TryGetComp<CompAbilityUserMight>();
+                CompAbilityUserMight comp = caster.GetCompAbilityUserMight();
                 if(comp != null)
                 {
                     ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
@@ -54,7 +55,7 @@ namespace TorannMagic
                 if (pawn != null)
                 {
                     Pawn victim = hitThing as Pawn;
-                    CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
 
                     if (victim != null && comp != null && Rand.Chance(.8f))
                     {

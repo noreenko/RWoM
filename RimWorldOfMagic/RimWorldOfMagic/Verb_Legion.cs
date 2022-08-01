@@ -5,6 +5,7 @@ using AbilityUser;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -60,9 +61,9 @@ namespace TorannMagic
             {
                 if (targetPawn.RaceProps.Humanlike)
                 {
-                    CompAbilityUserMight mightPawn = targetPawn.GetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight mightPawn = targetPawn.GetCompAbilityUserMight();
 
-                    CompAbilityUserMight mightComp = this.CasterPawn.GetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight mightComp = this.CasterPawn.GetCompAbilityUserMight();
                     
                     if (mightPawn.IsMightUser)
                     {

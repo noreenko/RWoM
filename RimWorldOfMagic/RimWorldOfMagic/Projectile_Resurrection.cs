@@ -4,6 +4,7 @@ using RimWorld;
 using AbilityUser;
 using System.Linq;
 using System.Collections.Generic;
+using TorannMagic.Extensions;
 using UnityEngine;
 
 namespace TorannMagic
@@ -66,9 +67,9 @@ namespace TorannMagic
             {
                 if (this.launcher is Pawn casterPawn)
                 {
-                    CompAbilityUserMagic comp = casterPawn.GetComp<CompAbilityUserMagic>();
-                    MagicPowerSkill ver = casterPawn.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_Resurrection.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Resurrection_ver");
-                    MagicPowerSkill pwr = casterPawn.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_Resurrection.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Resurrection_eff");
+                    CompAbilityUserMagic comp = casterPawn.GetCompAbilityUserMagic();
+                    MagicPowerSkill ver = casterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Resurrection.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Resurrection_ver");
+                    MagicPowerSkill pwr = casterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Resurrection.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Resurrection_eff");
                     verVal = ver.level;
                     pwrVal = pwr.level;
                 }
