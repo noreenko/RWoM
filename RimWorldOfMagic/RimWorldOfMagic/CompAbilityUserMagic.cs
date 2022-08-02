@@ -2201,6 +2201,8 @@ namespace TorannMagic
             }
         }
 
+        private static readonly TraitDef[] magicTraits = { TorannMagicDefOf.Enchanter, TorannMagicDefOf.BloodMage, TorannMagicDefOf.Technomancer, TorannMagicDefOf.Geomancer, TorannMagicDefOf.Warlock, TorannMagicDefOf.Succubus, TorannMagicDefOf.Faceless, TorannMagicDefOf.InnerFire, TorannMagicDefOf.HeartOfFrost, TorannMagicDefOf.StormBorn, TorannMagicDefOf.Arcanist, TorannMagicDefOf.Paladin, TorannMagicDefOf.Summoner, TorannMagicDefOf.Druid, TorannMagicDefOf.Necromancer, TorannMagicDefOf.Lich, TorannMagicDefOf.Priest, TorannMagicDefOf.TM_Bard, TorannMagicDefOf.Chronomancer, TorannMagicDefOf.ChaosMage };
+
         public bool IsMagicUser
         {
             get
@@ -2216,9 +2218,10 @@ namespace TorannMagic
                         {
                             return true;
                         }
+                        var allTraits = this.Pawn.story.traits.allTraits;
                         if (this.customClass == null && this.customIndex == -2)
                         {
-                            this.customIndex = TM_ClassUtility.IsCustomClassIndex(this.Pawn.story.traits.allTraits);
+                            this.customIndex = TM_ClassUtility.IsCustomClassIndex(allTraits);
                             if (this.customIndex >= 0)
                             {
                                 if (!TM_ClassUtility.CustomClasses()[this.customIndex].isMage)
@@ -2233,20 +2236,7 @@ namespace TorannMagic
                                 }
                             }
                         }
-                        bool flag4 = base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Enchanter) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.BloodMage) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Technomancer) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Geomancer) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Warlock) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Succubus) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.InnerFire) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.HeartOfFrost) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.StormBorn) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Arcanist) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Paladin) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Summoner) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Druid) ||
-                            (base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Necromancer) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Lich)) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Priest) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Bard) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Chronomancer) || TM_Calc.IsWanderer(base.Pawn) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage);
-                        if (flag4)
-                        {
-                            return true;
-                        }
+                        if (TraitUtils.HasAnyTraitsinArray(allTraits, magicTraits) || TM_Calc.IsWanderer(base.Pawn)) return true;
                     }
                 }
                 return false;
