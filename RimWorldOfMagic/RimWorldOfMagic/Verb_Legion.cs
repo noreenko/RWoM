@@ -5,6 +5,7 @@ using AbilityUser;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -56,21 +57,19 @@ namespace TorannMagic
         {
             bool result = false;
 
-            if (this.currentTarget != null && base.CasterPawn != null && this.currentTarget.Thing is Pawn)
+            if (this.currentTarget != null && base.CasterPawn != null && this.currentTarget.Thing is Pawn targetPawn)
             {
-                Pawn targetPawn = this.currentTarget.Thing as Pawn;
                 if (targetPawn.RaceProps.Humanlike)
                 {
-                    CompAbilityUserMight mightPawn = targetPawn.GetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight mightPawn = targetPawn.GetCompAbilityUserMight();
 
-                    TMAbilityDef tempAbility = null;
-                    CompAbilityUserMight mightComp = this.CasterPawn.GetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight mightComp = this.CasterPawn.GetCompAbilityUserMight();
                     
                     if (mightPawn.IsMightUser)
                     {
                         if (!targetPawn.story.traits.HasTrait(TM_Calc.GetMightTrait(this.CasterPawn)))
                         {
-                            tempAbility = TM_Calc.GetCopiedMightAbility(targetPawn, base.CasterPawn);
+                            TMAbilityDef tempAbility = TM_Calc.GetCopiedMightAbility(targetPawn, base.CasterPawn);
 
                             if (tempAbility != null)
                             {

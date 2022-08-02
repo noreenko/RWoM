@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using AbilityUser;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -180,7 +181,7 @@ namespace TorannMagic
                 bool flag2 = this.ticksToImpact <= 0;
                 if (flag2)
                 {
-                    bool flag3 = this.DestinationCell.InBounds(base.Map);
+                    bool flag3 = this.DestinationCell.InBoundsWithNullCheck(base.Map);
                     if (flag3)
                     {
                         base.Position = this.DestinationCell;
@@ -226,7 +227,7 @@ namespace TorannMagic
                             {
                                 cleaveVictim.TakeDamage(dinfo);
                                 FleckMaker.ThrowMicroSparks(cleaveVictim.Position.ToVector3(), base.Map);
-                                CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+                                CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
                                 verVal = TM_Calc.GetSkillVersatilityLevel(pawn, TorannMagicDefOf.TM_Whirlwind);
                                 //verVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_Whirlwind, "TM_Whirlwind", "_ver", true);
                                 //MightPowerSkill ver = comp.MightData.MightPowerSkill_Whirlwind.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Whirlwind_ver");
@@ -254,7 +255,7 @@ namespace TorannMagic
         public static int GetWeaponDmg(Pawn caster)
         {
             
-            CompAbilityUserMight comp = caster.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = caster.GetCompAbilityUserMight();
             //MightPowerSkill pwr = comp.MightData.MightPowerSkill_Whirlwind.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Whirlwind_pwr");
             //pwrVal = TM_Calc.GetMightSkillLevel(caster, comp.MightData.MightPowerSkill_Whirlwind, "TM_Whirlwind", "_pwr", true);
             pwrVal = TM_Calc.GetSkillPowerLevel(caster, TorannMagicDefOf.TM_Whirlwind, true);

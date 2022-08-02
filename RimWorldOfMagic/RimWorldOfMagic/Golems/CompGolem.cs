@@ -9,6 +9,7 @@ using Verse.AI.Group;
 using AbilityUser;
 using TorannMagic.TMDefs;
 using HarmonyLib;
+using TorannMagic.Extensions;
 
 namespace TorannMagic.Golems
 {
@@ -66,15 +67,11 @@ namespace TorannMagic.Golems
         {
             get
             {
-                if(threatTarget != null)
+                if (threatTarget is Pawn pawn)
                 {
-                    if (threatTarget is Pawn)
+                    if(pawn.DestroyedOrNull() || pawn.Dead || pawn.Downed || pawn.Map == null)
                     {
-                        Pawn p = threatTarget as Pawn;
-                        if(p.DestroyedOrNull() || p.Dead || p.Downed || p.Map == null)
-                        {
-                            threatTarget = null;
-                        }
+                        threatTarget = null;
                     }
                 }
                 return threatTarget;
@@ -98,14 +95,13 @@ namespace TorannMagic.Golems
                 {
                     return false;
                 }
-                if (targetThing is Pawn)
+                if (targetThing is Pawn targetPawn)
                 {
-                    Pawn p = targetThing as Pawn;
-                    if (p.Dead || p.Downed)
+                    if (targetPawn.Dead || targetPawn.Downed)
                     {
                         return false;
                     }
-                    if (checkThreatPath && p.CanReach(source, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.PassDoors))
+                    if (checkThreatPath && targetPawn.CanReach(source, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.PassDoors))
                     {
                         return false;
                     }
@@ -324,9 +320,9 @@ namespace TorannMagic.Golems
                 {
                     foreach(Thing t in innerContainer)
                     {
-                        if(t is Building_TMGolemBase)
+                        if(t is Building_TMGolemBase tmGolemBase)
                         {
-                            dormantThing = t as Building_TMGolemBase;
+                            dormantThing = tmGolemBase;
                         }
                     }
                 }
@@ -609,7 +605,7 @@ namespace TorannMagic.Golems
         {
             if(!pawnMaster.DestroyedOrNull() && !pawnMaster.Dead)
             {
-                CompAbilityUserMagic masterComp = pawnMaster.TryGetComp<CompAbilityUserMagic>();
+                CompAbilityUserMagic masterComp = pawnMaster.GetCompAbilityUserMagic();
                 if(TM_Calc.IsMagicUser(pawnMaster) && masterComp != null && masterComp.MagicData != null && masterComp.MagicData.AllMagicPowersWithSkills.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Golemancy).learned)
                 {
                     float pSev = .5f + masterComp.MagicData.GetSkill_Power(TorannMagicDefOf.TM_Golemancy).level;

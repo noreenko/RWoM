@@ -4,6 +4,7 @@ using RimWorld;
 using AbilityUser;
 using System.Linq;
 using System.Collections.Generic;
+using TorannMagic.Extensions;
 using UnityEngine;
 
 namespace TorannMagic
@@ -88,11 +89,11 @@ namespace TorannMagic
                 this.wolfDmg.Clear();
 
                 caster = this.launcher as Pawn;
-                CompAbilityUserMagic comp = caster.GetComp<CompAbilityUserMagic>();
+                CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
                 MagicPowerSkill bpwr = comp.MagicData.MagicPowerSkill_BloodGift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodGift_pwr");
-                pwrVal = caster.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_BloodMoon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodMoon_pwr").level;
-                verVal = caster.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_BloodMoon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodMoon_ver").level;
-                effVal = caster.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_BloodMoon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodMoon_eff").level;
+                pwrVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodMoon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodMoon_pwr").level;
+                verVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodMoon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodMoon_ver").level;
+                effVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodMoon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodMoon_eff").level;
                 this.arcaneDmg = comp.arcaneDmg;
                 this.arcaneDmg *= (1f + (.1f * bpwr.level));
                 this.attackFrequency *= (1 - (.05f * effVal));
@@ -105,13 +106,13 @@ namespace TorannMagic
 
                 this.CheckSpawnSustainer();
 
-                if (curCell.InBounds(map) && curCell.IsValid)
+                if (curCell.InBoundsWithNullCheck(map) && curCell.IsValid)
                 {
                     List<IntVec3> cellList = GenRadial.RadialCellsAround(base.Position, this.radius, true).ToList();
                     for (int i = 0; i < cellList.Count; i++)
                     {
                         curCell = cellList[i];
-                        if (curCell.InBounds(map) && curCell.IsValid)
+                        if (curCell.InBoundsWithNullCheck(map) && curCell.IsValid)
                         {
                             this.bloodCircleCells.Add(curCell);
                         }
@@ -122,7 +123,7 @@ namespace TorannMagic
                     for (int i = 0; i < cellList.Count; i++)
                     {
                         curCell = cellList[i];
-                        if (curCell.InBounds(map) && curCell.IsValid)
+                        if (curCell.InBoundsWithNullCheck(map) && curCell.IsValid)
                         {
                             outerRing.Add(curCell);
                         }

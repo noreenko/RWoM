@@ -6,6 +6,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using AbilityUser;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -136,7 +137,7 @@ namespace TorannMagic
             pawn = launcher as Pawn;
             this.oldjobTarget = pawn.CurJob.targetA.Thing;
             //Log.Message("pre leap target is " + this.oldjobTarget.LabelShort);
-            CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
             this.effVal = TM_Calc.GetSkillEfficiencyLevel(pawn, TorannMagicDefOf.TM_PsionicAugmentation, false); //comp.MightData.MightPowerSkill_PsionicAugmentation.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicAugmentation_eff").level;
             if (spawned)
             {
@@ -185,7 +186,7 @@ namespace TorannMagic
                 bool flag2 = this.ticksToImpact <= 0;
                 if (flag2)
                 {
-                    bool flag3 = this.DestinationCell.InBounds(base.Map);
+                    bool flag3 = this.DestinationCell.InBoundsWithNullCheck(base.Map);
                     if (flag3)
                     {
                         base.Position = this.DestinationCell;
@@ -279,7 +280,7 @@ namespace TorannMagic
             {
                 victim = null;
                 curCell = targets.ToArray<IntVec3>()[i];
-                if (curCell.InBounds(this.Map) && curCell.IsValid)
+                if (curCell.InBoundsWithNullCheck(this.Map) && curCell.IsValid)
                 {
                     victim = curCell.GetFirstPawn(map);
                 }

@@ -4,6 +4,7 @@ using Verse.AI;
 using Verse;
 using RimWorld;
 using RimWorld.Planet;
+using TorannMagic.Extensions;
 using UnityEngine;
 
 
@@ -101,7 +102,7 @@ namespace TorannMagic
                 Map myMap = portalBldg.Map;
                 Map map = mapParent.Map;
                 Current.Game.CurrentMap = map;
-                comp = pawn.GetComp<CompAbilityUserMagic>();
+                comp = pawn.GetCompAbilityUserMagic();
                 TargetingParameters portalTarget = new TargetingParameters();
                 portalTarget.canTargetLocations = true;
                 portalTarget.canTargetSelf = false;
@@ -109,7 +110,7 @@ namespace TorannMagic
                 portalTarget.canTargetFires = false;
                 portalTarget.canTargetBuildings = false;
                 portalTarget.canTargetItems = false;
-                portalTarget.validator = ((TargetInfo x) => x.IsValid && !x.Cell.Fogged(map) && x.Cell.InBounds(map) && x.Cell.Walkable(map));  //TargetingParameters.ForDropPodsDestination()
+                portalTarget.validator = ((TargetInfo x) => x.IsValid && !x.Cell.Fogged(map) && x.Cell.InBoundsWithNullCheck(map) && x.Cell.Walkable(map));  //TargetingParameters.ForDropPodsDestination()
                 Find.Targeter.BeginTargeting(portalTarget, delegate (LocalTargetInfo x)
                 {                    
                     portalBldg.PortalDestinationPosition = x.Cell;

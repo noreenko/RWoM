@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse.AI;
 using HarmonyLib;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -54,14 +55,14 @@ namespace TorannMagic
             if (!this.initialized)
             {
                 caster = this.launcher as Pawn;
-                CompAbilityUserMagic comp = caster.GetComp<CompAbilityUserMagic>();
-                pwrVal = caster.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_Encase.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Encase_pwr").level;
-                verVal = caster.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_Encase.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Encase_ver").level;
+                CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
+                pwrVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Encase.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Encase_pwr").level;
+                verVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Encase.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Encase_ver").level;
                 ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
                 if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
-                    pwrVal = caster.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
-                    verVal = caster.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;
+                    pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
+                    verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;
                 }
                 if (settingsRef.AIHardMode && !caster.IsColonist)
                 {
@@ -104,7 +105,7 @@ namespace TorannMagic
                 //{
                 for(int k =0; k < wall.Count(); k++)
                 { 
-                    if(wall[k].position.IsValid && wall[k].position.InBounds(caster.Map) && !wall[k].position.Fogged(caster.Map) && !wall[k].position.InNoZoneEdgeArea(caster.Map))
+                    if(wall[k].position.IsValid && wall[k].position.InBoundsWithNullCheck(caster.Map) && !wall[k].position.Fogged(caster.Map) && !wall[k].position.InNoZoneEdgeArea(caster.Map))
                     //if (wallPositions[k].IsValid && wallPositions[k].InBounds(caster.Map) && !wallPositions[k].Fogged(caster.Map) && !wallPositions[k].InNoZoneEdgeArea(caster.Map))
                     {
                         if (wall[k].terrain.defName == "Marsh" || wall[k].terrain.defName == "WaterShallow" || wall[k].terrain.defName == "WaterMovingShallow" || wall[k].terrain.defName == "WaterOceanShallow" || wall[k].terrain.defName == "WaterMovingChestDeep")

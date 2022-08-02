@@ -149,10 +149,10 @@ namespace TorannMagic
             bool spawned = flyingThing.Spawned;
             pawn = launcher as Pawn;
             this.speed = _speed;
-            //CompAbilityUserMagic comp = pawn.GetComp<CompAbilityUserMagic>();
+            //CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             //this.arcaneDmg = comp.arcaneDmg;
-            //MagicPowerSkill pwr = pawn.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_EyeOfTheStorm.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EyeOfTheStorm_pwr");
-            //MagicPowerSkill ver = pawn.GetComp<CompAbilityUserMagic>().MagicData.MagicPowerSkill_EyeOfTheStorm.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EyeOfTheStorm_ver");
+            //MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_EyeOfTheStorm.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EyeOfTheStorm_pwr");
+            //MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_EyeOfTheStorm.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EyeOfTheStorm_ver");
             //verVal = ver.level;
             //pwrVal = pwr.level;
             //ModOptions.SettingsRef settingsRef = new ModOptions.SettingsRef();
@@ -207,7 +207,7 @@ namespace TorannMagic
                 bool flag2 = this.ticksToImpact <= 0;
                 if (flag2)
                 {
-                    bool flag3 = this.DestinationCell.InBounds(base.Map);
+                    bool flag3 = this.DestinationCell.InBoundsWithNullCheck(base.Map);
                     if (flag3)
                     {
                         base.Position = this.DestinationCell;
@@ -352,7 +352,7 @@ namespace TorannMagic
             for (int i = 0; i < 4; i++)
             {
                 IntVec3 strikeCell = dissipationList.RandomElement();
-                if (strikeCell.InBounds(base.Map) && strikeCell.IsValid && !strikeCell.Fogged(this.Map))
+                if (strikeCell.InBoundsWithNullCheck(base.Map) && strikeCell.IsValid && !strikeCell.Fogged(this.Map))
                 {
                     DrawStrike(this.ExactPosition.ToIntVec3(), strikeCell.ToVector3Shifted());
                     for (int k = 0; k < Rand.Range(1, 8); k++)

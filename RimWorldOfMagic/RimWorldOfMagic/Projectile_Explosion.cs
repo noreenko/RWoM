@@ -5,6 +5,7 @@ using AbilityUser;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using TorannMagic.Extensions;
 using UnityEngine;
 
 namespace TorannMagic
@@ -74,7 +75,7 @@ namespace TorannMagic
             if (!this.initialized)
             {
                 caster = this.launcher as Pawn;
-                CompAbilityUserMagic comp = caster.GetComp<CompAbilityUserMagic>();
+                CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
                 //verVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_Custom, "TM_Explosion", "_ver", true);
                 //pwrVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_Custom, "TM_Explosion", "_pwr", true);
                 verVal = TM_Calc.GetSkillVersatilityLevel(caster, TorannMagicDefOf.TM_Explosion);
@@ -160,7 +161,7 @@ namespace TorannMagic
                     IEnumerable<IntVec3> explosionCells = newExplosionCells.Except(oldExplosionCells);
                     foreach (IntVec3 cell in explosionCells)
                     {
-                        if (cell.InBounds(map))
+                        if (cell.InBoundsWithNullCheck(map))
                         {
                             Vector3 heading = (cell - centerCell).ToVector3();
                             float distance = heading.magnitude;

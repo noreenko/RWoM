@@ -5,6 +5,7 @@ using System.Linq;
 using Verse;
 using Verse.AI;
 using AbilityUser;
+using TorannMagic.Extensions;
 using UnityEngine;
 
 namespace TorannMagic
@@ -43,13 +44,12 @@ namespace TorannMagic
                 targetPawn = TargetThingA as Pawn;
             }
 
-            cooldownFlag = this.verb.Ability.CooldownTicksLeft > 0 ? true : false;
+            cooldownFlag = this.verb.Ability.CooldownTicksLeft > 0;
 
-            if(this.verb.Ability.Def is TMAbilityDef)
+            if(this.verb.Ability.Def is TMAbilityDef tmAbilityDef)
             { 
-                TMAbilityDef tmAbility = (TMAbilityDef)(this.verb.Ability.Def);
-                CompAbilityUserMight compMight = this.pawn.TryGetComp<CompAbilityUserMight>();
-                CompAbilityUserMagic compMagic = this.pawn.TryGetComp<CompAbilityUserMagic>();
+                CompAbilityUserMight compMight = this.pawn.GetCompAbilityUserMight();
+                CompAbilityUserMagic compMagic = this.pawn.GetCompAbilityUserMagic();
                 //if (compMagic != null)
                 //{
                 //    compMagic.AIAbilityJob = null;
@@ -58,13 +58,13 @@ namespace TorannMagic
                 //{
                 //    //compMight.AIAbilityJob = null;
                 //}
-                if (tmAbility.manaCost > 0 && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if (tmAbilityDef.manaCost > 0 && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
                     if(this.pawn.Map.gameConditionManager.ConditionIsActive(TorannMagicDefOf.TM_ManaStorm))
                     {
                         //DamageInfo dinfo2;
                         //BodyPartRecord vitalPart = null;
-                        int amt = Mathf.RoundToInt(compMagic.ActualManaCost(tmAbility) * 100f);
+                        int amt = Mathf.RoundToInt(compMagic.ActualManaCost(tmAbilityDef) * 100f);
                         //IEnumerable<BodyPartRecord> partSearch = pawn.def.race.body.AllParts;
                         //vitalPart = partSearch.FirstOrDefault<BodyPartRecord>((BodyPartRecord x) => x.def.tags.Contains(BodyPartTagDefOf.ConsciousnessSource));
                         //dinfo2 = new DamageInfo(TMDamageDefOf.DamageDefOf.TM_Arcane, amt, 10, 0, pawn as Thing, vitalPart, null, DamageInfo.SourceCategory.ThingOrUnknown);
@@ -77,7 +77,7 @@ namespace TorannMagic
                     }
                     if (compMagic != null && compMagic.Mana != null)
                     {
-                        if (compMagic.ActualManaCost(tmAbility) > compMagic.Mana.CurLevel)
+                        if (compMagic.ActualManaCost(tmAbilityDef) > compMagic.Mana.CurLevel)
                         {
                             energyFlag = true;
                         }
@@ -87,11 +87,11 @@ namespace TorannMagic
                         energyFlag = true;
                     }
                 }
-                if (tmAbility.staminaCost > 0)
+                if (tmAbilityDef.staminaCost > 0)
                 {
                     if (compMight != null && compMight.Stamina != null)
                     {
-                        if (compMight.ActualStaminaCost(tmAbility) > compMight.Stamina.CurLevel)
+                        if (compMight.ActualStaminaCost(tmAbilityDef) > compMight.Stamina.CurLevel)
                         {
                             energyFlag = true;
                         }
@@ -113,7 +113,7 @@ namespace TorannMagic
                 //combatToil.FailOnDestroyedOrNull(TargetIndex.A);
                 //combatToil.FailOnDespawnedOrNull(TargetIndex.A);
                 //combatToil.FailOnDowned(TargetIndex.A);
-                //CompAbilityUserMagic comp = this.pawn.GetComp<CompAbilityUserMagic>();                
+                //CompAbilityUserMagic comp = this.pawn.GetCompAbilityUserMagic();
                 //JobDriver curDriver = this.pawn.jobs.curDriver;
                 combatToil.initAction = delegate
                 {
@@ -192,7 +192,7 @@ namespace TorannMagic
                         if (this.pawn.story != null && this.pawn.story.traits != null && this.pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) && Rand.Chance(.1f))
                         {
                             verb.Ability.PostAbilityAttempt();
-                            TM_Action.DoWildSurge(this.pawn, this.pawn.GetComp<CompAbilityUserMagic>(), (MagicAbility)verb.Ability, (TMAbilityDef)verb.Ability.Def, TargetA);
+                            TM_Action.DoWildSurge(this.pawn, this.pawn.GetCompAbilityUserMagic(), (MagicAbility)verb.Ability, (TMAbilityDef)verb.Ability.Def, TargetA);
                             EndJobWith(JobCondition.InterruptForced);
                         }
                     }
@@ -206,10 +206,9 @@ namespace TorannMagic
                         //bool inRange = (pawn.Position - TargetLocA).LengthHorizontal < verb.verbProps.range;
                         //if (inRange && validTarg)
                         //{
-                        if (verb != null && verb.Ability != null && verb.Ability.Def is TMAbilityDef)
-                        { 
-                            TMAbilityDef tmad = (TMAbilityDef)(verb.Ability.Def);
-                            if (tmad != null && tmad.relationsAdjustment != 0 && targetPawn.Faction != null && targetPawn.Faction != this.pawn.Faction && !targetPawn.Faction.HostileTo(this.pawn.Faction))
+                        if (verb != null && verb.Ability != null && verb.Ability.Def is TMAbilityDef tmad)
+                        {
+                            if (tmad.relationsAdjustment != 0 && targetPawn.Faction != null && targetPawn.Faction != this.pawn.Faction && !targetPawn.Faction.HostileTo(this.pawn.Faction))
                             {
                                 targetPawn.Faction.TryAffectGoodwillWith(this.pawn.Faction, tmad.relationsAdjustment, true, false, TorannMagicDefOf.TM_OffensiveMagic, null);
                             }
@@ -249,7 +248,7 @@ namespace TorannMagic
             {                
                 if (verb != null && verb.verbProps != null && (pawn.Position - TargetLocA).LengthHorizontal < verb.verbProps.range)
                 {
-                    if (TargetLocA.IsValid && TargetLocA.InBounds(pawn.Map) && !TargetLocA.Fogged(pawn.Map))  //&& TargetLocA.Walkable(pawn.Map)
+                    if (TargetLocA.IsValid && TargetLocA.InBoundsWithNullCheck(pawn.Map) && !TargetLocA.Fogged(pawn.Map))  //&& TargetLocA.Walkable(pawn.Map)
                     {
                         ShootLine shootLine;
                         bool validTarg = verb.TryFindShootLineFromTo(pawn.Position, TargetLocA, out shootLine);
@@ -324,7 +323,7 @@ namespace TorannMagic
                                     wildCheck = true;
                                     if (this.pawn.story != null && this.pawn.story.traits != null && this.pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) && Rand.Chance(.1f))
                                     {                                        
-                                        bool completeJob = TM_Action.DoWildSurge(this.pawn, this.pawn.GetComp<CompAbilityUserMagic>(), (MagicAbility)verb.Ability, (TMAbilityDef)verb.Ability.Def, TargetA);
+                                        bool completeJob = TM_Action.DoWildSurge(this.pawn, this.pawn.GetCompAbilityUserMagic(), (MagicAbility)verb.Ability, (TMAbilityDef)verb.Ability.Def, TargetA);
                                         if (!completeJob)
                                         {
                                             verb.Ability.PostAbilityAttempt();
@@ -387,12 +386,12 @@ namespace TorannMagic
             }
             else if (verbCast.AbilityProjectileDef.defName == "Projectile_PsionicDash")
             {
-                float sevReduct = 8f - this.pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_PsionicDash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicDash_eff").level;
+                float sevReduct = 8f - this.pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_PsionicDash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicDash_eff").level;
                 HealthUtility.AdjustSeverity(this.pawn, HediffDef.Named("TM_PsionicHD"), -sevReduct);
             }
             else if(verbCast.AbilityProjectileDef.defName == "Projectile_PsionicStorm")
             {
-                //float sevReduct = 65 - (5 * this.pawn.GetComp<CompAbilityUserMight>().MightData.MightPowerSkill_PsionicStorm.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicStorm_eff").level);
+                //float sevReduct = 65 - (5 * this.pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_PsionicStorm.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicStorm_eff").level);
                 HealthUtility.AdjustSeverity(this.pawn, HediffDef.Named("TM_PsionicHD"), -100);
             }
         }
@@ -415,8 +414,8 @@ namespace TorannMagic
 
         private void RemoveMimicAbility(Verb_UseAbility verbCast)
         {
-            CompAbilityUserMight mightComp = this.pawn.GetComp<CompAbilityUserMight>();
-            CompAbilityUserMagic magicComp = this.pawn.GetComp<CompAbilityUserMagic>();
+            CompAbilityUserMight mightComp = this.pawn.GetCompAbilityUserMight();
+            CompAbilityUserMagic magicComp = this.pawn.GetCompAbilityUserMagic();
             if (mightComp.mimicAbility != null && mightComp.mimicAbility.MainVerb.verbClass == verbCast.verbProps.verbClass)
             {
                 mightComp.RemovePawnAbility(mightComp.mimicAbility);

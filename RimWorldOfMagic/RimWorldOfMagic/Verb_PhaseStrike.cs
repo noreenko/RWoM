@@ -5,6 +5,7 @@ using AbilityUser;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -50,7 +51,7 @@ namespace TorannMagic
 
         public static int GetWeaponDmg(Pawn pawn)
         {
-            CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
             MightPowerSkill str = comp.MightData.MightPowerSkill_global_strength.FirstOrDefault((MightPowerSkill x) => x.label == "TM_global_strength_pwr");
             ThingWithComps weaponComp = pawn.equipment.Primary;
             float weaponDPS = weaponComp.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS, false) * .7f;
@@ -65,7 +66,7 @@ namespace TorannMagic
             bool result = false;
             bool arg_40_0;
 
-            CompAbilityUserMight comp = this.CasterPawn.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = this.CasterPawn.GetCompAbilityUserMight();
             verVal = TM_Calc.GetSkillVersatilityLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
             pwrVal = TM_Calc.GetSkillPowerLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
             //pwr = comp.MightData.MightPowerSkill_PhaseStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PhaseStrike_pwr");
@@ -175,29 +176,24 @@ namespace TorannMagic
 
         public void SearchForTargets(IntVec3 center, float radius, Map map, Pawn pawn)
         {
-            Pawn victim = null;
-            IntVec3 curCell;            
             IEnumerable<IntVec3> targets = GenRadial.RadialCellsAround(center, radius, true);
-            for (int i = 0; i < targets.Count(); i++)
+            foreach (IntVec3 curCell in targets)
             {
-                curCell = targets.ToArray<IntVec3>()[i];
                 FleckMaker.ThrowDustPuff(curCell, map, .2f);
-                if (curCell.InBounds(map) && curCell.IsValid)
+                if (curCell.InBoundsWithNullCheck(map) && curCell.IsValid)
                 {
-                    victim = curCell.GetFirstPawn(map);
-                }
-
-                if (victim != null && victim.Faction != pawn.Faction)
-                {
-                    if(Rand.Chance(.1f + .15f*pwrVal))
+                    Pawn victim = curCell.GetFirstPawn(map);
+                    if (victim != null && victim.Faction != pawn.Faction)
                     {
-                        this.dmgNum *= 3;
-                        MoteMaker.ThrowText(victim.DrawPos, victim.Map, "Critical Hit", -1f);
+                        if(Rand.Chance(.1f + .15f*pwrVal))
+                        {
+                            this.dmgNum *= 3;
+                            MoteMaker.ThrowText(victim.DrawPos, victim.Map, "Critical Hit", -1f);
+                        }
+                        DrawStrike(center, victim.Position.ToVector3(), map);
+                        damageEntities(victim, null, this.dmgNum, TMDamageDefOf.DamageDefOf.TM_PhaseStrike);
                     }
-                    DrawStrike(center, victim.Position.ToVector3(), map);
-                    damageEntities(victim, null, this.dmgNum, TMDamageDefOf.DamageDefOf.TM_PhaseStrike);
                 }
-                targets.GetEnumerator().MoveNext();
             }
         }
 

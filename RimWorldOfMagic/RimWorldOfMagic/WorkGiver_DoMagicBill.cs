@@ -7,6 +7,7 @@ using Verse.AI;
 using RimWorld;
 using UnityEngine;
 using HarmonyLib;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -154,13 +155,12 @@ namespace TorannMagic
                         }
                         return RefuelWorkGiverUtility.RefuelJob(pawn, thing, forced);
                     }
-                    CompAbilityUserMagic compMagic = pawn.TryGetComp<CompAbilityUserMagic>();
+                    CompAbilityUserMagic compMagic = pawn.GetCompAbilityUserMagic();
                     if (compMagic != null && compMagic.Mana != null)
                     {
-                        if (thing is Building_TMMagicCircle)
+                        if (thing is Building_TMMagicCircle tmMagicCircle)
                         {
-                            Building_TMMagicCircle mc = thing as Building_TMMagicCircle;
-                            if(mc.InteractionCellOccupied())
+                            if(tmMagicCircle.InteractionCellOccupied())
                             {
                                 return null;
                             }
@@ -247,15 +247,14 @@ namespace TorannMagic
                         
                         List<Pawn> billPawns = new List<Pawn>();
                         billPawns.Clear();
-                        if (bill.recipe is MagicRecipeDef)
+                        if (bill.recipe is MagicRecipeDef magicRecipeDef)
                         {
-                            MagicRecipeDef magicRecipe = bill.recipe as MagicRecipeDef;
-                            CompAbilityUserMagic compMagic = pawn.TryGetComp<CompAbilityUserMagic>(); 
+                            CompAbilityUserMagic compMagic = pawn.GetCompAbilityUserMagic();
                             if(magicCircle.IsActive)
                             {
                                 issueBill = false;
                             }
-                            if (!magicCircle.CanEverDoBill(bill, out billPawns, magicRecipe))
+                            if (!magicCircle.CanEverDoBill(bill, out billPawns, magicRecipeDef))
                             {
                                 issueBill = false;
                             }
@@ -294,13 +293,13 @@ namespace TorannMagic
                                 if (TryFindBestBillIngredients(bill, pawn, (Thing)giver, chosenIngThings))
                                 {
                                     this.magicCircle = thing as Building_TMMagicCircle;
-                                    if (this.magicCircle != null && bill.recipe is MagicRecipeDef)
+                                    if (this.magicCircle != null && bill.recipe is MagicRecipeDef recipeDef)
                                     {
-                                        this.magicCircle.magicRecipeDef = bill.recipe as MagicRecipeDef;
+                                        this.magicCircle.magicRecipeDef = recipeDef;
                                         this.magicCircle.MageList.Clear();
                                         magicCircle.MageList.Add(pawn);
                                         //Log.Message("assigning magic bill to " + pawn.LabelShort);
-                                        if (bill.recipe is MagicRecipeDef && billPawns.Count > 1)
+                                        if (recipeDef != null && billPawns.Count > 1)
                                         {
                                             for (int j = 0; j < billPawns.Count; j++)
                                             {

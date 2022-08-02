@@ -1,5 +1,6 @@
 ﻿using AbilityUser;
 using RimWorld;
+using TorannMagic.Extensions;
 using Verse;
 using TorannMagic.Golems;
 
@@ -16,7 +17,7 @@ namespace TorannMagic
             cellRect.ClipInsideMap(map);
             Building bldg = new Building();
             Pawn caster = this.launcher as Pawn;
-            CompAbilityUserMagic comp = caster.GetComp<CompAbilityUserMagic>();
+            CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
 
             IntVec3 c = cellRect.CenterCell;
 
@@ -24,10 +25,9 @@ namespace TorannMagic
             bldg = cellRect.CenterCell.GetFirstBuilding(map);            
             if (bldg != null)
             {
-                if (bldg is Building_TMGolemBase)
+                if (bldg is Building_TMGolemBase golemBase)
                 {
-                    Building_TMGolemBase gb = bldg as Building_TMGolemBase;
-                    gb.Energy.AddEnergyFlat(400 * comp.arcaneDmg);
+                    golemBase.Energy.AddEnergyFlat(400 * comp.arcaneDmg);
                 }
                 else if (bldg.GetComp<CompPowerBattery>() != null)
                 {

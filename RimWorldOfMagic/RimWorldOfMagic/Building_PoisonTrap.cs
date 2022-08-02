@@ -4,6 +4,7 @@ using Verse;
 using Verse.Sound;
 using System.Collections.Generic;
 using System.Linq;
+using TorannMagic.Extensions;
 using UnityEngine;
 using Verse.AI;
 using Verse.AI.Group;
@@ -85,7 +86,7 @@ namespace TorannMagic
                         {
                             curCell = targets.ToArray<IntVec3>()[i];
 
-                            if (curCell.InBounds(base.Map) && curCell.IsValid)
+                            if (curCell.InBoundsWithNullCheck(base.Map) && curCell.IsValid)
                             {
                                 Pawn victim = curCell.GetFirstPawn(base.Map);
                                 if (victim != null && !victim.Dead && victim.RaceProps.IsFlesh)
@@ -184,7 +185,7 @@ namespace TorannMagic
                 for (int i = 0; i < pList.Count; i++)
                 {
                     Pawn p = pList[i];
-                    CompAbilityUserMight comp = p.TryGetComp<CompAbilityUserMight>();
+                    CompAbilityUserMight comp = p.GetCompAbilityUserMight();
                     if(comp != null && comp.combatItems != null && comp.combatItems.Count > 0)
                     {
                         if(comp.combatItems.Contains(this))

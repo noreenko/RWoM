@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimWorld.Planet;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -35,7 +36,7 @@ namespace TorannMagic
         private void Initialize()
         {
             bool spawned = pawn.Spawned;
-            CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
             if (comp != null)
             {
                 herbPwr = comp.MightData.MightPowerSkill_Herbalist.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Herbalist_pwr").level;
@@ -63,11 +64,10 @@ namespace TorannMagic
                 {
                     this.Severity += .4f * (1f + (.1f * herbVer));
                 }
-                if(this.pawn.Map == null && this.pawn.ParentHolder is Caravan)
+                if(this.pawn.Map == null && this.pawn.ParentHolder is Caravan caravan)
                 {
-                    Caravan car = this.pawn.ParentHolder as Caravan;
                     bool flag;
-                    if (!car.NightResting)
+                    if (!caravan.NightResting)
                     {
                         this.Severity += (ForagedFoodPerDayCalculator.GetBaseForagedNutritionPerDay(this.pawn, out flag)/50f) * (1f + (.05f * herbVer));
                     }                    

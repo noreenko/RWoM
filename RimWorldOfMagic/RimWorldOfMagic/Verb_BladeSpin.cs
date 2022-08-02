@@ -4,6 +4,7 @@ using UnityEngine;
 using RimWorld;
 using System.Linq;
 using System.Collections.Generic;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -46,7 +47,7 @@ namespace TorannMagic
 
         public static int GetWeaponDmg(Pawn pawn)
         {
-            CompAbilityUserMight comp = pawn.GetComp<CompAbilityUserMight>();
+            CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
             MightPowerSkill str = comp.MightData.MightPowerSkill_global_strength.FirstOrDefault((MightPowerSkill x) => x.label == "TM_global_strength_pwr");
             int dmgNum = 0;
             ThingWithComps weaponComp = pawn.equipment.Primary;
@@ -61,7 +62,7 @@ namespace TorannMagic
         {            
             if (this.CasterPawn.equipment.Primary != null && !this.CasterPawn.equipment.Primary.def.IsRangedWeapon)
             {
-                CompAbilityUserMight comp = this.CasterPawn.GetComp<CompAbilityUserMight>();
+                CompAbilityUserMight comp = this.CasterPawn.GetCompAbilityUserMight();
                 //MightPowerSkill ver = comp.MightData.MightPowerSkill_SeismicSlash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_SeismicSlash_ver");
                 //MightPowerSkill pwr = comp.MightData.MightPowerSkill_SeismicSlash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_SeismicSlash_pwr");
                 //verVal = TM_Calc.GetMightSkillLevel(this.CasterPawn, comp.MightData.MightPowerSkill_BladeSpin, "TM_BladeSpin", "_ver", true);
@@ -116,7 +117,7 @@ namespace TorannMagic
             for (int i = 0; i < targets.Count(); i++)
             {
                 curCell = targets.ToArray<IntVec3>()[i];
-                if (curCell.InBounds(base.CasterPawn.Map) && curCell.IsValid)
+                if (curCell.InBoundsWithNullCheck(base.CasterPawn.Map) && curCell.IsValid)
                 {
                     victim = curCell.GetFirstPawn(map);
                 }
@@ -125,12 +126,7 @@ namespace TorannMagic
                 {
                     for (int j = 0; j < 2+pwrVal; j++)
                     {
-                        bool newTarg = false;
                         if (Rand.Chance(.5f + .04f*(pwrVal+verVal)))
-                        {
-                            newTarg = true;
-                        }
-                        if (newTarg)
                         {
                             DrawStrike(center, victim.Position.ToVector3(), map);
                             damageEntities(victim, null, GetWeaponDmg(this.CasterPawn), DamageDefOf.Cut);

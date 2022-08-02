@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using HarmonyLib;
+using TorannMagic.Extensions;
 
 namespace TorannMagic
 {
@@ -23,7 +24,7 @@ namespace TorannMagic
 
             Pawn pawn = this.launcher as Pawn;
             Pawn victim = hitThing as Pawn;
-            CompAbilityUserMagic comp = pawn.GetComp<CompAbilityUserMagic>();
+            CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             pwr = comp.MagicData.MagicPowerSkill_RaiseUndead.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_RaiseUndead_pwr");
             ver = comp.MagicData.MagicPowerSkill_RaiseUndead.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_RaiseUndead_ver");
 
@@ -36,7 +37,7 @@ namespace TorannMagic
                 curCell = targets.ToArray<IntVec3>()[i];
 
                 TM_MoteMaker.ThrowPoisonMote(curCell.ToVector3Shifted(), map, .3f);
-                if (curCell.InBounds(map))
+                if (curCell.InBoundsWithNullCheck(map))
                 { 
                     Corpse corpse = null;
                     List<Thing> thingList;
@@ -170,13 +171,13 @@ namespace TorannMagic
                                                 undeadPawn.guest.SetGuestStatus(pawn.Faction, GuestStatus.Slave);
                                             }
 
-                                            CompAbilityUserMagic compMagic = undeadPawn.GetComp<CompAbilityUserMagic>();
+                                            CompAbilityUserMagic compMagic = undeadPawn.GetCompAbilityUserMagic();
                                             if (compMagic != null && TM_Calc.IsMagicUser(undeadPawn)) //(compMagic.IsMagicUser && !undeadPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless)) || 
                                             {
                                                 compMagic.Initialize();
                                                 compMagic.RemovePowers(true);
                                             }
-                                            CompAbilityUserMight compMight = undeadPawn.GetComp<CompAbilityUserMight>();
+                                            CompAbilityUserMight compMight = undeadPawn.GetCompAbilityUserMight();
                                             if (compMight != null && TM_Calc.IsMightUser(undeadPawn)) //compMight.IsMightUser || 
                                             {
                                                 compMight.Initialize();
@@ -208,7 +209,7 @@ namespace TorannMagic
                                             
                                             //Color undeadColor = new Color(.2f, .4f, 0);
                                             //undeadPawn.story.hairColor = undeadColor;
-                                            //CompAbilityUserMagic undeadComp = undeadPawn.GetComp<CompAbilityUserMagic>();
+                                            //CompAbilityUserMagic undeadComp = undeadPawn.GetCompAbilityUserMagic();
                                             //if (undeadComp.IsMagicUser)
                                             //{
                                             //    undeadComp.ClearPowers();
@@ -238,10 +239,9 @@ namespace TorannMagic
                                     }
                                 }
                             }
-                            else if (corpseThing is Pawn)
+                            else if (corpseThing is Pawn undeadPawn)
                             {
-                                Pawn undeadPawn = corpseThing as Pawn;
-                                if(undeadPawn != pawn && !TM_Calc.IsNecromancer(undeadPawn) && TM_Calc.IsUndead(corpseThing as Pawn))
+                                if(undeadPawn != pawn && !TM_Calc.IsNecromancer(undeadPawn) && TM_Calc.IsUndead(undeadPawn))
                                 {
                                     RemoveHediffsAddictionsAndPermanentInjuries(undeadPawn);
                                     TM_MoteMaker.ThrowPoisonMote(curCell.ToVector3Shifted(), map, .6f);
