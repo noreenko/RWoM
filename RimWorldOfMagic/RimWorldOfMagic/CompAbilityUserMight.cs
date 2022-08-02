@@ -1272,6 +1272,8 @@ namespace TorannMagic
             }
         }
 
+        private static readonly TraitDef[] mightTraits = { TorannMagicDefOf.TM_Monk, TorannMagicDefOf.DeathKnight, TorannMagicDefOf.TM_Psionic, TorannMagicDefOf.Gladiator, TorannMagicDefOf.TM_Sniper, TorannMagicDefOf.Bladedancer, TorannMagicDefOf.Ranger, TorannMagicDefOf.Faceless, TorannMagicDefOf.TM_Commander, TorannMagicDefOf.TM_SuperSoldier, };
+
         public bool IsMightUser
         {
             get
@@ -1286,9 +1288,10 @@ namespace TorannMagic
                         {
                             return true;
                         }
+                        var allTraits = this.Pawn.story.traits.allTraits;
                         if (this.customClass == null && this.customIndex == -2)
                         {
-                            this.customIndex = TM_ClassUtility.IsCustomClassIndex(this.Pawn.story.traits.allTraits);
+                            this.customIndex = TM_ClassUtility.IsCustomClassIndex(allTraits);
                             if (this.customIndex >= 0)
                             {
                                 if (!TM_ClassUtility.CustomClasses()[this.customIndex].isFighter)
@@ -1303,14 +1306,7 @@ namespace TorannMagic
                                 }
                             }
                         }
-                        bool flag4 = base.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Monk) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.DeathKnight) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Psionic) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Gladiator) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Sniper) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Bladedancer) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Ranger) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) || TM_Calc.IsWayfarer(base.Pawn) || base.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Commander) ||
-                            base.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_SuperSoldier);
-                        if (flag4)
-                        {
-                            return true;
-                        }                        
+                        if (Utils.HasAnyTraitsinArray(allTraits, mightTraits) || TM_Calc.IsWayfarer(base.Pawn)) return true;
                     }
                 }
                 return false;
