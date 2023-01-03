@@ -5,7 +5,9 @@ using TorannMagic.Utils;
 using UnityEngine;
 using Verse;
 using System.Collections.Generic;
+using AbilityUserAI;
 using HarmonyLib;
+using TorannMagic.ModOptions;
 using TorannMagic.TMDefs;
 
 namespace TorannMagic
@@ -49,6 +51,7 @@ namespace TorannMagic
         }
 
         protected int age = -1;
+        public bool tickConditionsMet;  // Set in TM_PawnTracker to know if we should tick in CompTick or not
 
         protected int autocastTick = 0;
         protected int nextAICastAttemptTick = 0;
@@ -139,6 +142,36 @@ namespace TorannMagic
                     material.color = customClass.classIconColor;                    
                 }
                 DrawMark(material, new Vector3(.28f, 1f, .28f));
+            }
+        }
+
+        protected void handleAggressiveAICasting()
+        {
+            if (Pawn.IsColonist || !Settings.Instance.AICasting || !Settings.Instance.AIAggressiveCasting ||
+                Find.TickManager.TicksGame <= nextAICastAttemptTick) return;
+
+            nextAICastAttemptTick = Find.TickManager.TicksGame + Rand.Range(300, 500);
+            if (Pawn.jobs == null || Pawn.CurJobDef == TorannMagicDefOf.TMCastAbilitySelf ||
+                Pawn.CurJobDef == TorannMagicDefOf.TMCastAbilityVerb) return;
+
+            IEnumerable<AbilityUserAIProfileDef> enumerable = Pawn.EligibleAIProfiles();
+            foreach (AbilityUserAIProfileDef item in enumerable)
+            {
+                AbilityAIDef useThisAbility = item?.decisionTree?.RecursivelyGetAbility(Pawn);
+                if (useThisAbility == null) continue;
+
+                ThingComp val = Pawn.AllComps.First(comp => comp.GetType() == item.compAbilityUserClass);
+                if (!(val is CompAbilityUser compAbilityUser)) continue;
+
+                PawnAbility pawnAbility = compAbilityUser.AbilityData.AllPowers.First(ability => ability.Def == useThisAbility.ability);
+                if (pawnAbility.CanCastPowerCheck(AbilityContext.AI, out _))
+                {
+                    LocalTargetInfo target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, Pawn);
+                    if (target.IsValid)
+                    {
+                        pawnAbility.UseAbility(AbilityContext.Player, target);
+                    }
+                }
             }
         }
     }

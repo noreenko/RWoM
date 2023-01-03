@@ -32,7 +32,7 @@ namespace TorannMagic
         private int damageMitigationDelayMS = 0;
         public int magicXPRate = 1000;
         public int lastXPGain = 0;
-        
+
         private bool doOnce = true;
         private List<IntVec3> deathRing = new List<IntVec3>();
         public float weaponCritChance = 0f;
@@ -280,7 +280,7 @@ namespace TorannMagic
         public int lastChaosTraditionTick = 0;
         public ThingOwner<ThingWithComps> magicWardrobe;
 
-        private static HashSet<ushort> magicTraitIndexes = new HashSet<ushort>()
+        public static HashSet<ushort> magicTraitIndexes = new HashSet<ushort>()
         {
             TorannMagicDefOf.Enchanter.index,
             TorannMagicDefOf.BloodMage.index,
@@ -1915,11 +1915,6 @@ namespace TorannMagic
         //    return result;
         //}
 
-        private void SingleEvent()
-        {
-            this.doOnce = false;
-        }
-
         private void DoOncePerLoad()
         {
             if (this.spell_FertileLands == true)
@@ -1963,236 +1958,144 @@ namespace TorannMagic
 
         public override void CompTick()
         {
-            bool flag = base.Pawn != null;
-            if (flag)
+            if(!tickConditionsMet)
             {
-                bool spawned = base.Pawn.Spawned;
-                if (spawned)
+                if (TM_TickManager.tickMod2500 == tickOffset2500 && Pawn.Spawned && Pawn.story != null
+                    && Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Gifted) && !Pawn.Inspired
+                    && Pawn.CurJobDef == JobDefOf.LayDown && Rand.Chance(.025f))
                 {
-                    bool isMagicUser = this.IsMagicUser && !this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) && !this.Pawn.IsWildMan();
-                    if (isMagicUser)
-                    {
-                        bool flag3 = !this.firstTick;
-                        if (flag3)
-                        {
-                            this.PostInitializeTick();
-                        }
-                        if (this.doOnce)
-                        {
-                            SingleEvent();
-                        }
-                        base.CompTick();
-                        this.age++;
-                        if(this.chainedAbilitiesList != null && this.chainedAbilitiesList.Count > 0)
-                        {
-                            for(int i = 0; i < chainedAbilitiesList.Count; i++)
-                            {
-                                chainedAbilitiesList[i].expirationTicks--;
-                                if(chainedAbilitiesList[i].expires && chainedAbilitiesList[i].expirationTicks <= 0)
-                                {
-                                    this.RemovePawnAbility(chainedAbilitiesList[i].abilityDef);
-                                    this.chainedAbilitiesList.Remove(chainedAbilitiesList[i]);
-                                    break;
-                                }
-                            }                            
-                        }
-                        if (this.Mana != null)
-                        {
-                            if (Find.TickManager.TicksGame % 4 == 0 && this.Pawn.CurJob != null && this.Pawn.CurJobDef == JobDefOf.DoBill && this.Pawn.CurJob.targetA != null && this.Pawn.CurJob.targetA.Thing != null)
-                            {
-                                DoArcaneForging();
-                            }
-                            if (this.Mana.CurLevel >= (.99f * this.Mana.MaxLevel))
-                            {
-                                if (this.age > (lastXPGain + magicXPRate))
-                                {
-                                    MagicData.MagicUserXP++;
-                                    lastXPGain = this.age;
-                                }
-                            }
-                            if (TM_TickManager.tickMod30 == tickOffset30)
-                            {
-                                bool flag5 = this.MagicUserXP > this.MagicUserXPTillNextLevel;
-                                if (flag5)
-                                {
-                                    this.LevelUp(false);
-                                }
-                            }
-                            if (TM_TickManager.tickMod60 == tickOffset60)
-                            {
-                                if (this.Pawn.IsColonist && !this.magicPowersInitializedForColonist)
-                                {
-                                    ResolveFactionChange();
-                                }
-                                else if (!this.Pawn.IsColonist)
-                                {
-                                    this.magicPowersInitializedForColonist = false;
-                                }
-
-                                if (this.Pawn.IsColonist)
-                                {
-                                    ResolveEnchantments();
-                                    for (int i = 0; i < this.summonedMinions.Count; i++)
-                                    {
-                                        Pawn evaluateMinion = this.summonedMinions[i] as Pawn;
-                                        if (evaluateMinion == null || evaluateMinion.Dead || evaluateMinion.Destroyed)
-                                        {
-                                            this.summonedMinions.Remove(this.summonedMinions[i]);
-                                        }
-                                    }
-                                    ResolveMinions();
-                                    ResolveSustainers();
-                                    if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Necromancer) || this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Lich) || (this.customClass != null && this.customClass.isNecromancer))
-                                    {
-                                        ResolveUndead();
-                                    }
-                                    ResolveEffecter();
-                                    ResolveClassSkills();
-                                    ResolveSpiritOfLight();
-                                    ResolveChronomancerTimeMark();
-                                }
-                            }
-                            if (this.autocastTick < Find.TickManager.TicksGame)  //180 default
-                            {
-                                if (!this.Pawn.Dead && !this.Pawn.Downed && this.Pawn.Map != null && this.Pawn.story != null && this.Pawn.story.traits != null && this.MagicData != null && this.AbilityData != null && !this.Pawn.InMentalState)
-                                {
-                                    if (this.Pawn.IsColonist)
-                                    {
-                                        this.autocastTick = Find.TickManager.TicksGame + (int)Rand.Range(.8f * Settings.Instance.autocastEvaluationFrequency, 1.2f * Settings.Instance.autocastEvaluationFrequency);
-                                        ResolveAutoCast();
-                                    }
-                                    else if(Settings.Instance.AICasting && (!this.Pawn.IsPrisoner || this.Pawn.IsFighting()) && (this.Pawn.guest != null && !this.Pawn.IsSlave))
-                                    {
-                                        float tickMult = Settings.Instance.AIAggressiveCasting ? 1f : 2f;
-                                        this.autocastTick = Find.TickManager.TicksGame + (int)(Rand.Range(.75f * Settings.Instance.autocastEvaluationFrequency, 1.25f * Settings.Instance.autocastEvaluationFrequency) * tickMult);
-                                        ResolveAIAutoCast();
-                                    }
-                                }                                
-                            }
-                            if (!this.Pawn.IsColonist && Settings.Instance.AICasting && Settings.Instance.AIAggressiveCasting && Find.TickManager.TicksGame > this.nextAICastAttemptTick) //Aggressive AI Casting
-                            {
-                                this.nextAICastAttemptTick = Find.TickManager.TicksGame + Rand.Range(300, 500);
-                                if (this.Pawn.jobs != null && this.Pawn.CurJobDef != TorannMagicDefOf.TMCastAbilitySelf && this.Pawn.CurJobDef != TorannMagicDefOf.TMCastAbilityVerb)
-                                {
-                                    IEnumerable<AbilityUserAIProfileDef> enumerable = this.Pawn.EligibleAIProfiles();
-                                    if (enumerable != null && enumerable.Count() > 0)
-                                    {
-                                        foreach (AbilityUserAIProfileDef item in enumerable)
-                                        {
-                                            if (item != null)
-                                            {
-                                                AbilityAIDef useThisAbility = null;
-                                                if (item.decisionTree != null)
-                                                {
-                                                    useThisAbility = item.decisionTree.RecursivelyGetAbility(this.Pawn);
-                                                }
-                                                if (useThisAbility != null)
-                                                {
-                                                    ThingComp val = this.Pawn.AllComps.First((ThingComp comp) => ((object)comp).GetType() == item.compAbilityUserClass);
-                                                    CompAbilityUser compAbilityUser = val as CompAbilityUser;
-                                                    if (compAbilityUser != null)
-                                                    {
-                                                        PawnAbility pawnAbility = compAbilityUser.AbilityData.AllPowers.First((PawnAbility ability) => ability.Def == useThisAbility.ability);
-                                                        string reason = "";
-                                                        if (pawnAbility.CanCastPowerCheck(AbilityContext.AI, out reason))
-                                                        {
-                                                            LocalTargetInfo target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, this.Pawn);
-                                                            if (target.IsValid)
-                                                            {
-                                                                pawnAbility.UseAbility(AbilityContext.Player, target);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (Find.TickManager.TicksGame % this.overdriveFrequency == 0)
-                        {
-                            if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Technomancer) || (CombinedCustomAbilities.Count > 0 && CombinedCustomAbilities.Contains(TorannMagicDefOf.TM_Overdrive)))
-                            {
-                                ResolveTechnomancerOverdrive();
-                            }
-                        }
-                        if (TM_TickManager.tickMod300 == tickOffset300) //cache weapon damage for tooltip and damage calculations
-                        {
-                            weaponDamage = GetSkillDamage();
-                        }
-                        if (TM_TickManager.tickMod600 == tickOffset600)
-                        {
-                            if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Warlock))
-                            {
-                                ResolveWarlockEmpathy();
-                            }
-                            ResolveMagicUseEvents();
-                        }
-                        if (TM_TickManager.tickMod2000 == tickOffset2000)
-                        {
-                            if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Succubus))
-                            {
-                                ResolveSuccubusLovin();
-                            }
-                        }
-                        if (deathRetaliating)
-                        {
-                            DoDeathRetaliation();
-                        }
-                        else if (TM_TickManager.tickMod67 == tickOffset67 && !Pawn.IsColonist && Pawn.Downed)
-                        {
-                            DoDeathRetaliation();
-                        }
-                    }
-                    else
-                    {                        
-                        if(TM_TickManager.tickMod2500 == tickOffset2500 && Pawn.story != null && Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Gifted))
-                        {                            
-                            if (!this.Pawn.Inspired && this.Pawn.CurJobDef == JobDefOf.LayDown && Rand.Chance(.025f))
-                            {
-                                this.Pawn.mindState.inspirationHandler.TryStartInspiration(TorannMagicDefOf.ID_ArcanePathways);
-                            }
-                        }
-                    }
+                    Pawn.mindState.inspirationHandler.TryStartInspiration(TorannMagicDefOf.ID_ArcanePathways);
                 }
-                else
+
+                return;
+            }
+
+            if (!tickConditionsMet) return;
+            if (!firstTick)
+            {
+                PostInitializeTick();
+            }
+            base.CompTick();
+            age++;
+            if(chainedAbilitiesList != null && chainedAbilitiesList.Count > 0)
+            {
+                for(int i = 0; i < chainedAbilitiesList.Count; i++)
                 {
-                    if (TM_TickManager.tickMod600 == tickOffset600)
+                    chainedAbilitiesList[i].expirationTicks--;
+                    if(chainedAbilitiesList[i].expires && chainedAbilitiesList[i].expirationTicks <= 0)
                     {
-                        if (this.Pawn.Map == null)
-                        {
-                            if (this.IsMagicUser)
-                            {
-                                int num;
-                                if (AbilityData?.AllPowers != null)
-                                {
-                                    AbilityData obj = AbilityData;
-                                    num = ((obj != null && obj.AllPowers.Count > 0) ? 1 : 0);
-                                }
-                                else
-                                {
-                                    num = 0;
-                                }
-                                if (num != 0)
-                                {
-                                    foreach (PawnAbility allPower in AbilityData.AllPowers)
-                                    {
-                                        allPower.CooldownTicksLeft -= 600;
-                                        if (allPower.CooldownTicksLeft <= 0)
-                                        {
-                                            allPower.CooldownTicksLeft = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        RemovePawnAbility(chainedAbilitiesList[i].abilityDef);
+                        chainedAbilitiesList.Remove(chainedAbilitiesList[i]);
+                        break;
                     }
                 }
             }
-            if (Initialized)
+            if (Mana != null)
             {
-                //custom code
+                if (Find.TickManager.TicksGame % 4 == 0 && Pawn.CurJob != null && Pawn.CurJobDef == JobDefOf.DoBill && Pawn.CurJob.targetA != null && Pawn.CurJob.targetA.Thing != null)
+                {
+                    DoArcaneForging();
+                }
+                if (Mana.CurLevel >= .99f * Mana.MaxLevel)
+                {
+                    if (age > lastXPGain + magicXPRate)
+                    {
+                        MagicData.MagicUserXP++;
+                        lastXPGain = age;
+                    }
+                }
+                if (TM_TickManager.tickMod30 == tickOffset30)
+                {
+                    if (MagicUserXP > MagicUserXPTillNextLevel)
+                    {
+                        LevelUp();
+                    }
+                }
+                if (TM_TickManager.tickMod60 == tickOffset60)
+                {
+                    if (Pawn.IsColonist && !magicPowersInitializedForColonist)
+                    {
+                        ResolveFactionChange();
+                    }
+                    else if (!Pawn.IsColonist)
+                    {
+                        magicPowersInitializedForColonist = false;
+                    }
+
+                    if (Pawn.IsColonist)
+                    {
+                        ResolveEnchantments();
+                        for (int i = 0; i < summonedMinions.Count; i++)
+                        {
+                            if (!(summonedMinions[i] is Pawn evaluateMinion) || evaluateMinion.Dead || evaluateMinion.Destroyed)
+                            {
+                                summonedMinions.Remove(summonedMinions[i]);
+                            }
+                        }
+                        ResolveMinions();
+                        ResolveSustainers();
+                        if (Pawn.story.traits.HasTrait(TorannMagicDefOf.Necromancer) || Pawn.story.traits.HasTrait(TorannMagicDefOf.Lich) || (customClass != null && customClass.isNecromancer))
+                        {
+                            ResolveUndead();
+                        }
+                        ResolveEffecter();
+                        ResolveClassSkills();
+                        ResolveSpiritOfLight();
+                        ResolveChronomancerTimeMark();
+                    }
+                }
+                if (autocastTick < Find.TickManager.TicksGame)  //180 default
+                {
+                    if (!Pawn.Dead && !Pawn.Downed && Pawn.Map != null && Pawn.story?.traits != null && MagicData != null && !Pawn.InMentalState)
+                    {
+                        if (Pawn.IsColonist)
+                        {
+                            autocastTick = Find.TickManager.TicksGame + (int)Rand.Range(.8f * Settings.Instance.autocastEvaluationFrequency, 1.2f * Settings.Instance.autocastEvaluationFrequency);
+                            ResolveAutoCast();
+                        }
+                        else if(Settings.Instance.AICasting && (!Pawn.IsPrisoner || Pawn.IsFighting()) && Pawn.guest != null && !Pawn.IsSlave)
+                        {
+                            float tickMult = Settings.Instance.AIAggressiveCasting ? 1f : 2f;
+                            autocastTick = Find.TickManager.TicksGame + (int)(Rand.Range(.75f * Settings.Instance.autocastEvaluationFrequency, 1.25f * Settings.Instance.autocastEvaluationFrequency) * tickMult);
+                            ResolveAIAutoCast();
+                        }
+                    }
+                }
+                handleAggressiveAICasting();
+            }
+            if (Find.TickManager.TicksGame % overdriveFrequency == 0)
+            {
+                if (Pawn.story.traits.HasTrait(TorannMagicDefOf.Technomancer) || (CombinedCustomAbilities.Count > 0 && CombinedCustomAbilities.Contains(TorannMagicDefOf.TM_Overdrive)))
+                {
+                    ResolveTechnomancerOverdrive();
+                }
+            }
+            if (TM_TickManager.tickMod300 == tickOffset300) //cache weapon damage for tooltip and damage calculations
+            {
+                weaponDamage = GetSkillDamage();
+            }
+            if (TM_TickManager.tickMod600 == tickOffset600)
+            {
+                if (Pawn.story.traits.HasTrait(TorannMagicDefOf.Warlock))
+                {
+                    ResolveWarlockEmpathy();
+                }
+                ResolveMagicUseEvents();
+            }
+            if (TM_TickManager.tickMod2000 == tickOffset2000)
+            {
+                if (Pawn.story.traits.HasTrait(TorannMagicDefOf.Succubus))
+                {
+                    ResolveSuccubusLovin();
+                }
+            }
+            if (deathRetaliating)
+            {
+                DoDeathRetaliation();
+            }
+            else if (TM_TickManager.tickMod67 == tickOffset67 && !Pawn.IsColonist && Pawn.Downed)
+            {
+                DoDeathRetaliation();
             }
         }
 
@@ -4653,6 +4556,7 @@ namespace TorannMagic
                     }
                 }
             }
+            TM_PawnTracker.ResolveComps(Pawn);
         }
 
         public override bool TryTransformPawn()
@@ -4674,6 +4578,7 @@ namespace TorannMagic
             Log.Message("Removing ability: " + current.abilityDef.defName.ToString());
             base.RemovePawnAbility(current.abilityDef);
             base.UpdateAbilities();
+            TM_PawnTracker.ResolveComps((Pawn));
         }
 
         public void ResetSkills()
@@ -4721,7 +4626,7 @@ namespace TorannMagic
             //CompAbilityUserMagic.MagicAbilities = null;
             //this.magicData = null;
             this.AssignAbilities();
-          
+            TM_PawnTracker.ResolveComps(Pawn);
         }
 
         private void LoadPowers()

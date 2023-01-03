@@ -58,6 +58,8 @@ namespace TorannMagic
                     {
                         CustomMageClassesList.Add(cc);
                     }
+
+                    CompAbilityUserMagic.magicTraitIndexes.Add(cc.classTrait.index);
                 }
                 if (cc.isFighter)
                 {
@@ -69,6 +71,8 @@ namespace TorannMagic
                     {
                         CustomFighterClassesList.Add(cc);
                     }
+
+                    CompAbilityUserMight.mightTraitIndexes.Add(cc.classTrait.index);
                 }
                 
                 if (!cc.isAdvancedClass) {

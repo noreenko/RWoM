@@ -3,6 +3,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TorannMagic.Utils;
 using UnityEngine;
 using Verse;
 
@@ -2077,6 +2078,11 @@ namespace TorannMagic
                                 {
                                     compMagic.AddPawnAbility(TorannMagicDefOf.TM_LightSkipGlobal);
                                 }
+                            }
+                            // Make sure CompAbilityUserMight ticks after getting this skill levelled
+                            if (skill.label == "TM_Cantrips_eff" && skill.level >= 15)
+                            {
+                                TM_PawnTracker.ResolveComps(compMagic.Pawn);
                             }
                         }
                     }

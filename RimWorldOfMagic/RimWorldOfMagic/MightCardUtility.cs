@@ -3,6 +3,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TorannMagic.Utils;
 using UnityEngine;
 using Verse;
 
@@ -1407,11 +1408,11 @@ namespace TorannMagic
                     }
                     else
                     {
-                        bool flag12 = Widgets.ButtonText(rect41, "+", true, false, true) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                        bool flag12 = Widgets.ButtonText(rect41, "+", true, false, true) && compMight.Pawn.Faction == Faction.OfPlayer;
                         Widgets.Label(rect4, skill.label.Translate() + ": " + skill.level + " / " + skill.levelMax);
                         if (flag12)
                         {
-                            bool flag17 = compMight.AbilityUser.story != null && compMight.AbilityUser.story.DisabledWorkTagsBackstoryAndTraits == WorkTags.Violent && power.abilityDef.MainVerb.isViolent;
+                            bool flag17 = compMight.Pawn.story != null && compMight.Pawn.story.DisabledWorkTagsBackstoryAndTraits == WorkTags.Violent && power.abilityDef.MainVerb.isViolent;
                             if (flag17)
                             {
                                 Messages.Message("IsIncapableOfViolenceLower".Translate(
@@ -1421,7 +1422,11 @@ namespace TorannMagic
                             }                                                       
                             skill.level++;
                             compMight.MightData.MightAbilityPoints -= skill.costToLevel;
-                            
+                            // Make sure CompAbilityUserMagic ticks after getting this skill levelled
+                            if (skill.label == "TM_FieldTraining_eff" && skill.level >= 15)
+                            {
+                                TM_PawnTracker.ResolveComps(compMight.Pawn);
+                            }
                             
                         }
                     }

@@ -127,7 +127,7 @@ namespace TorannMagic
 
         public TMAbilityDef mimicAbility = null;
 
-        private static HashSet<ushort> mightTraitIndexes = new HashSet<ushort>()
+        public static HashSet<ushort> mightTraitIndexes = new HashSet<ushort>()
         {
             TorannMagicDefOf.TM_Monk.index,
             TorannMagicDefOf.DeathKnight.index,
@@ -1075,194 +1075,97 @@ namespace TorannMagic
 
         public override void CompTick()
         {
-            bool flag = base.Pawn != null;
-            if (flag)
-            {
-                bool spawned = base.Pawn.Spawned;
-                if (spawned)
-                {
-                    bool isMightUser = this.IsMightUser && !this.Pawn.NonHumanlikeOrWildMan();
-                    if (isMightUser)
-                    {
-                        bool flag3 = !this.MightData.Initialized;
-                        if (flag3)
-                        {
-                            this.PostInitializeTick();
-                        }
-                        base.CompTick();
-                        this.age++;
-                        if (this.chainedAbilitiesList != null && this.chainedAbilitiesList.Count > 0)
-                        {
-                            for (int i = 0; i < chainedAbilitiesList.Count; i++)
-                            {
-                                chainedAbilitiesList[i].expirationTicks--;
-                                if (chainedAbilitiesList[i].expires && chainedAbilitiesList[i].expirationTicks <= 0)
-                                {
-                                    this.RemovePawnAbility(chainedAbilitiesList[i].abilityDef);
-                                    this.chainedAbilitiesList.Remove(chainedAbilitiesList[i]);
-                                    break;
-                                }
-                            }
-                        }
-                        if (TM_TickManager.tickMod20 == tickOffset20)
-                        {
-                            ResolveSustainedSkills();
-                            if (reversalTarget != null)
-                            {
-                                ResolveReversalDamage();
-                            }
-                        }
-                        if (TM_TickManager.tickMod60 == tickOffset60)
-                        {                            
-                            ResolveClassSkills();
-                            //ResolveClassPassions(); currently disabled
-                        }
-                        if (this.autocastTick < Find.TickManager.TicksGame)  //180 default
-                        {
-                            if ( !this.Pawn.Dead && !this.Pawn.Downed && this.Pawn.Map != null && this.Pawn.story != null && this.Pawn.story.traits != null && this.MightData != null && this.AbilityData != null && !this.Pawn.InMentalState)
-                            {
-                                if (this.Pawn.IsColonist)
-                                {
-                                    this.autocastTick = Find.TickManager.TicksGame + (int)Rand.Range(.8f * Settings.Instance.autocastEvaluationFrequency, 1.2f * Settings.Instance.autocastEvaluationFrequency);
-                                    ResolveAutoCast();
-                                }
-                                else if(Settings.Instance.AICasting && (!this.Pawn.IsPrisoner || this.Pawn.IsFighting()))
-                                {
-                                    float tickMult = Settings.Instance.AIAggressiveCasting ? 1f : 2f;
-                                    this.autocastTick = Find.TickManager.TicksGame + (int)(Rand.Range(.75f * Settings.Instance.autocastEvaluationFrequency, 1.25f * Settings.Instance.autocastEvaluationFrequency) * tickMult);
-                                    ResolveAIAutoCast();
-                                }
-                            }                            
-                        }
-                        if (!this.Pawn.IsColonist && Settings.Instance.AICasting && Settings.Instance.AIAggressiveCasting && Find.TickManager.TicksGame > this.nextAICastAttemptTick) //Aggressive AI Casting
-                        {
-                            this.nextAICastAttemptTick = Find.TickManager.TicksGame + Rand.Range(300, 500);
-                            if (this.Pawn.jobs != null && this.Pawn.CurJobDef != TorannMagicDefOf.TMCastAbilitySelf && this.Pawn.CurJobDef != TorannMagicDefOf.TMCastAbilityVerb)
-                            {
-                                IEnumerable<AbilityUserAIProfileDef> enumerable = this.Pawn.EligibleAIProfiles();
-                                if (enumerable != null && enumerable.Count() > 0)
-                                {
-                                    foreach (AbilityUserAIProfileDef item in enumerable)
-                                    {
-                                        if (item != null)
-                                        {
-                                            AbilityAIDef useThisAbility = null;
-                                            if (item.decisionTree != null)
-                                            {
-                                                useThisAbility = item.decisionTree.RecursivelyGetAbility(this.Pawn);
-                                            }
-                                            if (useThisAbility != null)
-                                            {
-                                                ThingComp val = this.Pawn.AllComps.First((ThingComp comp) => ((object)comp).GetType() == item.compAbilityUserClass);
-                                                CompAbilityUser compAbilityUser = val as CompAbilityUser;
-                                                if (compAbilityUser != null)
-                                                {
-                                                    PawnAbility pawnAbility = compAbilityUser.AbilityData.AllPowers.First((PawnAbility ability) => ability.Def == useThisAbility.ability);
-                                                    string reason = "";
-                                                    if (pawnAbility.CanCastPowerCheck(AbilityContext.AI, out reason))
-                                                    {
-                                                        LocalTargetInfo target = useThisAbility.Worker.TargetAbilityFor(useThisAbility, this.Pawn);
-                                                        if (target.IsValid)
-                                                        {
-                                                            pawnAbility.UseAbility(AbilityContext.Player, target);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (this.Pawn.needs.AllNeeds.Contains(this.Stamina) && this.Stamina.CurLevel > (.99f * this.Stamina.MaxLevel))
-                        {
-                            if (this.age > (lastMightXPGain + mightXPRate))
-                            {
-                                MightData.MightUserXP++;
-                                lastMightXPGain = this.age;
-                            }
-                        }
-                        if (TM_TickManager.tickMod30 == tickOffset30)
-                        {
-                            bool flag5 = this.MightUserXP > this.MightUserXPTillNextLevel;
-                            if (flag5)
-                            {
-                                this.LevelUp(false);
-                            }
+            if (!tickConditionsMet) return;
 
-                            bool flag6 = this.Pawn.TargetCurrentlyAimingAt != null;
-                            if (flag6)
-                            {
-                                if (this.Pawn.TargetCurrentlyAimingAt.Thing is Pawn)
-                                {
-                                    Pawn targetPawn = this.Pawn.TargetCurrentlyAimingAt.Thing as Pawn;
-                                    if (targetPawn.RaceProps.Humanlike)
-                                    {
-                                        bool flag7 = (this.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_DisguiseHD")) || this.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_DisguiseHD_I")) || this.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_DisguiseHD_II")) || this.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_DisguiseHD_III")));
-                                        if (targetPawn.Faction != this.Pawn.Faction && flag7)
-                                        {
-                                            using (IEnumerator<Hediff> enumerator = this.Pawn.health.hediffSet.hediffs.GetEnumerator())
-                                            {
-                                                while (enumerator.MoveNext())
-                                                {
-                                                    Hediff rec = enumerator.Current;
-                                                    if (rec.def == TorannMagicDefOf.TM_DisguiseHD || rec.def == TorannMagicDefOf.TM_DisguiseHD_I || rec.def == TorannMagicDefOf.TM_DisguiseHD_II || rec.def == TorannMagicDefOf.TM_DisguiseHD_III)
-                                                    {
-                                                        this.Pawn.health.RemoveHediff(rec);
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (deathRetaliating)
-                        {
-                            DoDeathRetaliation();
-                        }
-                        else if (TM_TickManager.tickMod67 == tickOffset67 && !Pawn.IsColonist && Pawn.Downed)
-                        {
-                            DoDeathRetaliation();
-                        }
-                        if(TM_TickManager.tickMod300 == tickOffset300) //cache weapon damage for tooltip and damage calculations
-                        {
-                            weaponDamage = GetSkillDamage();
-                        }
-                        if (TM_TickManager.tickMod600 == tickOffset600)
-                        {
-                            ResolveMightUseEvents();
-                        }
-                    }                    
-                }
-                else
+            if (!MightData.Initialized)
+            {
+                PostInitializeTick();
+            }
+            base.CompTick();
+            age++;
+            if (chainedAbilitiesList != null && chainedAbilitiesList.Count > 0)
+            {
+                for (int i = 0; i < chainedAbilitiesList.Count; i++)
                 {
-                    if (TM_TickManager.tickMod600 == tickOffset600)
+                    chainedAbilitiesList[i].expirationTicks--;
+                    if (chainedAbilitiesList[i].expires && chainedAbilitiesList[i].expirationTicks <= 0)
                     {
-                        if (this.Pawn.Map == null)
+                        RemovePawnAbility(chainedAbilitiesList[i].abilityDef);
+                        chainedAbilitiesList.Remove(chainedAbilitiesList[i]);
+                        break;
+                    }
+                }
+            }
+            if (TM_TickManager.tickMod20 == tickOffset20)
+            {
+                ResolveSustainedSkills();
+                if (reversalTarget != null)
+                {
+                    ResolveReversalDamage();
+                }
+            }
+            if (TM_TickManager.tickMod60 == tickOffset60)
+            {
+                ResolveClassSkills();
+                //ResolveClassPassions(); currently disabled
+            }
+            if (autocastTick < Find.TickManager.TicksGame)  //180 default
+            {
+                if (!Pawn.Dead && !Pawn.Downed && Pawn.Map != null && Pawn.story?.traits != null && MightData != null && !Pawn.InMentalState)
+                {
+                    if (Pawn.IsColonist)
+                    {
+                        autocastTick = Find.TickManager.TicksGame + (int)Rand.Range(.8f * Settings.Instance.autocastEvaluationFrequency, 1.2f * Settings.Instance.autocastEvaluationFrequency);
+                        ResolveAutoCast();
+                    }
+                    else if(Settings.Instance.AICasting && (!Pawn.IsPrisoner || Pawn.IsFighting()))
+                    {
+                        float tickMult = Settings.Instance.AIAggressiveCasting ? 1f : 2f;
+                        autocastTick = Find.TickManager.TicksGame + (int)(Rand.Range(.75f * Settings.Instance.autocastEvaluationFrequency, 1.25f * Settings.Instance.autocastEvaluationFrequency) * tickMult);
+                        ResolveAIAutoCast();
+                    }
+                }
+            }
+            handleAggressiveAICasting();
+            if (Pawn.needs.AllNeeds.Contains(Stamina) && Stamina.CurLevel > .99f * Stamina.MaxLevel)
+            {
+                if (age > lastMightXPGain + mightXPRate)
+                {
+                    MightData.MightUserXP++;
+                    lastMightXPGain = age;
+                }
+            }
+            if (TM_TickManager.tickMod30 == tickOffset30)
+            {
+                if (MightUserXP > MightUserXPTillNextLevel)
+                {
+                    LevelUp();
+                }
+
+                if (Pawn.TargetCurrentlyAimingAt != null)
+                {
+                    if (Pawn.TargetCurrentlyAimingAt.Thing is Pawn targetPawn)
+                    {
+                        if (targetPawn.RaceProps.Humanlike)
                         {
-                            if (this.IsMightUser)
+                            if (targetPawn.Faction != Pawn.Faction && (
+                                    Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DisguiseHD)
+                                    || Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DisguiseHD_I)
+                                    || Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DisguiseHD_II)
+                                    || Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_DisguiseHD_III)
+                                )
+                               )
                             {
-                                int num;
-                                if (AbilityData?.AllPowers != null)
+                                for (int i = 0; i < Pawn.health.hediffSet.hediffs.Count; i++)
                                 {
-                                    AbilityData obj = AbilityData;
-                                    num = ((obj != null && obj.AllPowers.Count > 0) ? 1 : 0);
-                                }
-                                else
-                                {
-                                    num = 0;
-                                }
-                                if (num != 0)
-                                {
-                                    foreach (PawnAbility allPower in AbilityData.AllPowers)
+                                    Hediff hediff = Pawn.health.hediffSet.hediffs[i];
+                                    if (hediff.def == TorannMagicDefOf.TM_DisguiseHD
+                                        || hediff.def == TorannMagicDefOf.TM_DisguiseHD_I
+                                        || hediff.def == TorannMagicDefOf.TM_DisguiseHD_II
+                                        || hediff.def == TorannMagicDefOf.TM_DisguiseHD_III)
                                     {
-                                        allPower.CooldownTicksLeft -= 600;
-                                        if (allPower.CooldownTicksLeft <= 0)
-                                        {
-                                            allPower.CooldownTicksLeft = 0;
-                                        }
+                                        Pawn.health.RemoveHediff(hediff);
+                                        break;
                                     }
                                 }
                             }
@@ -1270,9 +1173,21 @@ namespace TorannMagic
                     }
                 }
             }
-            if (Initialized)
+            if (deathRetaliating)
             {
-                //custom code
+                DoDeathRetaliation();
+            }
+            else if (TM_TickManager.tickMod67 == tickOffset67 && !Pawn.IsColonist && Pawn.Downed)
+            {
+                DoDeathRetaliation();
+            }
+            if(TM_TickManager.tickMod300 == tickOffset300) //cache weapon damage for tooltip and damage calculations
+            {
+                weaponDamage = GetSkillDamage();
+            }
+            if (TM_TickManager.tickMod600 == tickOffset600)
+            {
+                ResolveMightUseEvents();
             }
         }
 
@@ -2326,6 +2241,7 @@ namespace TorannMagic
                     this.skill_BreachingCharge = false;
                 }                
             }
+            TM_PawnTracker.ResolveComps(Pawn);
         }
 
         public void ResetSkills()
@@ -2374,6 +2290,7 @@ namespace TorannMagic
             //CompAbilityUserMight.MightAbilities = null;
             //this.MightData = null;
             this.AssignAbilities();
+            TM_PawnTracker.ResolveComps(Pawn);
         }
 
         public void RemoveTMagicHediffs()
@@ -2403,6 +2320,7 @@ namespace TorannMagic
             Log.Message("Removing ability: " + current.abilityDef.defName.ToString());
             base.RemovePawnAbility(current.abilityDef);
             base.UpdateAbilities();
+            TM_PawnTracker.ResolveComps(Pawn);
         }
 
         public void RemoveTraits()
