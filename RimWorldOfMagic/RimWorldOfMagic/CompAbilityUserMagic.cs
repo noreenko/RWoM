@@ -22,6 +22,7 @@ namespace TorannMagic
     public class CompAbilityUserMagic : CompAbilityUserTMBase
     {
         public string LabelKey = "TM_Magic";
+        public bool IsMagicUser;  // Set in TM_PawnTracker by calling IsMagicUser after events that could change result
 
         public bool firstTick = false;
         public bool magicPowersInitialized = false;
@@ -493,12 +494,11 @@ namespace TorannMagic
         {
             get
             {
-                bool flag = this.magicData == null && this.IsMagicUser;
-                if (flag)
+                if (magicData == null && IsMagicUser)
                 {
-                    this.magicData = new MagicData(this);
+                    magicData = new MagicData(this);
                 }
-                return this.magicData;
+                return magicData;
             }
         }
 
@@ -573,14 +573,14 @@ namespace TorannMagic
         {
             if (shouldDraw && IsMagicUser)
             {
-                if (Settings.Instance.AIFriendlyMarking && base.Pawn.IsColonist && this.IsMagicUser)
+                if (Settings.Instance.AIFriendlyMarking && Pawn.IsColonist && IsMagicUser)
                 {
                     if (!this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                     {
                         DrawMark();
                     }
                 }
-                if (Settings.Instance.AIMarking && !base.Pawn.IsColonist && this.IsMagicUser)
+                if (Settings.Instance.AIMarking && !Pawn.IsColonist && IsMagicUser)
                 {
                     if (!this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                     {
@@ -606,7 +606,7 @@ namespace TorannMagic
                 Enchantment.CompEnchant compEnchant = this.Pawn.GetComp<Enchantment.CompEnchant>();
                 //try
                 //{
-                    if (this.IsMagicUser && compEnchant != null && compEnchant.enchantingContainer != null && compEnchant.enchantingContainer.Count > 0)
+                    if (IsMagicUser && compEnchant?.enchantingContainer != null && compEnchant.enchantingContainer.Count > 0)
                     {
                         DrawEnchantMark();
                     }
@@ -2177,64 +2177,49 @@ namespace TorannMagic
             }
         }
 
-        public bool IsMagicUser
+        public bool SetIsMagicUser()
         {
-            get
+            if (Pawn?.story == null) return IsMagicUser = false;
+
+            if (customClass != null) return IsMagicUser = true;
+            if (customClass == null && customIndex == -2)
             {
-                if (Pawn?.story == null) return false;
-
-                if (this.customClass != null) return true;
-                if (this.customClass == null && this.customIndex == -2)
+                customIndex = TM_ClassUtility.CustomClassIndexOfBaseMageClass(this.Pawn.story.traits.allTraits);
+                if (customIndex >= 0)
                 {
-                    this.customIndex = TM_ClassUtility.CustomClassIndexOfBaseMageClass(this.Pawn.story.traits.allTraits);
-                    if (this.customIndex >= 0)
+                    TM_CustomClass foundCustomClass = TM_ClassUtility.CustomClasses[customIndex];
+                    if (!foundCustomClass.isMage)
                     {
-                        TM_CustomClass foundCustomClass = TM_ClassUtility.CustomClasses[customIndex];
-                        if (!foundCustomClass.isMage)
-                        {
-                            this.customIndex = -1;
-                            return false;
-                        }
-                        else
-                        {
-                            this.customClass = foundCustomClass;
-                            return true;
-                        }
+                        customIndex = -1;
+                        return IsMagicUser = false;
+                    }
+                    else
+                    {
+                        customClass = foundCustomClass;
+                        return IsMagicUser = true;
                     }
                 }
-
-                // Avoid LINQ since this is called inside of CompTick
-                bool hasMagicTrait = false;
-                for (int i = 0; i < Pawn.story.traits.allTraits.Count; i++)
-                {
-                    if (!magicTraitIndexes.Contains(Pawn.story.traits.allTraits[i].def.index)) continue;
-
-                    hasMagicTrait = true;
-                    break;
-                }
-
-                if (hasMagicTrait || TM_Calc.IsWanderer(Pawn) || AdvancedClasses.Count > 0)
-                {
-                    return true;
-                }
-                if(TM_Calc.HasAdvancedClass(Pawn))
-                {
-                    bool hasMageAdvClass = false;
-                    foreach(TMDefs.TM_CustomClass cc in TM_ClassUtility.GetAdvancedClassesForPawn(this.Pawn))
-                    {
-                        if(cc.isMage)
-                        {
-                            this.AdvancedClasses.Add(cc);
-                            hasMageAdvClass = true;
-                        }
-                    }
-                    if(hasMageAdvClass)
-                    {
-                        return true;
-                    }
-                }
-                return false;
             }
+
+            // Avoid LINQ since this is called inside of CompTick
+            for (int i = 0; i < Pawn.story.traits.allTraits.Count; i++)
+            {
+                if (!magicTraitIndexes.Contains(Pawn.story.traits.allTraits[i].def.index)) continue;
+
+                return IsMagicUser = true;
+            }
+
+            if (TM_Calc.IsWanderer(Pawn) || AdvancedClasses.Count > 0)
+            {
+                return IsMagicUser = true;
+            }
+            for (int i = 0; i < Pawn.story.traits.allTraits.Count; i++)
+            {
+                TM_CustomClass cc = TM_ClassUtility.CustomAdvancedClassTraitIndexMap.TryGetValue(
+                    Pawn.story.traits.allTraits[i].def.index);
+                if (cc != null && cc.isMage) return IsMagicUser = true;
+            }
+            return IsMagicUser = false;
         }
 
         private Dictionary<int, int> cacheXPFL = new Dictionary<int, int>();
@@ -3674,7 +3659,7 @@ namespace TorannMagic
         public void InitializeSpell()
         {
             Pawn abilityUser = base.Pawn;
-            if (this.IsMagicUser)
+            if (IsMagicUser)
             {
                 if (this.customClass != null)
                 {
@@ -4157,7 +4142,7 @@ namespace TorannMagic
                         this.AddPawnAbility(TorannMagicDefOf.TM_Ignite);
                     }
                     
-                    if (this.IsMagicUser && this.MagicData.MagicPowersCustomAll != null && this.MagicData.MagicPowersCustomAll.Count > 0)
+                    if (IsMagicUser && MagicData.MagicPowersCustomAll != null && MagicData.MagicPowersCustomAll.Count > 0)
                     {
                         for (int j = 0; j < this.MagicData.MagicPowersCustomAll.Count; j++)
                         {
@@ -8165,7 +8150,7 @@ namespace TorannMagic
                 }
             }
 
-            if (this.IsMagicUser && !this.Pawn.Dead && !this.Pawn.Downed)
+            if (IsMagicUser && !Pawn.Dead && !Pawn.Downed)
             {
                 if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Bard))
                 {
@@ -8228,7 +8213,7 @@ namespace TorannMagic
                 }
             }
 
-            if (this.IsMagicUser && !this.Pawn.Dead & !this.Pawn.Downed && (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Bard) || (isCustom && this.customClass.classMageAbilities.Contains(TorannMagicDefOf.TM_Inspire))))
+            if (IsMagicUser && !Pawn.Dead & !Pawn.Downed && (Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Bard) || (isCustom && customClass.classMageAbilities.Contains(TorannMagicDefOf.TM_Inspire))))
             {
                 if (!this.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_InspirationalHD")) && this.MagicData.MagicPowersB.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Inspire).learned)
                 {
@@ -8646,7 +8631,7 @@ namespace TorannMagic
             this.arcaneRes = Mathf.Clamp(1 + _arcaneRes, 0.01f, 5f);
             this.arcaneDmg = 1 + _arcaneDmg;
 
-            if (this.IsMagicUser && !TM_Calc.IsCrossClass(this.Pawn, true))
+            if (IsMagicUser && !TM_Calc.IsCrossClass(Pawn, true))
             {
                 if (this.maxMP != 1f && !this.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_HediffEnchantment_maxEnergy")))
                 {
@@ -8869,25 +8854,26 @@ namespace TorannMagic
             {
                 this
             });
-            bool flag11 = Scribe.mode == LoadSaveMode.PostLoadInit;
-            if (flag11)
+
+            SetIsMagicUser();  // We need to manually set IsMagicUser since no harmony patch is called here.
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                Pawn abilityUser = base.Pawn;
+                Pawn abilityUser = Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseMageClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)
-                {                   
-                    this.customClass = TM_ClassUtility.CustomClasses[index];
-                    this.customIndex = index;
-                    LoadCustomClassAbilities(this.customClass);                    
-                }                
+                {
+                    customClass = TM_ClassUtility.CustomClasses[index];
+                    customIndex = index;
+                    LoadCustomClassAbilities(customClass);
+                }
                 else
                 {
                     bool flagCM = abilityUser.story.traits.HasTrait(TorannMagicDefOf.ChaosMage);
                     bool flag40 = abilityUser.story.traits.HasTrait(TorannMagicDefOf.InnerFire) || flagCM;
                     if (flag40)
                     {
-                        bool flag14 = !this.MagicData.MagicPowersIF.NullOrEmpty<MagicPower>();
-                        if (flag14)
+                        if (!MagicData.MagicPowersIF.NullOrEmpty())
                         {
                             //this.LoadPowers();
                             foreach (MagicPower current3 in this.MagicData.MagicPowersIF)
@@ -10305,7 +10291,7 @@ namespace TorannMagic
         public void UpdateAutocastDef()
         {
             IEnumerable<TM_CustomPowerDef> mpDefs = TM_Data.CustomMagePowerDefs();
-            if (this.IsMagicUser && this.MagicData != null && this.MagicData.MagicPowersCustom != null)
+            if (IsMagicUser && MagicData?.MagicPowersCustom != null)
             {
                 foreach (MagicPower mp in this.MagicData.MagicPowersCustom)
                 {

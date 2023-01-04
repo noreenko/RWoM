@@ -232,13 +232,10 @@ namespace TorannMagic
         public static List<TM_CustomClass> GetAdvancedClassesForPawn(Pawn p)
         {
             List<TM_CustomClass> ccList = new List<TM_CustomClass>();
-            ccList.Clear();
-            foreach(TM_CustomClass cc in CustomAdvancedClasses)
+            for (int i = 0; i < p.story.traits.allTraits.Count; i++)
             {
-                if(p.story.traits.HasTrait(cc.classTrait))
-                {
-                    ccList.Add(cc);
-                }
+                TM_CustomClass cc = CustomAdvancedClassTraitIndexMap.TryGetValue(p.story.traits.allTraits[i].def.index);
+                if (cc != null) ccList.Add(cc);
             }
             return ccList;
         }

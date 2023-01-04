@@ -11,6 +11,7 @@ using UnityEngine;
 using CompDeflector;
 using TorannMagic.Ideology;
 using TorannMagic.ModOptions;
+using TorannMagic.TMDefs;
 using TorannMagic.Utils;
 
 namespace TorannMagic
@@ -24,6 +25,7 @@ namespace TorannMagic
 
         public bool mightPowersInitialized = false;
         public bool firstMightTick = false;
+        public bool IsMightUser;  // Set in TM_PawnTracker by calling IsMightUser after events that could change result
 
         private int fortitudeMitigationDelay = 0;
         private int mightXPRate = 900;
@@ -161,12 +163,11 @@ namespace TorannMagic
         {
             get
             {
-                bool flag = this.mightData == null && this.IsMightUser;
-                if (flag)
+                if (mightData == null && IsMightUser)
                 {
-                    this.mightData = new MightData(this);
+                    mightData = new MightData(this);
                 }
-                return this.mightData;
+                return mightData;
             }
         }
 
@@ -1077,7 +1078,7 @@ namespace TorannMagic
         {
             if (!tickConditionsMet) return;
 
-            if (!MightData.Initialized)
+            if (!firstMightTick)
             {
                 PostInitializeTick();
             }
@@ -1247,62 +1248,52 @@ namespace TorannMagic
             this.ResolveMightTab();
             this.ResolveMightPowers();
             this.ResolveStamina();
+            firstMightTick = true;
         }
 
-        public bool IsMightUser
+        public bool SetIsMightUser()
         {
-            get
+            if (Pawn?.story == null) return IsMightUser = false;
+            if (customClass != null) return IsMightUser = true;
+            if (customClass == null && customIndex == -2)
             {
-                if (Pawn?.story == null) return false;
-                if (this.customClass != null) return true;
-                if (this.customClass == null && this.customIndex == -2)
+                customIndex = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(Pawn.story.traits.allTraits);
+                if (customIndex >= 0)
                 {
-                    this.customIndex = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(this.Pawn.story.traits.allTraits);
-                    if (this.customIndex >= 0)
+                    if (!TM_ClassUtility.CustomClasses[customIndex].isFighter)
                     {
-                        if (!TM_ClassUtility.CustomClasses[this.customIndex].isFighter)
-                        {
-                            this.customIndex = -1;
-                            return false;
-                        }
-                        else
-                        {
-                            this.customClass = TM_ClassUtility.CustomClasses[this.customIndex];
-                            return true;
-                        }
+                        customIndex = -1;
+                        return IsMightUser = false;
+                    }
+                    else
+                    {
+                        customClass = TM_ClassUtility.CustomClasses[customIndex];
+                        return IsMightUser = true;
                     }
                 }
-
-                // Avoid LINQ since this is called inside of CompTick
-                bool hasMightTrait = false;
-                for (int i = 0; i < Pawn.story.traits.allTraits.Count; i++)
-                {
-                    if (!mightTraitIndexes.Contains(Pawn.story.traits.allTraits[i].def.index)) continue;
-
-                    hasMightTrait = true;
-                    break;
-                }
-
-                if (hasMightTrait || TM_Calc.IsWayfarer(Pawn) || AdvancedClasses.Count > 0)
-                {
-                    return true;
-                }                
-                else if (TM_Calc.HasAdvancedClass(this.Pawn))
-                {
-                    bool hasAdvClass = false;
-                    foreach (TMDefs.TM_CustomClass cc in TM_ClassUtility.GetAdvancedClassesForPawn(this.Pawn))
-                    {
-                        if (cc.isFighter)
-                        {
-                            this.AdvancedClasses.Add(cc);
-                            hasAdvClass = true;
-                            break;
-                        }
-                    }
-                    return hasAdvClass;
-                }
-                return false;
             }
+
+            // Avoid LINQ since this is called inside of CompTick
+            for (int i = 0; i < Pawn.story.traits.allTraits.Count; i++)
+            {
+                if (!mightTraitIndexes.Contains(Pawn.story.traits.allTraits[i].def.index)) continue;
+
+                return IsMightUser = true;
+            }
+
+            if (TM_Calc.IsWayfarer(Pawn) || AdvancedClasses.Count > 0)
+            {
+                return IsMightUser = true;
+            }
+
+            for (int i = 0; i < Pawn.story.traits.allTraits.Count; i++)
+            {
+                TM_CustomClass cc = TM_ClassUtility.CustomAdvancedClassTraitIndexMap.TryGetValue(
+                    Pawn.story.traits.allTraits[i].def.index);
+                if (cc != null && cc.isFighter) return IsMightUser = true;
+            }
+
+            return IsMightUser = false;
         }
 
         public int MightUserLevel
@@ -5221,26 +5212,24 @@ namespace TorannMagic
             {
                 this
             });
+            SetIsMightUser();  // We need to manually set IsMightUser after loading since no harmony patch is called
 
-            bool flag11 = Scribe.mode == LoadSaveMode.PostLoadInit;
-            if (flag11)
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                Pawn abilityUser = base.Pawn;
+                Pawn abilityUser = Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)
                 {
-                    this.customClass = TM_ClassUtility.CustomClasses[index];
-                    this.customIndex = index;
-
-                    LoadCustomClassAbilities(this.customClass);                    
+                    customClass = TM_ClassUtility.CustomClasses[index];
+                    customIndex = index;
+                    LoadCustomClassAbilities(customClass);
                 }
                 else
                 {
                     bool flag40 = abilityUser.story.traits.HasTrait(TorannMagicDefOf.Gladiator);
                     if (flag40)
                     {
-                        bool flag14 = !this.MightData.MightPowersG.NullOrEmpty<MightPower>();
-                        if (flag14)
+                        if (!MightData.MightPowersG.NullOrEmpty())
                         {
                             foreach (MightPower current3 in this.MightData.MightPowersG)
                             {

@@ -46,7 +46,7 @@ namespace TorannMagic
         private List<TM_CustomClass> advClasses;
         public List<TM_CustomClass> AdvancedClasses
         {
-            get => advClasses ?? (advClasses = new List<TM_CustomClass>());
+            get => advClasses ?? (advClasses = TM_ClassUtility.GetAdvancedClassesForPawn(Pawn));
             set => advClasses = value;
         }
 

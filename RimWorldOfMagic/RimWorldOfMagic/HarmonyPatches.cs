@@ -1280,7 +1280,7 @@ namespace TorannMagic
                 if (__instance != null && ___currentPlayer != null && Find.TickManager.TicksGame % 131 == 0)
                 {
                     CompAbilityUserMagic comp = ___currentPlayer.GetCompAbilityUserMagic();
-                    if (comp != null && comp.MagicData != null && comp.IsMagicUser)
+                    if (comp?.MagicData != null && comp.IsMagicUser)
                     {
                         if (comp.MagicData.MagicPowersB.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Entertain).learned)
                         {
@@ -6328,7 +6328,7 @@ namespace TorannMagic
                 IntVec3 c = IntVec3.FromVector3(clickPos);
                 Enchantment.CompEnchant comp = pawn.TryGetComp<Enchantment.CompEnchant>();
                 CompAbilityUserMagic pawnComp = pawn.GetCompAbilityUserMagic();
-                if (comp != null && pawnComp != null && pawnComp.IsMagicUser && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if (comp != null && pawnComp != null && pawnComp.IsMagicUser && pawn.story?.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
                     if (comp.enchantingContainer == null)
                     {

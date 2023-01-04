@@ -14,9 +14,7 @@ namespace TorannMagic.Utils
      */
     public static class TM_PawnTracker
     {
-        // Keep track of the Comps instead of Pawn so we don't have to search for the comp.
-        public static readonly HashSet<CompAbilityUserMagic> MagicPawnComps = new HashSet<CompAbilityUserMagic>();
-        public static readonly HashSet<CompAbilityUserMight> MightPawnComps = new HashSet<CompAbilityUserMight>();
+        // Keep track of when the pawn despawned so we can calculate cooldowns when they come back
         public static readonly Dictionary<Pawn, int> DeSpawnedPawnTickTracker = new Dictionary<Pawn, int>();
 
         // For simplicity, use this not fully optimized function to prevent bugs that would be hard to find
@@ -28,9 +26,8 @@ namespace TorannMagic.Utils
         public static void ResolveMagicComp(CompAbilityUserMagic magicComp)
         {
             if (magicComp == null) return;
-            if (magicComp.IsMagicUser)
+            if (magicComp.SetIsMagicUser())
             {
-                MagicPawnComps.Add(magicComp);
                 if (magicComp.Pawn.Spawned && !magicComp.Pawn.IsWildMan() &&
                     !magicComp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
@@ -43,7 +40,6 @@ namespace TorannMagic.Utils
             }
             else
             {
-                MagicPawnComps.Remove(magicComp);
                 magicComp.tickConditionsMet = false;
             }
         }
@@ -51,9 +47,8 @@ namespace TorannMagic.Utils
         public static void ResolveMightComp(CompAbilityUserMight mightComp)
         {
             if (mightComp == null) return;
-            if (mightComp.IsMightUser)
+            if (mightComp.SetIsMightUser())
             {
-                MightPawnComps.Add(mightComp);
                 if (mightComp.Pawn.Spawned && !mightComp.Pawn.NonHumanlikeOrWildMan())
                 {
                     mightComp.tickConditionsMet = true;
@@ -65,7 +60,6 @@ namespace TorannMagic.Utils
             }
             else
             {
-                MightPawnComps.Remove(mightComp);
                 mightComp.tickConditionsMet = false;
             }
         }

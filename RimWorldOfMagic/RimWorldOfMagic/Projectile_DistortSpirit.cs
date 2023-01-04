@@ -19,8 +19,7 @@ namespace TorannMagic
 
 		protected override void Impact(Thing hitThing, bool blockedByShield = false)
 		{            
-            Map map = base.Map;			
-			ThingDef def = this.def;
+            Map map = Map;
             this.age++;
             this.Destroy(DestroyMode.Vanish);
             Pawn caster = this.launcher as Pawn;

@@ -1901,18 +1901,6 @@ namespace TorannMagic
             }
         }
 
-        public bool Initialized
-        {
-            get
-            {
-                return this.initialized;
-            }
-            set
-            {
-                this.initialized = value;
-            }
-        }
-
         public int MightUserLevel
         {
             get

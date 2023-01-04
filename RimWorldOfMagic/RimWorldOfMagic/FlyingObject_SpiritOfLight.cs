@@ -493,10 +493,10 @@ namespace TorannMagic
 
         private void UpdateSoLPower()
         {
-            if(!pawn.DestroyedOrNull() && pawn.Spawned)
+            if (!pawn.DestroyedOrNull() && pawn.Spawned)
             {
                 CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
-                if(comp != null && comp.IsMagicUser)
+                if (comp != null && comp.IsMagicUser)
                 {
                     //pwrVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_pwr");
                     //effVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_SpiritOfLight, "TM_SpiritOfLight", "_eff");

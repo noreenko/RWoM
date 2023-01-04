@@ -36,15 +36,13 @@ namespace TorannMagic.Thoughts
             }
             else if(compInit != null && compRec != null)
             {
-                bool flag2 = !compInit.IsMagicUser;
-                if (flag2)
+                if (!compInit.IsMagicUser)
                 {
                     result = 0f;
                 }
                 else
                 {
-                    bool flag3 = !compRec.IsMagicUser;
-                    if (flag3)
+                    if (!compRec.IsMagicUser)
                     {
                         result = 0f;
                     }

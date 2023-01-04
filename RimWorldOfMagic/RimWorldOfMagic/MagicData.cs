@@ -115,7 +115,6 @@ namespace TorannMagic
                 if(this.magicPowerCustomAll == null)
                 {
                     this.magicPowerCustomAll = new List<MagicPower>();
-                    this.magicPowerCustomAll.Clear();
                     this.magicPowerCustomAll.AddRange(MagicPowersCustom);
                     this.magicPowerCustomAll.AddRange(MagicPowersCustomStandalone);
                 }
@@ -3436,18 +3435,6 @@ namespace TorannMagic
             set
             {
                 this.dominationCount = value;
-            }
-        }
-
-        public bool Initialized
-        {
-            get
-            {
-                return this.initialized;
-            }
-            set
-            {
-                this.initialized = value;
             }
         }
 
