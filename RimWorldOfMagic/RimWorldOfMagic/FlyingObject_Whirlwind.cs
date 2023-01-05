@@ -233,7 +233,7 @@ namespace TorannMagic
                                     //verVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_Whirlwind, "TM_Whirlwind", "_ver", true);
                                     //MightPowerSkill ver = comp.MightData.MightPowerSkill_Whirlwind.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Whirlwind_ver");
                                     //verVal = ver.level;
-                                    //if(pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                                    //if(comp.IsFaceless)
                                     //{
                                     //    MightPowerSkill mver = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
                                     //    verVal = mver.level;

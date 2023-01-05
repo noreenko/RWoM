@@ -46,7 +46,7 @@ namespace TorannMagic.ModOptions
                         pawn.AllComps.Remove(compMagic);
                         addMagicComp = true;
                     }
-                    catch(NullReferenceException ex)
+                    catch(NullReferenceException)
                     {
                         Log.Warning("failed to remove magic comp");
                     }
@@ -60,7 +60,7 @@ namespace TorannMagic.ModOptions
                         pawn.AllComps.Remove(compMight);
                         addMightComp = true;
                     }
-                    catch(NullReferenceException ex)
+                    catch(NullReferenceException)
                     {
                         Log.Warning("failed to remove might comp");
                     }
@@ -337,7 +337,7 @@ namespace TorannMagic.ModOptions
                     {
                         compMagic.Mana.CurLevel += 1f;
                     }
-                    catch (NullReferenceException ex)
+                    catch (NullReferenceException)
                     {
                         Log.Warning("failed to give mana");
                     }
@@ -349,7 +349,7 @@ namespace TorannMagic.ModOptions
                     {
                         compMight.Stamina.CurLevel += 1f;
                     }
-                    catch (NullReferenceException ex)
+                    catch (NullReferenceException)
                     {
                         Log.Warning("failed to give stamina");
                     }

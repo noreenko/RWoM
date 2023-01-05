@@ -66,7 +66,7 @@ namespace TorannMagic
                     //{
                     //    //compMight.AIAbilityJob = null;
                     //}
-                    if (tmAbility.manaCost > 0 && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                    if (tmAbility.manaCost > 0 && pawn?.story.traits != null && !compMight.IsFaceless)
                     {
                         if (this.pawn.Map.gameConditionManager.ConditionIsActive(TorannMagicDefOf.TM_ManaStorm))
                         {
@@ -83,7 +83,7 @@ namespace TorannMagic
                                 this.pawn.Map.weatherManager.eventHandler.AddEvent(new TM_WeatherEvent_MeshFlash(this.Map, this.pawn.Position, TM_MatPool.blackLightning, TMDamageDefOf.DamageDefOf.TM_Arcane, this.pawn, amt, Mathf.Clamp((float)amt / 5f, 1f, 5f)));
                             }
                         }
-                        if (compMagic != null && compMagic.Mana != null)
+                        if (compMagic?.Mana != null)
                         {
                             if (compMagic.ActualManaCost(tmAbility) > compMagic.Mana.CurLevel)
                             {
@@ -139,7 +139,7 @@ namespace TorannMagic
 
                         if (this.pawn.RaceProps.Humanlike)
                         {
-                            //if (this.pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                            //if (compMagic.IsFaceless)
                             //{
                             //    RemoveMimicAbility(verb);
                             //}

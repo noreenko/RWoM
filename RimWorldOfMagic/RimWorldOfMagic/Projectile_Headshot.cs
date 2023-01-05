@@ -35,7 +35,7 @@ namespace TorannMagic
                 //verVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_Headshot, "TM_Headshot", "_ver", true);
                 //MightPowerSkill ver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Headshot.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Headshot_ver");
                 //verVal = ver.level;
-                //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                //if (comp.IsFaceless)
                 //{
                 //    MightPowerSkill mver = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
                 //    verVal = mver.level;
@@ -55,7 +55,7 @@ namespace TorannMagic
                     }
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 //Log.Message("null error " + ex);
             }

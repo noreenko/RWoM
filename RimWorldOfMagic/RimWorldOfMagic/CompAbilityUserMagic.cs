@@ -36,7 +36,6 @@ namespace TorannMagic
 
         private bool doOnce = true;
         private List<IntVec3> deathRing = new List<IntVec3>();
-        public float weaponCritChance = 0f;
         public LocalTargetInfo SecondTarget = null;
         public List<TM_EventRecords> magicUsed = new List<TM_EventRecords>();
 
@@ -319,6 +318,8 @@ namespace TorannMagic
             base.PostSpawnSetup(respawningAfterLoad);
             tickOffset2000 = Pawn.GetHashCode() % 2000;
             tickOffset2500 = Pawn.GetHashCode() % 2500;
+
+            TM_PawnTracker.ResolveMagicComp(this);
         }
         public class ChainedMagicAbility
         {
@@ -505,11 +506,12 @@ namespace TorannMagic
         public override void PostDeSpawn(Map map)
         {
             base.PostDeSpawn(map);
-            bool flag = this.powerEffecter != null;
-            if (flag)
+            if (powerEffecter != null)
             {
-                this.powerEffecter.Cleanup();
+                powerEffecter.Cleanup();
             }
+
+            TM_PawnTracker.ResolveMagicComp(this);
         }
 
         public List<Pawn> HexedPawns
@@ -518,54 +520,22 @@ namespace TorannMagic
             {
                 if(hexedPawns == null)
                 {
-                    this.hexedPawns = new List<Pawn>();
-                    this.hexedPawns.Clear();
+                    hexedPawns = new List<Pawn>();
                 }
                 List<Pawn> validPawns = new List<Pawn>();
-                validPawns.Clear();
-                foreach (Pawn p in this.hexedPawns)
+                foreach (Pawn p in hexedPawns)
                 {
                     if (p != null && !p.Destroyed && !p.Dead)
                     {
-                        if (p.health != null && p.health.hediffSet != null && p.health.hediffSet.HasHediff(TorannMagicDefOf.TM_HexHD))
+                        if (p.health?.hediffSet != null && p.health.hediffSet.HasHediff(TorannMagicDefOf.TM_HexHD))
                         {
                             validPawns.Add(p);
                         }
                     }
                 }
-                this.hexedPawns = validPawns;
-                return this.hexedPawns;
+                hexedPawns = validPawns;
+                return hexedPawns;
             }
-        }
-
-        public float GetSkillDamage()
-        {
-            float result;
-            float strFactor = 1f;
-            if (IsMagicUser)
-            {
-                strFactor = arcaneDmg;
-            }
-
-            if (Pawn.equipment?.Primary != null)
-            {
-                if(Pawn.equipment.Primary.def.IsMeleeWeapon)
-                {
-                    result = TM_Calc.GetSkillDamage_Melee(Pawn, strFactor);
-                    weaponCritChance = TM_Calc.GetWeaponCritChance(Pawn.equipment.Primary);
-                }
-                else
-                {
-                    result = TM_Calc.GetSkillDamage_Range(Pawn, strFactor);
-                    weaponCritChance = 0f;
-                }
-            }
-            else
-            {
-                result = Pawn.GetStatValue(StatDefOf.MeleeDPS, false) * strFactor;
-            }
-
-            return result;
         }
 
         public bool shouldDraw = true;
@@ -573,19 +543,13 @@ namespace TorannMagic
         {
             if (shouldDraw && IsMagicUser)
             {
-                if (Settings.Instance.AIFriendlyMarking && Pawn.IsColonist && IsMagicUser)
+                if (Settings.Instance.AIFriendlyMarking && Pawn.IsColonist && !IsFaceless)
                 {
-                    if (!this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                    {
-                        DrawMark();
-                    }
+                    DrawMark();
                 }
-                if (Settings.Instance.AIMarking && !Pawn.IsColonist && IsMagicUser)
+                if (Settings.Instance.AIMarking && !Pawn.IsColonist && !IsFaceless)
                 {
-                    if (!this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                    {
-                        DrawMark();
-                    }
+                    DrawMark();
                 }
 
                 if (this.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower mp) => mp.abilityDef == TorannMagicDefOf.TM_TechnoBit).learned == true && this.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_TechnoBitHD))
@@ -2072,7 +2036,7 @@ namespace TorannMagic
             }
             if (TM_TickManager.tickMod300 == tickOffset300) //cache weapon damage for tooltip and damage calculations
             {
-                weaponDamage = GetSkillDamage();
+                weaponDamage = GetSkillDamage(IsMagicUser ? arcaneDmg : 1f);
             }
             if (TM_TickManager.tickMod600 == tickOffset600)
             {
@@ -2334,7 +2298,7 @@ namespace TorannMagic
 
         public void LevelUp(bool hideNotification = false)
         {
-            if (!(this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) || this.Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Wayfarer)))
+            if (!(IsFaceless || Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Wayfarer)))
             {
                 if (this.MagicUserLevel < (this.customClass?.maxMageLevel ?? 200))
                 {
@@ -2371,9 +2335,9 @@ namespace TorannMagic
         {
             get
             {
-                if (!this.Pawn.DestroyedOrNull() && !this.Pawn.Dead)
+                if (!Pawn.DestroyedOrNull() && !Pawn.Dead)
                 {
-                    return base.Pawn.needs.TryGetNeed<Need_Mana>();
+                    return Pawn.needs.TryGetNeed<Need_Mana>();
                 }
                 return null;
             }
@@ -2450,11 +2414,10 @@ namespace TorannMagic
         {
             float hardModeMasterChance = .35f;
             float masterChance = .05f;
-            Pawn abilityUser = base.Pawn;
+            Pawn abilityUser = Pawn;
             bool flag2;
             List<TMAbilityDef> usedAbilities = new List<TMAbilityDef>();
-            usedAbilities.Clear();
-            if (abilityUser != null && abilityUser.story != null && abilityUser.story.traits != null)
+            if (abilityUser?.story?.traits != null)
             {
                 if (this.customClass != null)
                 {
@@ -5551,7 +5514,7 @@ namespace TorannMagic
                 {
                     adjustedManaCost *= 1f - (magicDef.efficiencyReductionPercent * this.MagicData.GetSkill_Efficiency(TorannMagicDefOf.TM_Hex).level);
                 }
-                else if(this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                else if(IsFaceless)
                 {
                     CompAbilityUserMight compMight = this.Pawn.GetCompAbilityUserMight();
                     adjustedManaCost *= 1f - (magicDef.efficiencyReductionPercent * compMight.MightData.GetSkill_Efficiency(TorannMagicDefOf.TM_Mimic).level);
@@ -5585,7 +5548,7 @@ namespace TorannMagic
             {
                 return 0f;
             }
-            if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (IsFaceless)
             {
                 adjustedManaCost = 0;
             }
@@ -5906,9 +5869,9 @@ namespace TorannMagic
         {
             bool flagCM = this.Pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage);
             bool isCustom = this.customClass != null;
-            //bool flagCP = this.Pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) || this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
+            //bool flagCP = this.Pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) || IsFaceless;
             //CompAbilityUserMight compMight = null;
-            //if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //if (IsFaceless)
             //{
             //    compMight = this.Pawn.GetCompAbilityUserMight();
             //}
@@ -7952,7 +7915,7 @@ namespace TorannMagic
         }
         public void ResolveMagicTab()
         {
-            if (!this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (!IsFaceless)
             {
                 InspectTabBase inspectTabsx = base.Pawn.GetInspectTabs().FirstOrDefault((InspectTabBase x) => x.labelKey == "TM_TabMagic");
                 IEnumerable<InspectTabBase> inspectTabs = base.Pawn.GetInspectTabs();
@@ -8730,7 +8693,7 @@ namespace TorannMagic
 
         public override void PostExposeData()
         {
-            //base.PostExposeData();            
+            base.PostExposeData();
             Scribe_Values.Look<bool>(ref this.magicPowersInitialized, "magicPowersInitialized", false, false);
             Scribe_Values.Look<bool>(ref this.magicPowersInitializedForColonist, "magicPowersInitializedForColonist", true, false);
             Scribe_Values.Look<bool>(ref this.colonistPowerCheck, "colonistPowerCheck", true, false);

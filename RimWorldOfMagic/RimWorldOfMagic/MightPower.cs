@@ -114,27 +114,6 @@ namespace TorannMagic
             {
                 return this.TMabilityDefs[0];
             }
-            //
-            AbilityDef result = null;
-            bool flag = this.TMabilityDefs != null && this.TMabilityDefs.Count > 0;
-            if (flag)
-            {
-                result = this.TMabilityDefs[0];
-                bool flag2 = index > -1 && index < this.TMabilityDefs.Count;
-                if (flag2)
-                {
-                    result = this.TMabilityDefs[index];
-                }
-                else
-                {
-                    bool flag3 = index >= this.TMabilityDefs.Count;
-                    if (flag3)
-                    {
-                        result = this.TMabilityDefs[this.TMabilityDefs.Count - 1];
-                    }
-                }
-            }
-            return result;
         }
 
         public AbilityDef HasAbilityDef(AbilityDef defToFind)

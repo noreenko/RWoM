@@ -5,7 +5,6 @@ using UnityEngine;
 using RimWorld;
 using System.Collections.Generic;
 using System;
-using System.Linq;
 
 namespace TorannMagic
 {
@@ -36,7 +35,7 @@ namespace TorannMagic
                     }
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 //
             }

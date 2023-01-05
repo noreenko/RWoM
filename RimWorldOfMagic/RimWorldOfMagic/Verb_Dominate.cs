@@ -58,7 +58,7 @@ namespace TorannMagic
             //    pwrVal = 3;
             //    effVal = 3;
             //}
-            //if (p.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //if (comp.IsFaceless)
             //{
             //    MightPowerSkill mpwr = p.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
             //    MightPowerSkill mver = p.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");

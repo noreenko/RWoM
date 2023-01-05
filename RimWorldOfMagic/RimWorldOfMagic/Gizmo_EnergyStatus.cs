@@ -45,7 +45,7 @@ namespace TorannMagic
                 CompAbilityUserMagic compMagic = pawn.GetCompAbilityUserMagic();
                 CompAbilityUserMight compMight = pawn.GetCompAbilityUserMight();
 
-                bool isMage = compMagic.IsMagicUser && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
+                bool isMage = compMagic.IsMagicUser && !compMagic.IsFaceless;
                 bool isFighter = compMight.IsMightUser;
                 bool isPsionic = pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_PsionicHD"), false);
                 bool isBloodMage = pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_BloodHD"), false);
@@ -57,13 +57,13 @@ namespace TorannMagic
 
                 if (customHediff == null || Find.TickManager.TicksGame % 303 == 0)
                 {
-                    if (isMage && compMagic.customClass != null && compMagic.customClass.classHediff != null && compMagic.customClass.showHediffOnGizmo)
+                    if (isMage && compMagic.customClass?.classHediff != null && compMagic.customClass.showHediffOnGizmo)
                     {
                         isCustom = true;
                         customHediff = pawn.health.hediffSet.GetFirstHediffOfDef(compMagic.customClass.classHediff) as HediffWithCompsExtra;
                         CustomTex = SolidColorMaterials.NewSolidColorTexture(compMagic.customClass.classIconColor);
                     }
-                    else if (isFighter && compMight.customClass != null && compMight.customClass.classHediff != null && compMight.customClass.showHediffOnGizmo)
+                    else if (isFighter && compMight.customClass?.classHediff != null && compMight.customClass.showHediffOnGizmo)
                     {
                         isCustom = true;
                         customHediff = pawn.health.hediffSet.GetFirstHediffOfDef(compMight.customClass.classHediff) as HediffWithCompsExtra;

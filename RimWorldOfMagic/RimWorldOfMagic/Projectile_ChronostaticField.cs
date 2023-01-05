@@ -65,7 +65,7 @@ namespace TorannMagic
                 MagicPowerSkill ver = comp.MagicData.MagicPowerSkill_ChronostaticField.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ChronostaticField_ver");
                 pwrVal = pwr.level;
                 verVal = ver.level;
-                if (this.casterPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if (comp.IsFaceless)
                 {
                     MightPowerSkill mpwr = casterPawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
                     MightPowerSkill mver = casterPawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");

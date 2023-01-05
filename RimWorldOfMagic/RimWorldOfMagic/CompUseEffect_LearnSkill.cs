@@ -181,7 +181,7 @@ namespace TorannMagic
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
-                        else if (parent.def == TorannMagicDefOf.SkillOf_Legion && comp.skill_Legion == false && !user.story.traits.HasTrait(TorannMagicDefOf.Faceless) && comp.Pawn.story.DisabledWorkTagsBackstoryAndTraits != WorkTags.Violent)
+                        else if (parent.def == TorannMagicDefOf.SkillOf_Legion && comp.skill_Legion == false && !comp.IsFaceless && comp.Pawn.story.DisabledWorkTagsBackstoryAndTraits != WorkTags.Violent)
                         {
                             comp.skill_Legion = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_Legion).learned = true;

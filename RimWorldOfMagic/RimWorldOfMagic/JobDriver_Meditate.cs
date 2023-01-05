@@ -147,7 +147,7 @@ namespace TorannMagic
                                 this.pawn.needs.joy.CurLevel += (.004f * (1 + (.1f * verVal)));
                                 this.pawn.needs.mood.CurLevel += .001f * (1 + (.1f * verVal));
                             }
-                            catch(NullReferenceException ex)
+                            catch(NullReferenceException)
                             {
                                 //ex
                             }

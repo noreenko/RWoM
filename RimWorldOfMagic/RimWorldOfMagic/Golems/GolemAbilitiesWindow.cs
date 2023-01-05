@@ -81,7 +81,7 @@ namespace TorannMagic.Golems
                     }
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 base.Close(doCloseSound);
             }
@@ -121,7 +121,6 @@ namespace TorannMagic.Golems
                 }
             }
             int num = 0;
-            float rowHeight = 28f;
             //GUI.BeginGroup(inRect);
             int scrollCount = 256;
             if(upgrades.Count > 8)

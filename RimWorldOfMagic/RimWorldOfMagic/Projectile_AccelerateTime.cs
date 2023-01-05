@@ -65,7 +65,7 @@ namespace TorannMagic
                 MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_AccelerateTime.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_AccelerateTime_ver");
                 pwrVal = pwr.level;
                 verVal = ver.level;
-                if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if (comp.IsFaceless)
                 {
                     MightPowerSkill mpwr = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
                     MightPowerSkill mver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
@@ -196,15 +196,15 @@ namespace TorannMagic
                                 Plant plant = thingList[j] as Plant;
                                 try
                                 {
-                                    plant.Growth = plant.Growth + ((Rand.Range((2 + pwrVal), (4 + pwrVal)) / plant.def.plant.growDays) * this.arcaneDmg);
+                                    plant.Growth += Rand.Range(2 + pwrVal, 4 + pwrVal) / plant.def.plant.growDays * arcaneDmg;
                                 }
-                                catch (NullReferenceException ex)
+                                catch (NullReferenceException)
                                 {
                                     plant.Growth *= (1.1f + (.1f * pwrVal));
                                 }
                             }
                             CompHatcher compHatcher = thingList[j].TryGetComp<CompHatcher>();
-                            if(compHatcher != null)
+                            if (compHatcher != null)
                             {
                                 float gestateProgress = Traverse.Create(root: compHatcher).Field(name: "gestateProgress").GetValue<float>();
                                 Traverse.Create(root: compHatcher).Field(name: "gestateProgress").SetValue((gestateProgress + Rand.Range(.3f + (.1f * pwrVal), .7f + (.1f * pwrVal))) * this.arcaneDmg);

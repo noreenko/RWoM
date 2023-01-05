@@ -44,7 +44,7 @@ namespace TorannMagic
                         verVal = TM_Calc.GetSkillVersatilityLevel(pawn, TorannMagicDefOf.TM_PoisonTrap);
                         MightPowerSkill ver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_PoisonTrap.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PoisonTrap_ver");
                         //verVal = ver.level;
-                        //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                        //if (comp.IsFaceless)
                         //{
                         //    MightPowerSkill mver = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
                         //    verVal = mver.level;

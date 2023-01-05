@@ -190,7 +190,7 @@ namespace TorannMagic
 
                         //MightCardUtility.PowersGUIHandler(inRect3, pawn.GetCompAbilityUserMight(), pawn.GetCompAbilityUserMight().MightData.MightPowersR, pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_RangerTraining, pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_BowTraining, pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_PoisonTrap, pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_AnimalFriend, pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_ArrowStorm, null, TexButton.TMTex_SkillPointUsed);
                     }
-                    else if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                    else if (comp.IsFaceless)
                     {
                         Rect inRect3 = new Rect(rect.x, rect11.y, MightCardUtility.PowersColumnWidth, MightCardUtility.PowersColumnHeight);
                         MightCardUtility.CustomPowersHandler(inRect3, comp, comp.MightData.AllMightPowersWithSkills, GetAbilityList(comp, comp.MightData.MightPowersF), TexButton.TMTex_SkillPointUsed);
@@ -390,7 +390,7 @@ namespace TorannMagic
                     }
                     else
                     {
-                        bool flag12 = Widgets.ButtonText(rect31, "+", true, false, true) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                        bool flag12 = Widgets.ButtonText(rect31, "+", true, false, true) && compMight.Pawn.Faction == Faction.OfPlayer;
                         Widgets.Label(rect3, skill.label.Translate() + ": " + skill.level + " / " + skill.levelMax);
                         if (flag12)
                         {
@@ -417,7 +417,7 @@ namespace TorannMagic
                     }
                     else
                     {
-                        bool flag12 = Widgets.ButtonText(rect41, "+", true, false, true) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                        bool flag12 = Widgets.ButtonText(rect41, "+", true, false, true) && compMight.Pawn.Faction == Faction.OfPlayer;
                         Widgets.Label(rect4, skill.label.Translate() + ": " + skill.level + " / " + skill.levelMax);
                         if (flag12)
                         {
@@ -444,7 +444,7 @@ namespace TorannMagic
                     }
                     else
                     {
-                        bool flag12 = Widgets.ButtonText(rect51, "+", true, false, true) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                        bool flag12 = Widgets.ButtonText(rect51, "+", true, false, true) && compMight.Pawn.Faction == Faction.OfPlayer;
                         Widgets.Label(rect5, skill.label.Translate() + ": " + skill.level + " / " + skill.levelMax);
                         if (flag12)
                         {
@@ -471,7 +471,7 @@ namespace TorannMagic
                     }
                     else
                     {
-                        bool flag12 = Widgets.ButtonText(rect61, "+", true, false, true) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                        bool flag12 = Widgets.ButtonText(rect61, "+", true, false, true) && compMight.Pawn.Faction == Faction.OfPlayer;
                         Widgets.Label(rect6, skill.label.Translate() + ": " + skill.level + " / " + skill.levelMax);
                         if (flag12)
                         {
@@ -1274,7 +1274,7 @@ namespace TorannMagic
                         if (compMight.MightData.MightAbilityPoints >= enumerator.Current.learnCost)
                         {
                             Text.Font = GameFont.Tiny;
-                            bool flagLearn = Widgets.ButtonText(rectLearn, "TM_Learn".Translate(), true, false, true) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                            bool flagLearn = Widgets.ButtonText(rectLearn, "TM_Learn".Translate(), true, false) && compMight.Pawn.Faction == Faction.OfPlayer;
                             if (flagLearn)
                             {
                                 enumerator.Current.learned = true;
@@ -1332,7 +1332,7 @@ namespace TorannMagic
                             if (flag999)
                             {
                                 Rect rect10 = new Rect(rect.xMax, rect.yMin, x4, MightCardUtility.TextSize);
-                                bool flag1 = Widgets.ButtonImage(rect, power.Icon) && compMight.AbilityUser.Faction == Faction.OfPlayer;
+                                bool flag1 = Widgets.ButtonImage(rect, power.Icon) && compMight.Pawn.Faction == Faction.OfPlayer;
                                 Widgets.Label(rect10, " " + power.level + " / " + power.maxLevel);
                                 if (flag1)
                                 {

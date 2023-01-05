@@ -32,7 +32,7 @@ namespace TorannMagic
             {
                 CompAbilityUserMight compMight = this.pawn.GetCompAbilityUserMight();
                 CompAbilityUserMagic compMagic = this.pawn.GetCompAbilityUserMagic();
-                if (tmAbility.manaCost > 0 && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if (tmAbility.manaCost > 0 && pawn.story?.traits != null && !compMight.IsFaceless)
                 {
                     if (this.pawn.Map.gameConditionManager.ConditionIsActive(TorannMagicDefOf.TM_ManaStorm))
                     {

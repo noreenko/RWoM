@@ -31,7 +31,7 @@ namespace TorannMagic
             verVal = ver.level;
             pwrVal = pwr.level;
             arcaneDmg = comp.arcaneDmg;
-            if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (comp.IsFaceless)
             {
                 MightPowerSkill mpwr = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
                 MightPowerSkill mver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");

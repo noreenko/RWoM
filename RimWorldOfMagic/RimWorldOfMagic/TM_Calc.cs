@@ -557,7 +557,7 @@ namespace TorannMagic
 
         public static bool IsCrossClass(Pawn pawn, bool forMagic)
         {
-            if (pawn.story != null && pawn.story.traits != null)
+            if (pawn.story?.traits != null)
             {
                 if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) && forMagic)
                 {
@@ -2565,10 +2565,6 @@ namespace TorannMagic
                         tempAbility = TorannMagicDefOf.TM_FirstAid;
                     }
                 }
-                else if (targetPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                {
-
-                }
             }
             return tempAbility;
         }
@@ -3431,7 +3427,7 @@ namespace TorannMagic
             //    val = mps.level;
             //    if (canCopy && val == 0)
             //    {
-            //        if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //        if (comp.IsFaceless)
             //        {
             //            label = "TM_Mimic" + suffix;
             //            val = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == label).level;
@@ -3516,7 +3512,7 @@ namespace TorannMagic
             //        val = mps.level;
             //        if (canCopy && val == 0)
             //        {
-            //            if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //            if (comp.IsFaceless)
             //            {
             //                label = "TM_Mimic" + suffix;
             //                val = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == label).level;

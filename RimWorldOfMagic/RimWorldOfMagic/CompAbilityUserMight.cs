@@ -34,7 +34,6 @@ namespace TorannMagic
         private int nextSSTend = 0;
 
         private List<IntVec3> deathRing = new List<IntVec3>();
-        public float weaponCritChance = 0f;
         public bool shouldDrawPsionicShield = false;
         public List<TM_EventRecords> mightUsed = new List<TM_EventRecords>();
 
@@ -193,35 +192,16 @@ namespace TorannMagic
             }
         }
 
-        public float GetSkillDamage()
+        public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-            float result;
-            float strFactor = 1f;
+            base.PostSpawnSetup(respawningAfterLoad);
+            TM_PawnTracker.ResolveMightComp(this);
+        }
 
-            if (IsMightUser)
-            {
-                strFactor = mightPwr;
-            }
-
-            if (Pawn.equipment?.Primary != null)
-            {
-                if(Pawn.equipment.Primary.def.IsMeleeWeapon)
-                {
-                    result = TM_Calc.GetSkillDamage_Melee(Pawn, strFactor);
-                    weaponCritChance = TM_Calc.GetWeaponCritChance(Pawn.equipment.Primary);
-                }
-                else
-                {
-                    result = TM_Calc.GetSkillDamage_Range(Pawn, strFactor);
-                    weaponCritChance = 0f;
-                }
-            }
-            else
-            {
-                result = Pawn.GetStatValue(StatDefOf.MeleeDPS, false) * strFactor;
-            }
-
-            return result;
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+            TM_PawnTracker.ResolveMightComp(this);
         }
 
         public bool shouldDraw = true;
@@ -352,7 +332,7 @@ namespace TorannMagic
         //        {
         //            Graphics.DrawMesh(MeshPool.plane10, matrix, TM_RenderQueue.rangerMarkMat, 0);
         //        }
-        //        else if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+        //        else if (IsFaceless)
         //        {
         //            Graphics.DrawMesh(MeshPool.plane10, matrix, TM_RenderQueue.facelessMarkMat, 0);
         //        }
@@ -1084,17 +1064,14 @@ namespace TorannMagic
             }
             base.CompTick();
             age++;
-            if (chainedAbilitiesList != null && chainedAbilitiesList.Count > 0)
+            for (int i = 0; i < chainedAbilitiesList.Count; i++)
             {
-                for (int i = 0; i < chainedAbilitiesList.Count; i++)
+                chainedAbilitiesList[i].expirationTicks--;
+                if (chainedAbilitiesList[i].expires && chainedAbilitiesList[i].expirationTicks <= 0)
                 {
-                    chainedAbilitiesList[i].expirationTicks--;
-                    if (chainedAbilitiesList[i].expires && chainedAbilitiesList[i].expirationTicks <= 0)
-                    {
-                        RemovePawnAbility(chainedAbilitiesList[i].abilityDef);
-                        chainedAbilitiesList.Remove(chainedAbilitiesList[i]);
-                        break;
-                    }
+                    RemovePawnAbility(chainedAbilitiesList[i].abilityDef);
+                    chainedAbilitiesList.Remove(chainedAbilitiesList[i]);
+                    break;
                 }
             }
             if (TM_TickManager.tickMod20 == tickOffset20)
@@ -1184,7 +1161,7 @@ namespace TorannMagic
             }
             if(TM_TickManager.tickMod300 == tickOffset300) //cache weapon damage for tooltip and damage calculations
             {
-                weaponDamage = GetSkillDamage();
+                weaponDamage = GetSkillDamage(IsMightUser ? mightPwr : 1f);
             }
             if (TM_TickManager.tickMod600 == tickOffset600)
             {
@@ -1440,9 +1417,9 @@ namespace TorannMagic
         {
             get
             {
-                if (!base.Pawn.DestroyedOrNull() && base.Pawn.needs != null)
+                if (!Pawn.DestroyedOrNull() && Pawn.needs != null)
                 {
-                    return base.Pawn.needs.TryGetNeed<Need_Stamina>();
+                    return Pawn.needs.TryGetNeed<Need_Stamina>();
                 }
                 return null;
             }
@@ -1646,8 +1623,7 @@ namespace TorannMagic
                     this.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_ArrowStorm_II).learned = true;
                     this.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_ArrowStorm_III).learned = true;
                 }
-                flag2 = abilityUser.story.traits.HasTrait(TorannMagicDefOf.Faceless);
-                if (flag2)
+                if (IsFaceless)
                 {
                     //Log.Message("Initializing Faceless Abilities");
                     this.AddPawnAbility(TorannMagicDefOf.TM_Disguise);
@@ -2144,7 +2120,7 @@ namespace TorannMagic
                     this.RemovePawnAbility(TorannMagicDefOf.TM_ArrowStorm_II);
                     this.RemovePawnAbility(TorannMagicDefOf.TM_ArrowStorm_III);
                 }
-                //flag2 = abilityUser.story.traits.HasTrait(TorannMagicDefOf.Faceless);
+                //flag2 = IsFaceless;
                 if (flag2)
                 {
                     foreach (MightPower current in this.MightData.MightPowersF)
@@ -2690,7 +2666,7 @@ namespace TorannMagic
                 {
                     adjustedStaminaCost *= 1f - (mightDef.efficiencyReductionPercent * this.MightData.GetSkill_Versatility(TorannMagicDefOf.TM_ShotgunSpec).level);
                 }
-                else if(this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) && (mightDef != TorannMagicDefOf.TM_Possess && mightDef != TorannMagicDefOf.TM_Disguise && mightDef != TorannMagicDefOf.TM_Transpose &&
+                else if(IsFaceless && (mightDef != TorannMagicDefOf.TM_Possess && mightDef != TorannMagicDefOf.TM_Disguise && mightDef != TorannMagicDefOf.TM_Transpose &&
                     mightDef != TorannMagicDefOf.TM_Transpose_I && mightDef != TorannMagicDefOf.TM_Transpose_II && mightDef != TorannMagicDefOf.TM_Transpose_III && mightDef != TorannMagicDefOf.TM_Mimic && mightDef != TorannMagicDefOf.TM_Reversal))
                 {
                     adjustedStaminaCost *= 1f - (mightDef.efficiencyReductionPercent * this.mightData.GetSkill_Efficiency(TorannMagicDefOf.TM_Mimic).level);
@@ -3348,7 +3324,6 @@ namespace TorannMagic
         public void ResolveMightUseEvents()
         {
             List<TM_EventRecords> tmpList = new List<TM_EventRecords>();
-            tmpList.Clear();
             foreach (TM_EventRecords ev in MightUsed)
             {
                 if (Find.TickManager.TicksGame - 60000 > ev.eventTick)
@@ -5177,7 +5152,7 @@ namespace TorannMagic
 
         public override void PostExposeData()
         {
-            //base.PostExposeData();
+            base.PostExposeData();
             Scribe_Values.Look<bool>(ref this.mightPowersInitialized, "mightPowersInitialized", false, false);
             Scribe_Collections.Look<Thing>(ref this.combatItems, "combatItems", LookMode.Reference);
             Scribe_Deep.Look(ref this.equipmentContainer, "equipmentContainer", new object[0]);
@@ -5412,8 +5387,8 @@ namespace TorannMagic
                         this.AddPawnAbility(TorannMagicDefOf.TM_AnimalFriend);
                     }
 
-                    bool flag44 = abilityUser.story.traits.HasTrait(TorannMagicDefOf.Faceless);
-                    if (flag44)
+                    bool flag44 = IsFaceless;
+                    if (IsFaceless)
                     {
                         bool flag21 = !this.MightData.MightPowersF.NullOrEmpty<MightPower>();
                         if (flag21)
@@ -5445,9 +5420,6 @@ namespace TorannMagic
                                 }
                             }
                         }
-                    }
-                    if (flag44)
-                    {
                         //Log.Message("Loading Faceless Abilities");
                         this.AddPawnAbility(TorannMagicDefOf.TM_Disguise);
                         this.AddPawnAbility(TorannMagicDefOf.TM_Mimic);

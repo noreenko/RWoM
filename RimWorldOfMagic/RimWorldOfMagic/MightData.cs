@@ -2356,7 +2356,7 @@ namespace TorannMagic
 
         public MightData(CompAbilityUserMight newUser)
         {
-            this.mightPawn = newUser.AbilityUser;
+            this.mightPawn = newUser.Pawn;
         }
 
         public void ClearData()

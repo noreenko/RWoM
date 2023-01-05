@@ -52,7 +52,7 @@ namespace TorannMagic
             pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
             //MagicPowerSkill pwr = comp.MagicData.MagicPowerSkill_EnchantWeapon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EnchantWeapon_pwr");
             //pwrVal = pwr.level;
-            //if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //if (comp.IsFaceless)
             //{
             //    pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
             //}

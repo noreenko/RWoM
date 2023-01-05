@@ -11,12 +11,9 @@ namespace TorannMagic.Thoughts
             bool baseInspiration = base.InspirationCanOccur(pawn);
             bool magicInspiration = false;
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
-            if(comp.IsMagicUser)
+            if(comp.IsMagicUser && !comp.IsFaceless)
             {
-                if (!pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                {
-                    magicInspiration = true;
-                }
+                magicInspiration = true;
             }
             return baseInspiration && magicInspiration;
         }

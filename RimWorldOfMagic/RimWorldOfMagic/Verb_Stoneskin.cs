@@ -54,7 +54,7 @@ namespace TorannMagic
             //MagicPowerSkill ver = comp.MagicData.MagicPowerSkill_Stoneskin.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Stoneskin_ver");
             //pwrVal = pwr.level;
             //verVal = ver.level;
-            //if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //if (comp.IsFaceless)
             //{
             //    pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
             //    verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;

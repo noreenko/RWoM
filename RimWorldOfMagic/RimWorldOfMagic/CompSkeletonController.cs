@@ -719,7 +719,7 @@ namespace TorannMagic
                                 returnThings.Add(cellList[j]);
                             }
                         }
-                        catch (NullReferenceException ex)
+                        catch (NullReferenceException)
                         {
                             //Log.Message("threw exception " + ex);
                         }

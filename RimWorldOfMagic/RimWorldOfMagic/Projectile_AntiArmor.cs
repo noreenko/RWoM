@@ -46,7 +46,7 @@ namespace TorannMagic
                 MightPowerSkill str = comp.MightData.MightPowerSkill_global_strength.FirstOrDefault((MightPowerSkill x) => x.label == "TM_global_strength_pwr");
                 //pwrVal = pwr.level;
                 //verVal = ver.level;
-                //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                //if (comp.IsFaceless)
                 //{
                 //    MightPowerSkill mpwr = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
                 //    MightPowerSkill mver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
@@ -95,7 +95,7 @@ namespace TorannMagic
                     Log.Message("No valid target for anti armor shot or missed");
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 //
             }

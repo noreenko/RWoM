@@ -14,9 +14,6 @@ namespace TorannMagic.Utils
      */
     public static class TM_PawnTracker
     {
-        // Keep track of when the pawn despawned so we can calculate cooldowns when they come back
-        public static readonly Dictionary<Pawn, int> DeSpawnedPawnTickTracker = new Dictionary<Pawn, int>();
-
         // For simplicity, use this not fully optimized function to prevent bugs that would be hard to find
         public static void ResolveComps(Pawn pawn)
         {
@@ -26,10 +23,11 @@ namespace TorannMagic.Utils
         public static void ResolveMagicComp(CompAbilityUserMagic magicComp)
         {
             if (magicComp == null) return;
+
+            magicComp.IsFaceless = magicComp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
             if (magicComp.SetIsMagicUser())
             {
-                if (magicComp.Pawn.Spawned && !magicComp.Pawn.IsWildMan() &&
-                    !magicComp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if (magicComp.Pawn.Spawned && !magicComp.Pawn.IsWildMan() && !magicComp.IsFaceless)
                 {
                     magicComp.tickConditionsMet = true;
                 }
@@ -47,6 +45,8 @@ namespace TorannMagic.Utils
         public static void ResolveMightComp(CompAbilityUserMight mightComp)
         {
             if (mightComp == null) return;
+
+            mightComp.IsFaceless = mightComp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
             if (mightComp.SetIsMightUser())
             {
                 if (mightComp.Pawn.Spawned && !mightComp.Pawn.NonHumanlikeOrWildMan())
@@ -83,47 +83,6 @@ namespace TorannMagic.Utils
         static void Postfix(Pawn ___pawn)
         {
             TM_PawnTracker.ResolveComps(___pawn);
-        }
-    }
-
-    [HarmonyPatch(typeof(Pawn), nameof(Pawn.SpawnSetup))]
-    class TM_PawnTracker__SpawnSetup__Postfix
-    {
-        static void Postfix(Pawn __instance)
-        {
-            var magicComp = __instance.TryGetComp<CompAbilityUserMagic>();
-            TM_PawnTracker.ResolveMagicComp(magicComp);
-            var mightComp = __instance.TryGetComp<CompAbilityUserMight>();
-            TM_PawnTracker.ResolveMightComp(mightComp);
-
-            int tickDeSpawned = TM_PawnTracker.DeSpawnedPawnTickTracker.TryGetValue(__instance, -1);
-            if (tickDeSpawned == -1) return;
-
-            int ticksPassed = Find.TickManager.TicksGame - tickDeSpawned;
-            for (int i = 0; i < magicComp.AbilityData.AllPowers.Count; i++)
-            {
-                magicComp.AbilityData.AllPowers[i].CooldownTicksLeft = Math.Max(
-                    magicComp.AbilityData.AllPowers[i].CooldownTicksLeft - ticksPassed, 0
-                );
-            }
-            for (int i = 0; i < mightComp.AbilityData.AllPowers.Count; i++)
-            {
-                mightComp.AbilityData.AllPowers[i].CooldownTicksLeft = Math.Max(
-                    mightComp.AbilityData.AllPowers[i].CooldownTicksLeft - ticksPassed, 0
-                );
-            }
-
-            TM_PawnTracker.DeSpawnedPawnTickTracker.Remove(__instance);
-        }
-    }
-
-    [HarmonyPatch(typeof(Pawn), nameof(Pawn.DeSpawn))]
-    class TM_PawnTracker__DeSpawn__Postfix
-    {
-        static void Postfix(Pawn __instance)
-        {
-            TM_PawnTracker.ResolveComps(__instance);
-            TM_PawnTracker.DeSpawnedPawnTickTracker[__instance] = Find.TickManager.TicksGame;
         }
     }
 

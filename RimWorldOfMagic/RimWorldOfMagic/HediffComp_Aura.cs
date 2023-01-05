@@ -55,8 +55,7 @@ namespace TorannMagic
         public override void CompPostTick(ref float severityAdjustment)
         {
             base.CompPostTick(ref severityAdjustment);
-            bool flag = base.Pawn != null && base.Pawn.Map != null;
-            if (flag)
+            if (Pawn?.Map != null)
             {
                 if (!initialized)
                 {
@@ -67,7 +66,7 @@ namespace TorannMagic
                 if (Find.TickManager.TicksGame > this.nextApplyTick && this.hediffDef != null)
                 {
                     Pawn pawn = TM_Calc.FindNearbyFactionPawn(this.Pawn, this.Pawn.Faction, 100);
-                    if (pawn != null && pawn.health != null)
+                    if (pawn?.health != null)
                     {
                         if (pawn.health.hediffSet.HasHediff(this.hediffDef, false) || pawn.Faction != this.Pawn.Faction || pawn.RaceProps.Animal)
                         {

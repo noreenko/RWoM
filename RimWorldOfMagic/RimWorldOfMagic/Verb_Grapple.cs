@@ -110,7 +110,6 @@ namespace TorannMagic
                 }                
                 
             }
-            bool result;
             bool arg_40_0;
             if (this.currentTarget != null && base.caster != null)
             {
@@ -164,7 +163,6 @@ namespace TorannMagic
                     {
                         //miss
                     }
-                    result = true;
                 }
             }
             else

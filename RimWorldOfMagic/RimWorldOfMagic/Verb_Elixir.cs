@@ -66,7 +66,7 @@ namespace TorannMagic
                     Messages.Message("TM_InvalidTarget".Translate(caster.LabelShort, this.Ability.Def.label), MessageTypeDefOf.NeutralEvent);
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 //ex
             }

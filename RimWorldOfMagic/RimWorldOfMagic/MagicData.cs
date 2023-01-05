@@ -4042,7 +4042,7 @@ namespace TorannMagic
 
         public MagicData(CompAbilityUserMagic newUser)
         {
-            this.magicPawn = newUser.AbilityUser;            
+            this.magicPawn = newUser.Pawn;
         }
 
         public void ClearData()
@@ -4071,8 +4071,8 @@ namespace TorannMagic
             this.magicPowerShaman.Clear();
             this.magicPowerGolemancer.Clear();
             this.magicPowerCustom.Clear();
-            this.magicPawn = null;            
-            this.initialized = false;           
+            this.magicPawn = null;
+            this.initialized = false;
         }
 
         public void ExposeData()

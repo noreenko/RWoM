@@ -315,7 +315,7 @@ namespace TorannMagic
                     }
                     base.Destroy(mode);
                 }
-                catch(NullReferenceException ex)
+                catch(NullReferenceException)
                 {
                     base.Destroy(mode);
                 }

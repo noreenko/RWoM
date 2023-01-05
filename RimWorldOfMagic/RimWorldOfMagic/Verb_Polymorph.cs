@@ -57,7 +57,7 @@ namespace TorannMagic
             this.arcaneDmg = base.CasterPawn.GetCompAbilityUserMagic().arcaneDmg;
             this.duration += Mathf.RoundToInt(600 * verVal * this.arcaneDmg); 
 
-            if (base.CasterPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (comp.IsFaceless)
             {
                 MightPowerSkill mpwr = base.CasterPawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
                 MightPowerSkill mver = base.CasterPawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
@@ -80,7 +80,7 @@ namespace TorannMagic
                 if (newPawn != this.CasterPawn)
                 {
                     CompPolymorph compPoly = newPawn.GetComp<CompPolymorph>();
-                    if (compPoly != null && compPoly.Original != null && compPoly.TicksLeft > 0)
+                    if (compPoly?.Original != null && compPoly.TicksLeft > 0)
                     {
                         compPoly.Temporary = true;
                         compPoly.TicksLeft = 0;

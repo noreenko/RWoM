@@ -282,7 +282,6 @@ namespace TorannMagic
 
         public IEnumerable<FloatMenuOption> GetTransportPodsFloatMenuOptionsAt(int tile, GlobalTargetInfo target)
         {
-            bool anything = false;
             MapParent mapParent = target.WorldObject as MapParent;
             if (mapParent != null && mapParent.HasMap)
             {

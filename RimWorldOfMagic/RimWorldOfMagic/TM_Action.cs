@@ -279,7 +279,7 @@ namespace TorannMagic
                     QualityCategory qc = thing.TryGetComp<CompQuality>().Quality;
                     twcq.SetQuality(qc, ArtGenerationContext.Colony);
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -354,7 +354,7 @@ namespace TorannMagic
                     QualityCategory qc = thing.TryGetComp<CompQuality>().Quality;
                     twcq.SetQuality(qc, ArtGenerationContext.Colony);
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -376,7 +376,7 @@ namespace TorannMagic
                         }
                     }
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -454,7 +454,7 @@ namespace TorannMagic
                     QualityCategory qc = thing.TryGetComp<CompQuality>().Quality;
                     twcq.SetQuality(qc, ArtGenerationContext.Colony);
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -476,7 +476,7 @@ namespace TorannMagic
                         }
                     }
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -562,7 +562,7 @@ namespace TorannMagic
                     QualityCategory qc = thing.TryGetComp<CompQuality>().Quality;
                     twcq.SetQuality(qc, ArtGenerationContext.Colony);
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -584,7 +584,7 @@ namespace TorannMagic
                         }
                     }
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //ignore
                 }
@@ -1351,7 +1351,7 @@ namespace TorannMagic
                             {
                                 lord.AddPawn(newPawn);
                             }
-                            catch (NullReferenceException ex)
+                            catch (NullReferenceException)
                             {
                                 if (lord != null)
                                 {
@@ -3679,20 +3679,16 @@ namespace TorannMagic
             if (hd_br != null)
             {
                 HediffComp_BrandingBase hdc = hd_br.TryGetComp<HediffComp_BrandingBase>();
-                if (hdc != null && hdc.BranderPawn != null)
+                CompAbilityUserMagic branderComp = hdc?.BranderPawn?.GetCompAbilityUserMagic();
+                if (branderComp != null)
                 {
-                    CompAbilityUserMagic branderComp = hdc.BranderPawn.GetCompAbilityUserMagic();
-                    if (branderComp != null)
+                    for(int i = 0; i < branderComp.BrandPawns.Count; i++)
                     {
-                        TMDefs.TM_Branding tmpBranding = null;
-                        for(int i = 0; i < branderComp.BrandPawns.Count; i++)
+                        if(branderComp.BrandPawns[i] == hitPawn && branderComp.BrandDefs[i] == brandDef)
                         {
-                            if(branderComp.BrandPawns[i] == hitPawn && branderComp.BrandDefs[i] == brandDef)
-                            {
-                                branderComp.BrandPawns.Remove(branderComp.BrandPawns[i]);
-                                branderComp.BrandDefs.Remove(branderComp.BrandDefs[i]);
-                                break;
-                            }
+                            branderComp.BrandPawns.Remove(branderComp.BrandPawns[i]);
+                            branderComp.BrandDefs.Remove(branderComp.BrandDefs[i]);
+                            break;
                         }
                     }
                 }

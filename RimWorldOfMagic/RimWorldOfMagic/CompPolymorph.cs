@@ -39,26 +39,25 @@ namespace TorannMagic
         {
             get
             {
-                Pawn pawn = this.parent as Pawn;
-                bool flag = pawn == null;
-                if (flag)
+                Pawn pawn = parent as Pawn;
+                if (pawn == null)
                 {
                     Log.Error("pawn is null");
                 }
                 return pawn;
             }
-            set => this.parent = value;
+            set => parent = value;
         }
 
         public Pawn Original
         {
-            get => this.original;
+            get => original;
             set => original = value;
         }
 
         public Pawn Spawner
         {
-            get => this.spawner;
+            get => spawner;
             set => spawner = value;
         }
 
@@ -74,11 +73,11 @@ namespace TorannMagic
         {
             get
             {
-                return this.temporary;
+                return temporary;
             }
             set
             {
-                this.temporary = value;
+                temporary = value;
             }
         }
 
@@ -133,72 +132,58 @@ namespace TorannMagic
             if (Find.TickManager.TicksGame % Rand.Range(30, 60) == 0 && this.ParentPawn.kindDef == PawnKindDef.Named("TM_Dire_Wolf"))
             {
                 bool castSuccess = false;                
-                AutoCast.AnimalBlink.Evaluate(this.ParentPawn, 2, 6, out castSuccess);                
+                AutoCast.AnimalBlink.Evaluate(ParentPawn, 2, 6, out castSuccess);
             }
 
-            if (this.ParentPawn.drafter == null)
+            if (ParentPawn.drafter == null)
             {
-                this.ParentPawn.drafter = new Pawn_DraftController(this.ParentPawn);
+                ParentPawn.drafter = new Pawn_DraftController(this.ParentPawn);
             }
         }        
 
         public override void CompTick()
         {
-            if (this.original != null)
+            if (original == null) return;
+
+            base.CompTick();
+            if (Find.TickManager.TicksGame % 4 != 0) return;
+            if (!initialized)
             {
-                base.CompTick();
-                if (Find.TickManager.TicksGame % 4 == 0)
+                initialized = true;
+                SpawnSetup();
+            }
+            activeMap = ParentPawn.Map;
+            if (temporary && initialized)
+            {
+                ticksLeft -= 4;
+                if (ticksLeft <= 0)
                 {
-                    if (!this.initialized)
+                    PreDestroy();
+                    ParentPawn.Destroy();
+                }
+                CheckPawnState();
+                if (!parent.Spawned) return;
+
+                if (effecter == null)
+                {
+                    EffecterDef progressBar = EffecterDefOf.ProgressBar;
+                    effecter = progressBar.Spawn();
+                }
+                else
+                {
+                    effecter.EffectTick(parent, TargetInfo.Invalid);
+                    MoteProgressBar mote = ((SubEffecter_ProgressBar)effecter.children[0]).mote;
+                    if (mote != null)
                     {
-                        this.initialized = true;
-                        SpawnSetup();
-                    }
-                    this.activeMap = this.ParentPawn.Map;
-                    bool flag2 = this.temporary;
-                    if (flag2 && this.initialized)
-                    {
-                        this.ticksLeft -= 4;
-                        bool flag3 = this.ticksLeft <= 0;
-                        if (flag3)
-                        {
-                            this.PreDestroy();
-                            ParentPawn.Destroy(DestroyMode.Vanish);                            
-                        }
-                        CheckPawnState();
-                        bool spawned = this.parent.Spawned;
-                        if (spawned)
-                        {
-                            bool flag4 = this.effecter == null;
-                            if (flag4)
-                            {
-                                EffecterDef progressBar = EffecterDefOf.ProgressBar;
-                                this.effecter = progressBar.Spawn();
-                            }
-                            else
-                            {
-                                LocalTargetInfo localTargetInfo = this.parent;
-                                bool spawned2 = base.parent.Spawned;
-                                if (spawned2)
-                                {
-                                    this.effecter.EffectTick(this.parent, TargetInfo.Invalid);
-                                }
-                                MoteProgressBar mote = ((SubEffecter_ProgressBar)this.effecter.children[0]).mote;
-                                bool flag5 = mote != null;
-                                if (flag5)
-                                {
-                                    float value = 1f - (float)(this.TicksToDestroy - this.ticksLeft) / (float)this.TicksToDestroy;
-                                    mote.progress = Mathf.Clamp01(value);
-                                    mote.offsetZ = -0.5f;
-                                }
-                            }
-                        }
-                    }
-                    else if(this.initialized && !flag2 && this.parent.Spawned)
-                    {
-                        CheckPawnState();
+                        float value = 1f - (TicksToDestroy - ticksLeft) / (float)TicksToDestroy;
+                        mote.progress = Mathf.Clamp01(value);
+                        mote.offsetZ = -0.5f;
                     }
                 }
+            }
+            else if(initialized && !temporary && parent.Spawned)
+            {
+                CheckPawnState();
             }
         }
 
@@ -372,7 +357,7 @@ namespace TorannMagic
                     pawn.needs.mood.thoughts.memories.TryGainMemory(TorannMagicDefOf.Polymorphed, this.spawner);
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
 
             }

@@ -137,7 +137,7 @@ namespace TorannMagic
                         this.pawn.skills.Learn(SkillDefOf.Social, Rand.Range(200f, 500f));
                     }
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //failed
                 }

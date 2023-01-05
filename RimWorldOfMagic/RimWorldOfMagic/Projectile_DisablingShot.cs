@@ -32,7 +32,7 @@ namespace TorannMagic
                 verVal = TM_Calc.GetSkillVersatilityLevel(pawn, TorannMagicDefOf.TM_DisablingShot);
                 MightPowerSkill str = comp.MightData.MightPowerSkill_global_strength.FirstOrDefault((MightPowerSkill x) => x.label == "TM_global_strength_pwr");
                 //verVal = ver.level;
-                //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                //if (comp.IsFaceless)
                 //{
                 //    MightPowerSkill mver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
                 //    verVal = mver.level;
@@ -67,7 +67,7 @@ namespace TorannMagic
                     Log.Message("No valid target for Disabling Shot");
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
 
             }

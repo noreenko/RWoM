@@ -56,19 +56,17 @@ namespace TorannMagic
                         {
                             Pawn victim = pList[i];
                             List<BodyPartRecord> bprList = new List<BodyPartRecord>();
-                            bprList.Clear();
-                            BodyPartRecord bpr = null;
                             foreach (BodyPartRecord record in victim.def.race.body.AllParts)
                             {
                                 if (record.def.tags.Contains(BodyPartTagDefOf.BreathingSource) || record.def.tags.Contains(BodyPartTagDefOf.BreathingPathway))
                                 {
-                                    if (victim.health != null && victim.health.hediffSet != null && !victim.health.hediffSet.PartIsMissing(record))
+                                    if (victim.health?.hediffSet != null && !victim.health.hediffSet.PartIsMissing(record))
                                     {
                                         bprList.Add(record);
                                     }
                                 }
                             }
-                            if (bprList != null && bprList.Count > 0 && caster != null)
+                            if (bprList.Count > 0 && caster != null)
                             {
                                 TM_Action.DamageEntities(victim, bprList.RandomElement(), Rand.Range(1f, 2f), 2f, TMDamageDefOf.DamageDefOf.TM_Poison, caster);
                             }

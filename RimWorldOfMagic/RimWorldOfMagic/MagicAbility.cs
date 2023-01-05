@@ -18,7 +18,7 @@ namespace TorannMagic
         {
             get
             {
-                return MagicUserUtility.GetMagicUser(base.Pawn);
+                return MagicUserUtility.GetMagicUser(Pawn);
             }
         }
 
@@ -399,194 +399,135 @@ namespace TorannMagic
 
         public override bool CanCastPowerCheck(AbilityContext context, out string reason)
         {
-            bool flag = base.CanCastPowerCheck(context, out reason);
-            bool result;
-            if (flag)
+            if (!base.CanCastPowerCheck(context, out reason)) return false;
+
+            reason = "";
+            if (Def is TMAbilityDef)
             {
-                reason = "";
-                TMAbilityDef tmAbilityDef;
-                bool flag1 = base.Def != null && (tmAbilityDef = (base.Def as TMAbilityDef)) != null;
-                if (flag1)
+                if (MagicUser.Mana != null)
                 {
-                    bool flag4 = this.MagicUser.Mana != null;
-                    if (flag4)
+                    if (magicDef.manaCost > 0f && ActualManaCost > MagicUser.Mana.CurLevel)
                     {
-                        bool flag5 = magicDef.manaCost > 0f && this.ActualManaCost > this.MagicUser.Mana.CurLevel;
-                        if (flag5)
-                        {
-                            reason = "TM_NotEnoughMana".Translate(
-                                base.Pawn.LabelShort
-                            );
-                            result = false;
-                            return result;
-                        }
-                        if (magicDef.bloodCost > 0f)
-                        {
-                            bool flag6 = this.MagicUser.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_BloodHD"), false) ? (this.ActualBloodCost * 100) > this.MagicUser.Pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_BloodHD"), false).Severity : true;
-                            if (flag6)
-                            {
-                                reason = "TM_NotEnoughBlood".Translate(
-                                    base.Pawn.LabelShort
-                                );
-                                result = false;
-                                return result;
-                            }
-                        }
-                        bool flagMute = this.MagicUser.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_MuteHD);
-                        if(flagMute)
-                        {
-                            reason = "TM_CasterMute".Translate(
-                                base.Pawn.LabelShort
-                            );
-                            result = false;
-                            return result;
-                        }
-                        bool flagNeed = magicDef.requiredNeed != null; ;
-                        if(flagNeed)
-                        {
-                            if (this.MagicUser.Pawn.needs.TryGetNeed(magicDef.requiredNeed) != null)
-                            {
-                                if(this.MagicUser.Pawn.needs.TryGetNeed(magicDef.requiredNeed).CurLevel < ActualNeedCost(magicDef, MagicUser))
-                                {
-                                    reason = "TM_NotEnoughEnergy".Translate(
-                                        base.Pawn.LabelShort,
-                                        magicDef.requiredNeed.label
-                                    );
-                                    result = false;
-                                    return result;
-                                }
-                                //passes need requirements
-                            }
-                            else
-                            {
-                                reason = "TM_NoRequiredNeed".Translate(
-                                    base.Pawn.LabelShort,
-                                    magicDef.requiredNeed.label
-                                );
-                                result = false;
-                                return result;
-                            }
-                        }
-
-                        bool flagHediff = magicDef.requiredHediff != null;
-                        if (flagHediff)
-                        {
-                            Hediff reqHediff = TM_Calc.GetLinkedHediff(base.Pawn, magicDef.requiredHediff);
-                            if (reqHediff != null)
-                            {
-                                if (reqHediff.Severity < ActualHediffCost(magicDef, MagicUser))
-                                {
-                                    reason = "TM_NotEnoughEnergy".Translate(
-                                        base.Pawn.LabelShort,
-                                        magicDef.requiredHediff.label
-                                    );
-                                    result = false;
-                                    return result;
-                                }
-                                //passes hediff requirements
-                            }
-                            else
-                            {
-                                reason = "TM_NoRequiredHediff".Translate(
-                                    base.Pawn.LabelShort,
-                                    magicDef.requiredHediff.label
-                                );
-                                result = false;
-                                return result;
-                            }                            
-                        }
-
-                        bool flagInspiration = magicDef.requiredInspiration != null;
-                        if (flagInspiration)
-                        {
-                            if (base.Pawn.mindState != null && base.Pawn.mindState.inspirationHandler != null && base.Pawn.InspirationDef != null && base.Pawn.mindState.inspirationHandler.CurStateDef == magicDef.requiredInspiration)
-                            {
-                                //passes hediff requirements
-                            }
-                            else
-                            {
-                                reason = "TM_NoRequiredInspiration".Translate(
-                                        base.Pawn.LabelShort,
-                                        magicDef.requiredInspiration.label
-                                    );
-                                result = false;
-                                return result;
-                            }
-                        }
-
-                        if (magicDef.requiresAnyInspiration)
-                        {
-                            if (!base.Pawn.Inspired)
-                            {
-                                reason = "TM_NotInspired".Translate(
-                                        base.Pawn.LabelShort
-                                    );
-                                result = false;
-                                return result;
-                            }
-                        }
-                    }
-                    else if (this.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                    {
-                        CompAbilityUserMight mightComp = this.Pawn.GetCompAbilityUserMight();
-                        bool flag7 = mightComp != null && mightComp.Stamina != null && magicDef.manaCost > 0f && this.magicDef.manaCost > mightComp.Stamina.CurLevel;
-                        if (flag7)
-                        {
-                            reason = "TM_NotEnoughStamina".Translate(
-                            base.Pawn.LabelShort
-                            );
-                            result = false;
-                            return result;
-                        }
-                    }
-                    TMAbilityDef tmad = this.magicDef;
-                    if (tmad != null && tmad.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(this.Pawn))
-                    {
-                        reason = "TM_IncompatibleWeaponType".Translate(
-                            base.Pawn.LabelShort,
-                            tmad.label);
+                        reason = "TM_NotEnoughMana".Translate(Pawn.LabelShort);
                         return false;
                     }
-                    //if (magicDef == TorannMagicDefOf.TM_HarvestPassion && !Pawn.Inspired)
-                    //{
-                    //    reason = "TM_MustHaveInspiration".Translate(
-                    //            base.Pawn.LabelShort,
-                    //            magicDef.label
-                    //        );
-                    //    result = false;
-                    //    return result;
-                    //}
-                }
-                List<Apparel> wornApparel = base.Pawn.apparel.WornApparel;
-                for (int i = 0; i < wornApparel.Count; i++)
-                {
-                    if (!wornApparel[i].AllowVerbCast(this.Verb) &&
-                        (this.magicDef.defName == "TM_LightningCloud" || this.magicDef.defName == "Laser_LightningBolt" || this.magicDef.defName == "TM_LightningStorm" || this.magicDef.defName == "TM_EyeOfTheStorm" ||
-                        this.magicDef.defName.Contains("Laser_FrostRay") || this.magicDef.defName == "TM_Blizzard" || this.magicDef.defName == "TM_Snowball" || this.magicDef.defName == "TM_Icebolt" ||
-                        this.magicDef.defName == "TM_Firestorm" || this.magicDef.defName == "TM_Fireball" || this.magicDef.defName == "TM_Fireclaw" || this.magicDef.defName == "TM_Firebolt" ||
-                        this.magicDef.defName.Contains("TM_MagicMissile") ||
-                        this.magicDef.defName.Contains("TM_DeathBolt") ||
-                        this.magicDef.defName.Contains("TM_ShadowBolt") ||
-                        this.magicDef.defName == "TM_BloodForBlood" || this.magicDef.defName == "TM_IgniteBlood" ||
-                        this.magicDef.defName == "TM_Poison" ||
-                        this.magicDef == TorannMagicDefOf.TM_ChainLightning ||
-                        this.magicDef == TorannMagicDefOf.TM_ArcaneBolt) )
+                    if (magicDef.bloodCost > 0f)
                     {
-                        reason = "TM_ShieldBlockingPowers".Translate(
-                            base.Pawn.Label,
-                            wornApparel[i].Label
-                        );
+                        bool flag6 = this.MagicUser.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_BloodHD"), false) ? (this.ActualBloodCost * 100) > this.MagicUser.Pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_BloodHD"), false).Severity : true;
+                        if (flag6)
+                        {
+                            reason = "TM_NotEnoughBlood".Translate(Pawn.LabelShort);
+                            return false;
+                        }
+                    }
+                    if(MagicUser.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_MuteHD))
+                    {
+                        reason = "TM_CasterMute".Translate(Pawn.LabelShort);
+                        return false;
+                    }
+                    if(magicDef.requiredNeed != null)
+                    {
+                        if (MagicUser.Pawn.needs.TryGetNeed(magicDef.requiredNeed) != null)
+                        {
+                            if(MagicUser.Pawn.needs.TryGetNeed(magicDef.requiredNeed).CurLevel < ActualNeedCost(magicDef, MagicUser))
+                            {
+                                reason = "TM_NotEnoughEnergy".Translate(
+                                    Pawn.LabelShort, magicDef.requiredNeed.label);
+                                return false;
+                            }
+                            //passes need requirements
+                        }
+                        else
+                        {
+                            reason = "TM_NoRequiredNeed".Translate(
+                                Pawn.LabelShort, magicDef.requiredNeed.label);
+                            return false;
+                        }
+                    }
+
+                    if (magicDef.requiredHediff != null)
+                    {
+                        Hediff reqHediff = TM_Calc.GetLinkedHediff(Pawn, magicDef.requiredHediff);
+                        if (reqHediff != null)
+                        {
+                            if (reqHediff.Severity < ActualHediffCost(magicDef, MagicUser))
+                            {
+                                reason = "TM_NotEnoughEnergy".Translate(
+                                    Pawn.LabelShort, magicDef.requiredHediff.label);
+                                return false;
+                            }
+                            //passes hediff requirements
+                        }
+                        else
+                        {
+                            reason = "TM_NoRequiredHediff".Translate(
+                                Pawn.LabelShort, magicDef.requiredHediff.label);
+                            return false;
+                        }
+                    }
+
+                    if (magicDef.requiredInspiration != null)
+                    {
+                        if (Pawn.mindState?.inspirationHandler != null && Pawn.InspirationDef != null && Pawn.mindState.inspirationHandler.CurStateDef == magicDef.requiredInspiration)
+                        {
+                            //passes hediff requirements
+                        }
+                        else
+                        {
+                            reason = "TM_NoRequiredInspiration".Translate(
+                                Pawn.LabelShort, magicDef.requiredInspiration.label);
+                            return false;
+                        }
+                    }
+
+                    if (magicDef.requiresAnyInspiration)
+                    {
+                        if (!Pawn.Inspired)
+                        {
+                            reason = "TM_NotInspired".Translate(Pawn.LabelShort);
+                            return false;
+                        }
+                    }
+                }
+                else if (Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                {
+                    CompAbilityUserMight mightComp = Pawn.GetCompAbilityUserMight();
+                    if (mightComp?.Stamina != null && magicDef.manaCost > 0f && magicDef.manaCost > mightComp.Stamina.CurLevel)
+                    {
+                        reason = "TM_NotEnoughStamina".Translate(Pawn.LabelShort);
                         return false;
                     }
                 }
-                result = true;
-                
+                TMAbilityDef tmad = magicDef;
+                if (tmad?.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(Pawn))
+                {
+                    reason = "TM_IncompatibleWeaponType".Translate(
+                        Pawn.LabelShort, tmad.label);
+                    return false;
+                }
             }
-            else
+            List<Apparel> wornApparel = Pawn.apparel.WornApparel;
+            for (int i = 0; i < wornApparel.Count; i++)
             {
-                result = false;
+                if (!wornApparel[i].AllowVerbCast(Verb) &&
+                    (magicDef.defName == "TM_LightningCloud" || magicDef.defName == "Laser_LightningBolt" || magicDef.defName == "TM_LightningStorm" || magicDef.defName == "TM_EyeOfTheStorm" ||
+                     magicDef.defName.Contains("Laser_FrostRay") || magicDef.defName == "TM_Blizzard" || magicDef.defName == "TM_Snowball" || magicDef.defName == "TM_Icebolt" ||
+                     magicDef.defName == "TM_Firestorm" || magicDef.defName == "TM_Fireball" || magicDef.defName == "TM_Fireclaw" || magicDef.defName == "TM_Firebolt" ||
+                     magicDef.defName.Contains("TM_MagicMissile") ||
+                     magicDef.defName.Contains("TM_DeathBolt") ||
+                     magicDef.defName.Contains("TM_ShadowBolt") ||
+                     magicDef.defName == "TM_BloodForBlood" || magicDef.defName == "TM_IgniteBlood" ||
+                     magicDef.defName == "TM_Poison" ||
+                     magicDef == TorannMagicDefOf.TM_ChainLightning ||
+                     magicDef == TorannMagicDefOf.TM_ArcaneBolt) )
+                {
+                    reason = "TM_ShieldBlockingPowers".Translate(
+                        Pawn.Label, wornApparel[i].Label);
+                    return false;
+                }
             }
-            return result;
+
+            return true;
 
         }
 

@@ -12,7 +12,7 @@ namespace TorannMagic
             {
                 return c.InBounds(map);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 //Log.Warning($"NullReference during InBounds call: {e.ToString()}");
                 return false;
@@ -25,7 +25,7 @@ namespace TorannMagic
             {
                 return v.InBounds(map);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 //Log.Warning($"NullReference during InBounds call: {e.ToString()}");
                 return false;

@@ -115,11 +115,11 @@ namespace TorannMagic
             base.Impact(hitThing);
             Pawn pawn = this.launcher as Pawn;
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
-            MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Fireclaw.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Fireclaw_pwr");
-            MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Fireclaw.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Fireclaw_ver");
+            MagicPowerSkill pwr = comp.MagicData.MagicPowerSkill_Fireclaw.FirstOrDefault(mps => mps.label == "TM_Fireclaw_pwr");
+            MagicPowerSkill ver = comp.MagicData.MagicPowerSkill_Fireclaw.FirstOrDefault(mps => mps.label == "TM_Fireclaw_ver");
             pwrVal = pwr.level;
             verVal = ver.level;
-            if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (comp.IsFaceless)
             {
                 MightPowerSkill mpwr = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
                 MightPowerSkill mver = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");

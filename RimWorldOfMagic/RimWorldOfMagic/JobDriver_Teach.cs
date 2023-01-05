@@ -49,7 +49,7 @@ namespace TorannMagic
             {
                 CompAbilityUserMagic compMagic = student.GetCompAbilityUserMagic();
                 CompAbilityUserMight compMight = student.GetCompAbilityUserMight();
-                if(compMagic != null && compMagic.IsMagicUser && !student.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if(compMagic != null && compMagic.IsMagicUser && !compMagic.IsFaceless)
                 {
                     this.isMageTeaching = true;
                     if(compMight != null && compMight.IsMightUser)
@@ -286,7 +286,7 @@ namespace TorannMagic
                         student.needs.joy.GainJoy(.2f, TorannMagicDefOf.Social);
                     }
                 }
-                catch(NullReferenceException ex)
+                catch(NullReferenceException)
                 {
                     //failed
                 }
@@ -328,7 +328,7 @@ namespace TorannMagic
                         student.needs.joy.GainJoy(.2f, TorannMagicDefOf.Social);
                     }
                 }
-                catch (NullReferenceException ex)
+                catch (NullReferenceException)
                 {
                     //failed
                 }

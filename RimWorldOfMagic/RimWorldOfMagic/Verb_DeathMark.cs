@@ -50,7 +50,7 @@ namespace TorannMagic
             //verVal = ver.level;
             //pwrVal = pwr.level;
             //this.arcaneDmg = comp.arcaneDmg;
-            //if (p.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //if (comp.IsFaceless)
             //{
             //    MightPowerSkill mpwr = p.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
             //    MightPowerSkill mver = p.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");

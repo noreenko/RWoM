@@ -335,7 +335,7 @@ namespace TorannMagic
                                     if (mapPawns[i] != null && mapPawns[i].Spawned && !mapPawns[i].Dead && !mapPawns[i].AnimalOrWildMan())
                                     {
                                         CompAbilityUserMagic mageCheck = mapPawns[i].GetCompAbilityUserMagic();
-                                        if (mageCheck != null && mageCheck.IsMagicUser && !mapPawns[i].story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                                        if (mageCheck != null && mageCheck.IsMagicUser && !mageCheck.IsFaceless)
                                         {
                                             mageCount++;
                                         }
@@ -382,7 +382,6 @@ namespace TorannMagic
 
                         //Undead modifier
                         float necroReduction = 0;
-                        int necroCount = 0;
                         float undeadCount = 0;
 
                         if (Settings.Instance.undeadUpkeepMultiplier > 0f && comp.supportedUndead != null && comp.supportedUndead.Count > 0)

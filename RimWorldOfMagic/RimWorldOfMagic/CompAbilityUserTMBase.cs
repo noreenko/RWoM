@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using AbilityUser;
 using RimWorld;
 using TorannMagic.Utils;
@@ -30,6 +31,11 @@ namespace TorannMagic
         protected int tickOffset300;
         protected int tickOffset600;
 
+        private int deSpawnTick = -1;  // Keep track of when we DeSpawn for cooldowns
+
+        // Cache variables
+        public bool IsFaceless;  // There are a lot of exceptions that occur when a pawn has the faceless trait
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
@@ -40,6 +46,24 @@ namespace TorannMagic
             tickOffset67 = Pawn.GetHashCode() % 67;
             tickOffset300 = Pawn.GetHashCode() % 300;
             tickOffset600 = Pawn.GetHashCode() % 600;
+
+            // Handle cooldowns on spawn
+            if (deSpawnTick != -1)
+            {
+                int ticksPassed = Find.TickManager.TicksGame - deSpawnTick;
+                for (int i = 0; i < AbilityData.AllPowers.Count; i++)
+                {
+                    AbilityData.AllPowers[i].CooldownTicksLeft = Math.Max(
+                        AbilityData.AllPowers[i].CooldownTicksLeft - ticksPassed, 0
+                    );
+                }
+            }
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+            deSpawnTick = Find.TickManager.TicksGame;
         }
 
         public TM_CustomClass customClass = null;
@@ -66,6 +90,7 @@ namespace TorannMagic
         public float xpGain = 1;
 
         public float weaponDamage = 1f;
+        public float weaponCritChance;
 
         public List<TM_CustomClass> CombinedCustomClasses
         {
@@ -98,6 +123,17 @@ namespace TorannMagic
                     }
                 }
                 return combinedCustomAbilities;
+            }
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look<int>(ref deSpawnTick, "deSpawnTick", -1);  // Currently don't save cooldowns, but this will be necessary if we decide to
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                IsFaceless = Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
             }
         }
 
@@ -143,6 +179,20 @@ namespace TorannMagic
                 }
                 DrawMark(material, new Vector3(.28f, 1f, .28f));
             }
+        }
+
+        public float GetSkillDamage(float strFactor)
+        {
+            if (Pawn.equipment?.Primary == null)
+                return Pawn.GetStatValue(StatDefOf.MeleeDPS, false) * strFactor;
+
+            if(Pawn.equipment.Primary.def.IsMeleeWeapon)
+            {
+                weaponCritChance = TM_Calc.GetWeaponCritChance(Pawn.equipment.Primary);
+                return TM_Calc.GetSkillDamage_Melee(Pawn, strFactor);
+            }
+            weaponCritChance = 0f;
+            return TM_Calc.GetSkillDamage_Range(Pawn, strFactor);
         }
 
         protected void handleAggressiveAICasting()

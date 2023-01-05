@@ -14,7 +14,7 @@ namespace TorannMagic
         {
             CompAbilityUserMagic comp = diffSet.pawn.GetCompAbilityUserMagic();
             float num = 0;
-            if(comp != null && comp.IsMagicUser && !comp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if(comp != null && comp.IsMagicUser && !comp.IsFaceless)
             {
                 num = 1;
             }

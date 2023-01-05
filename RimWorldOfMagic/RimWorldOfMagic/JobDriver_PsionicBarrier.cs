@@ -35,7 +35,7 @@ namespace TorannMagic
             //{
             //    radius = 2 + (.5f * comp.MightData.MightPowerSkill_PsionicBarrier.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicBarrier_ver").level);
             //}
-            //else if(this.pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            //else if(comp.IsFaceless)
             //{
             //    radius = 2 + (.5f * comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level);
             //}
@@ -121,7 +121,7 @@ namespace TorannMagic
             }, false, 0f);
             psionicBarrier.AddFinishAction(delegate
             {
-                if(this.pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                if(comp.IsFaceless)
                 {                    
                     CompAbilityUserMight mightComp = this.pawn.GetCompAbilityUserMight();
                     if (mightComp.mimicAbility != null)

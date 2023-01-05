@@ -125,7 +125,7 @@ namespace TorannMagic
                 //this.pwrVal = comp.MightData.MightPowerSkill_PsionicDash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicDash_pwr").level;
                 //this.verVal = comp.MightData.MightPowerSkill_PsionicDash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicDash_ver").level;
                 this.arcaneDmg = comp.mightPwr;
-                //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                //if (comp.IsFaceless)
                 //{
                 //    this.pwrVal = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
                 //    this.verVal = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;

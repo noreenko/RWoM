@@ -43,7 +43,7 @@ namespace TorannMagic
                     TM_MoteMaker.ThrowBloodSquirt(victim.DrawPos, victim.Map, 1f);
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 //
             }

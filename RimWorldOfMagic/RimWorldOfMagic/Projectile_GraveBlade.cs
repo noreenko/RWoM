@@ -137,7 +137,7 @@ namespace TorannMagic
                                         Job job = new Job(JobDefOf.FleeAndCower);
                                         //victim.mindState.mentalStateHandler.TryStartMentalState(TorannMagicDefOf.TM_PanicFlee);
                                     }
-                                    catch (NullReferenceException ex)
+                                    catch (NullReferenceException)
                                     {
 
                                     }

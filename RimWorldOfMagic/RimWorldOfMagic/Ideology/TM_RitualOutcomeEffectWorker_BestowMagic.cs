@@ -29,7 +29,6 @@ namespace TorannMagic.Ideology
             {
                 ApplyAttachableOutcome(totalPresence, jobRitual, outcome, out extraLetterText, ref letterLookTargets);
             }
-            bool flag = false;
             foreach (Pawn key in totalPresence.Keys)
             {
                 if (key.IsSlave)
@@ -39,7 +38,6 @@ namespace TorannMagic.Ideology
                     {
                         need_Suppression.CurLevel = 1f;
                     }
-                    flag = true;
                 }
                 else
                 {
@@ -64,4 +62,3 @@ namespace TorannMagic.Ideology
         }
     }
 }
- 

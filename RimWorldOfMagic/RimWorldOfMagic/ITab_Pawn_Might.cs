@@ -70,7 +70,7 @@ namespace TorannMagic
                     {
                         return flag && true;
                     }
-                    if (base.SelPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                    if (compMight.IsFaceless)
                     {
                         return flag && true;
                     }

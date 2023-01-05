@@ -54,7 +54,7 @@ namespace TorannMagic
             MagicPowerSkill bpwr = comp.MagicData.MagicPowerSkill_BloodGift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodGift_pwr");
             MagicPowerSkill pwr = comp.MagicData.MagicPowerSkill_BloodShield.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodShield_pwr");
             pwrVal = pwr.level;
-            if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (comp.IsFaceless)
             {
                 pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
             }

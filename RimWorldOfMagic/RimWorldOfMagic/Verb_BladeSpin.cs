@@ -72,7 +72,7 @@ namespace TorannMagic
                 pwrVal = TM_Calc.GetSkillPowerLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
                 //verVal = ver.level;
                 //pwrVal = pwr.level;
-                //if (base.CasterPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                //if (comp.IsFaceless)
                 //{
                 //    MightPowerSkill mver = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
                 //    MightPowerSkill mpwr = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");

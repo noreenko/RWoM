@@ -36,7 +36,6 @@ namespace TorannMagic.Golems
         public override void DoWindowContents(Rect inRect)
         {                       
             int num = 0;
-            float rowHeight = 28f;
             //GUI.BeginGroup(inRect);
             Rect sRect = new Rect(inRect.x, inRect.y, inRect.width - 36f, inRect.height);
             scrollPosition = GUI.BeginScrollView(inRect, scrollPosition, sRect, false, true);

@@ -1007,7 +1007,7 @@ namespace TorannMagic.Golems
                     }
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 //Log.Message("Error processing threats" + ex);
             }

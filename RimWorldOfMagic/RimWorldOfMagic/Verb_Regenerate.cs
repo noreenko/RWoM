@@ -62,7 +62,7 @@ namespace TorannMagic
                 verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
                 pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 //ex
             }
@@ -96,7 +96,7 @@ namespace TorannMagic
                     Messages.Message("TM_NothingToRegenerate".Translate(), MessageTypeDefOf.NeutralEvent);
                 }
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 //ex
             }

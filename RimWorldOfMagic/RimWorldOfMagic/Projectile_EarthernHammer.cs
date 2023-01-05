@@ -63,7 +63,7 @@ namespace TorannMagic
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
             pwrVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_EarthernHammer.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EarthernHammer_pwr").level;
             verVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_EarthernHammer.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EarthernHammer_ver").level;
-            if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+            if (comp.IsFaceless)
             {
                 pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
                 verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;
@@ -106,7 +106,7 @@ namespace TorannMagic
                                 }
                             }
                         }
-                        catch (NullReferenceException ex)
+                        catch (NullReferenceException)
                         {
                             //Log.Message("threw exception " + ex);
                         }
