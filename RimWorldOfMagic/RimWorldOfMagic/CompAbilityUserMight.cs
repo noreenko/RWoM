@@ -24,7 +24,6 @@ namespace TorannMagic
         public string LabelKey = "TM_Might";
 
         public bool mightPowersInitialized = false;
-        public bool firstMightTick = false;
         public bool IsMightUser;  // Set in TM_PawnTracker by calling IsMightUser after events that could change result
 
         private int fortitudeMitigationDelay = 0;
@@ -1058,10 +1057,6 @@ namespace TorannMagic
         {
             if (!tickConditionsMet) return;
 
-            if (!firstMightTick)
-            {
-                PostInitializeTick();
-            }
             base.CompTick();
             age++;
             for (int i = 0; i < chainedAbilitiesList.Count; i++)
@@ -1217,15 +1212,12 @@ namespace TorannMagic
             }
         }
 
-        public void PostInitializeTick()
+        public override void Initialize()
         {
-            if (Pawn?.story == null || !Pawn.Spawned) return;
-
-            this.Initialize();
-            this.ResolveMightTab();
-            this.ResolveMightPowers();
-            this.ResolveStamina();
-            firstMightTick = true;
+            base.Initialize();
+            ResolveMightTab();
+            ResolveMightPowers();
+            ResolveStamina();
         }
 
         public bool SetIsMightUser()
@@ -1242,11 +1234,8 @@ namespace TorannMagic
                         customIndex = -1;
                         return IsMightUser = false;
                     }
-                    else
-                    {
-                        customClass = TM_ClassUtility.CustomClasses[customIndex];
-                        return IsMightUser = true;
-                    }
+                    customClass = TM_ClassUtility.CustomClasses[customIndex];
+                    return IsMightUser = true;
                 }
             }
 
@@ -5187,10 +5176,10 @@ namespace TorannMagic
             {
                 this
             });
-            SetIsMightUser();  // We need to manually set IsMightUser after loading since no harmony patch is called
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
+                SetIsMightUser();  // We need to manually set IsMightUser after loading since no harmony patch is called
                 Pawn abilityUser = Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)

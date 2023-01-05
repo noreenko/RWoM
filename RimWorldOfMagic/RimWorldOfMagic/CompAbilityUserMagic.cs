@@ -24,8 +24,7 @@ namespace TorannMagic
         public string LabelKey = "TM_Magic";
         public bool IsMagicUser;  // Set in TM_PawnTracker by calling IsMagicUser after events that could change result
 
-        public bool firstTick = false;
-        public bool magicPowersInitialized = false;
+        public bool magicPowersInitialized;
         public bool magicPowersInitializedForColonist = true;
         private bool colonistPowerCheck = true;
         private int resMitigationDelay = 0;
@@ -1922,8 +1921,10 @@ namespace TorannMagic
 
         public override void CompTick()
         {
+            Log.Message("Checking conditions met");
             if(!tickConditionsMet)
             {
+                Log.Message("Checking inspiration");
                 if (TM_TickManager.tickMod2500 == tickOffset2500 && Pawn.Spawned && Pawn.story != null
                     && Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Gifted) && !Pawn.Inspired
                     && Pawn.CurJobDef == JobDefOf.LayDown && Rand.Chance(.025f))
@@ -1934,13 +1935,14 @@ namespace TorannMagic
                 return;
             }
 
-            if (!tickConditionsMet) return;
-            if (!firstTick)
-            {
-                PostInitializeTick();
-            }
-            base.CompTick();
+            if (!Initialized)
+                Initialize();
+            Log.Message("Go through all powers");
+            foreach (PawnAbility allPower in AbilityData.AllPowers)
+                allPower.Tick();
+
             age++;
+            Log.Message("Chained Abilities");
             if(chainedAbilitiesList != null && chainedAbilitiesList.Count > 0)
             {
                 for(int i = 0; i < chainedAbilitiesList.Count; i++)
@@ -1954,6 +1956,7 @@ namespace TorannMagic
                     }
                 }
             }
+            Log.Message("Mana check");
             if (Mana != null)
             {
                 if (Find.TickManager.TicksGame % 4 == 0 && Pawn.CurJob != null && Pawn.CurJobDef == JobDefOf.DoBill && Pawn.CurJob.targetA != null && Pawn.CurJob.targetA.Thing != null)
@@ -2008,6 +2011,7 @@ namespace TorannMagic
                         ResolveChronomancerTimeMark();
                     }
                 }
+                Log.Message("AutoCast Check");
                 if (autocastTick < Find.TickManager.TicksGame)  //180 default
                 {
                     if (!Pawn.Dead && !Pawn.Downed && Pawn.Map != null && Pawn.story?.traits != null && MagicData != null && !Pawn.InMentalState)
@@ -2025,6 +2029,7 @@ namespace TorannMagic
                         }
                     }
                 }
+                Log.Message("Aggressive AI");
                 handleAggressiveAICasting();
             }
             if (Find.TickManager.TicksGame % overdriveFrequency == 0)
@@ -2111,34 +2116,18 @@ namespace TorannMagic
             }
         }
 
-        public void PostInitializeTick()
+        public override void Initialize()
         {
-            bool flag = base.Pawn != null;
-            if (flag)
+            Trait t = Pawn.story.traits.GetTrait(TorannMagicDefOf.TM_Possessed);
+            if (t != null && !Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SpiritPossessionHD))
             {
-                bool spawned = base.Pawn.Spawned;
-                if (spawned)
-                {
-                    bool flag2 = base.Pawn.story != null;
-                    if (flag2)
-                    {
-                        Trait t = base.Pawn.story.traits.GetTrait(TorannMagicDefOf.TM_Possessed);
-                        if (t != null && !base.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SpiritPossessionHD))
-                        {
-                            base.Pawn.story.traits.RemoveTrait(t);
-                        }
-                        else
-                        {
-                            this.firstTick = true;
-                            this.Initialize();
-                            this.ResolveMagicTab();
-                            this.ResolveMagicPowers();
-                            this.ResolveMana();
-                            this.DoOncePerLoad();
-                        }
-                    }
-                }
+                Pawn.story.traits.RemoveTrait(t);
+                return;
             }
+            base.Initialize();
+            ResolveMagicTab();
+            ResolveMana();
+            DoOncePerLoad();
         }
 
         public bool SetIsMagicUser()
@@ -2157,11 +2146,8 @@ namespace TorannMagic
                         customIndex = -1;
                         return IsMagicUser = false;
                     }
-                    else
-                    {
-                        customClass = foundCustomClass;
-                        return IsMagicUser = true;
-                    }
+                    customClass = foundCustomClass;
+                    return IsMagicUser = true;
                 }
             }
 
@@ -2391,22 +2377,21 @@ namespace TorannMagic
         public override void PostInitialize()
         {
             base.PostInitialize();
-            bool flag = CompAbilityUserMagic.MagicAbilities == null;
-            if (flag)
+            if (MagicAbilities == null)
             {
-                if (this.magicPowersInitialized == false && this.MagicData != null)
+                if (magicPowersInitialized == false && MagicData != null)
                 {
                     MagicData.MagicUserLevel = 0;
                     MagicData.MagicAbilityPoints = 0;
                     AssignAbilities();
-                    if (!this.Pawn.IsColonist)
+                    if (!Pawn.IsColonist)
                     {
                         InitializeSpell();
-                        this.colonistPowerCheck = false;
+                        colonistPowerCheck = false;
                     }
                 }
-                this.magicPowersInitialized = true;
-                base.UpdateAbilities();
+                magicPowersInitialized = true;
+                UpdateAbilities();
             }
         }
 
@@ -4124,7 +4109,7 @@ namespace TorannMagic
         public void RemovePowers(bool clearStandalone = true)
         {
             Pawn abilityUser = base.Pawn;
-            if (this.magicPowersInitialized == true && MagicData != null)
+            if (magicPowersInitialized && MagicData != null)
             {
                 bool flag2 = true;
                 if (this.customClass != null)
@@ -7905,14 +7890,6 @@ namespace TorannMagic
                 }
             }
         }
-        public void ResolveMagicPowers()
-        {
-            bool flag = this.magicPowersInitialized;
-            if (!flag)
-            {
-                this.magicPowersInitialized = true;
-            }
-        }
         public void ResolveMagicTab()
         {
             if (!IsFaceless)
@@ -8694,7 +8671,6 @@ namespace TorannMagic
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Values.Look<bool>(ref this.magicPowersInitialized, "magicPowersInitialized", false, false);
             Scribe_Values.Look<bool>(ref this.magicPowersInitializedForColonist, "magicPowersInitializedForColonist", true, false);
             Scribe_Values.Look<bool>(ref this.colonistPowerCheck, "colonistPowerCheck", true, false);
             Scribe_Values.Look<bool>(ref this.spell_Rain, "spell_Rain", false, false);
@@ -8818,10 +8794,9 @@ namespace TorannMagic
                 this
             });
 
-            SetIsMagicUser();  // We need to manually set IsMagicUser since no harmony patch is called here.
-
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
+                SetIsMagicUser();  // We need to manually set IsMagicUser since no harmony patch is called here.
                 Pawn abilityUser = Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseMageClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)

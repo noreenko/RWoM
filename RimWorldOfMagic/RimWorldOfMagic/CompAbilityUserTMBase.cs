@@ -48,7 +48,7 @@ namespace TorannMagic
             tickOffset600 = Pawn.GetHashCode() % 600;
 
             // Handle cooldowns on spawn
-            if (deSpawnTick != -1)
+            if (!respawningAfterLoad && deSpawnTick != -1)
             {
                 int ticksPassed = Find.TickManager.TicksGame - deSpawnTick;
                 for (int i = 0; i < AbilityData.AllPowers.Count; i++)
@@ -125,6 +125,8 @@ namespace TorannMagic
                 return combinedCustomAbilities;
             }
         }
+
+        public override bool TryTransformPawn() => true;
 
         public override void PostExposeData()
         {
