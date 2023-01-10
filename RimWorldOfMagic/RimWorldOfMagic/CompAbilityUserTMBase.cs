@@ -52,6 +52,7 @@ namespace TorannMagic
 
         protected int autocastTick = 0;
         protected int nextAICastAttemptTick = 0;
+        public int DeSpawnTick = -1;
 
         public bool canDeathRetaliate = false;
         protected bool deathRetaliating = false;
@@ -61,6 +62,10 @@ namespace TorannMagic
         public float arcaneRes = 1;
         public float coolDown = 1;
         public float xpGain = 1;
+
+        // Utils.TM_PawnTracker variables. Set after loading and through harmony patches
+        public bool TickConditionsMet;
+        public bool IsFaceless;
 
         public float weaponDamage = 1f;
 

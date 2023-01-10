@@ -155,6 +155,7 @@
     <Compile Include="TMDefs\TM_AdvancedClassOptions.cs" />
     <Compile Include="Utils\TM_TickManager.cs" />
     <Compile Include="Utils\LinqExtensions.cs" />
+    <Compile Include="Utils\TM_PawnTracker.cs" />
     <Compile Include="Utils\TraitIconMap.cs" />
     <Compile Include="Utils\SimpleCache.cs" />
     <Compile Include="Verb_Attraction.cs" />
