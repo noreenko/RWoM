@@ -511,10 +511,8 @@ namespace TorannMagic
             base.PostSpawnSetup(respawningAfterLoad);
             tickOffset2000 = Pawn.GetHashCode() % 2000;
             tickOffset2500 = Pawn.GetHashCode() % 2500;
-
-            if (respawningAfterLoad) return;
-
             TM_PawnTracker.ResolveMagicComp(this);
+            if (respawningAfterLoad) return;
 
             if (DeSpawnTick == -1 || !IsMagicUser) return;
             foreach (PawnAbility allPower in AbilityData.AllPowers)
@@ -8943,7 +8941,6 @@ namespace TorannMagic
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                TM_PawnTracker.ResolveMagicComp(this);
                 Pawn abilityUser = base.Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseMageClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)
