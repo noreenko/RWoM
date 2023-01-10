@@ -8910,7 +8910,7 @@ namespace TorannMagic
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                SetIsMagicUser();
+                TM_PawnTracker.ResolveMagicComp(this);
                 Pawn abilityUser = base.Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseMageClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)

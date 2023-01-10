@@ -5268,7 +5268,7 @@ namespace TorannMagic
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                SetIsMightUser();
+                TM_PawnTracker.ResolveMightComp(this);
                 Pawn abilityUser = base.Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)
