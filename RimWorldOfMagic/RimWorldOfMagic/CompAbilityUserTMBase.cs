@@ -42,6 +42,7 @@ namespace TorannMagic
 
         protected int autocastTick = 0;
         protected int nextAICastAttemptTick = 0;
+        public int DeSpawnTick = -1;
 
         public bool canDeathRetaliate = false;
         protected bool deathRetaliating = false;

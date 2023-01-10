@@ -200,13 +200,22 @@ namespace TorannMagic
         {
             base.PostDeSpawn(map);
             TM_PawnTracker.ResolveMightComp(this);
+            DeSpawnTick = Find.TickManager.TicksGame;
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
-            if (!respawningAfterLoad)
-                TM_PawnTracker.ResolveMightComp(this);
+            if (respawningAfterLoad) return;
+
+            TM_PawnTracker.ResolveMightComp(this);
+            if (DeSpawnTick == -1 || !IsMightUser) return;
+            foreach (PawnAbility allPower in AbilityData.AllPowers)
+            {
+                allPower.CooldownTicksLeft = Math.Max(
+                    allPower.CooldownTicksLeft - (Find.TickManager.TicksGame - DeSpawnTick), 0);
+            }
+            DeSpawnTick = -1;
         }
 
         public bool shouldDraw = true;
@@ -1068,8 +1077,7 @@ namespace TorannMagic
                 bool spawned = base.Pawn.Spawned;
                 if (spawned)
                 {
-                    bool isMightUser = this.IsMightUser && !this.Pawn.NonHumanlikeOrWildMan();
-                    if (isMightUser)
+                    if (TickConditionsMet)
                     {
                         bool flag3 = !this.MightData.Initialized;
                         if (flag3)
@@ -1227,43 +1235,6 @@ namespace TorannMagic
                         }
                     }                    
                 }
-                else
-                {
-                    if (Find.TickManager.TicksGame % 600 == 0)
-                    {
-                        if (this.Pawn.Map == null)
-                        {
-                            if (this.IsMightUser)
-                            {
-                                int num;
-                                if (AbilityData?.AllPowers != null)
-                                {
-                                    AbilityData obj = AbilityData;
-                                    num = ((obj != null && obj.AllPowers.Count > 0) ? 1 : 0);
-                                }
-                                else
-                                {
-                                    num = 0;
-                                }
-                                if (num != 0)
-                                {
-                                    foreach (PawnAbility allPower in AbilityData.AllPowers)
-                                    {
-                                        allPower.CooldownTicksLeft -= 600;
-                                        if (allPower.CooldownTicksLeft <= 0)
-                                        {
-                                            allPower.CooldownTicksLeft = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (Initialized)
-            {
-                //custom code
             }
         }
 
@@ -5292,10 +5263,8 @@ namespace TorannMagic
             Scribe_Values.Look<bool>(ref this.useCQCToggle, "useCQCToggle", true, false);
             Scribe_Defs.Look<TMAbilityDef>(ref this.mimicAbility, "mimicAbility");
             Scribe_Values.Look<float>(ref this.maxSP, "maxSP", 1f, false);
-            Scribe_Deep.Look<MightData>(ref this.mightData, "mightData", new object[]
-            {
-                this
-            });
+            Scribe_Deep.Look<MightData>(ref this.mightData, "mightData", new object[]{ this });
+            Scribe_Values.Look<int>(ref DeSpawnTick, "DeSpawnTick", -1);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
