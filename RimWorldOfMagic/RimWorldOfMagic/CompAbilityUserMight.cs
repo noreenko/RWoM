@@ -206,9 +206,9 @@ namespace TorannMagic
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+            TM_PawnTracker.ResolveMightComp(this);
             if (respawningAfterLoad) return;
 
-            TM_PawnTracker.ResolveMightComp(this);
             if (DeSpawnTick == -1 || !IsMightUser) return;
             foreach (PawnAbility allPower in AbilityData.AllPowers)
             {
@@ -5268,7 +5268,6 @@ namespace TorannMagic
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                TM_PawnTracker.ResolveMightComp(this);
                 Pawn abilityUser = base.Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)
