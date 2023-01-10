@@ -12,6 +12,7 @@ using Verse.Sound;
 using AbilityUserAI;
 using TorannMagic.Ideology;
 using TorannMagic.TMDefs;
+using TorannMagic.Utils;
 
 namespace TorannMagic
 {
@@ -31,7 +32,10 @@ namespace TorannMagic
         private int damageMitigationDelayMS = 0;
         public int magicXPRate = 1000;
         public int lastXPGain = 0;
-        
+
+        // Utils.TM_PawnTracker variables. Set after loading and through harmony patches
+        public bool IsMagicUser;
+
         private bool doOnce = true;
         private List<IntVec3> deathRing = new List<IntVec3>();
         public float weaponDamage = 1;
@@ -491,11 +495,18 @@ namespace TorannMagic
         public override void PostDeSpawn(Map map)
         {
             base.PostDeSpawn(map);
-            bool flag = this.powerEffecter != null;
-            if (flag)
+            if (powerEffecter != null)
             {
-                this.powerEffecter.Cleanup();
+                powerEffecter.Cleanup();
             }
+            TM_PawnTracker.ResolveMagicComp(this);
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            if (!respawningAfterLoad)
+                TM_PawnTracker.ResolveMagicComp(this);
         }
 
         public List<Pawn> HexedPawns
@@ -2236,7 +2247,12 @@ namespace TorannMagic
             }
         }
 
-        public bool IsMagicUser 
+        public bool SetIsMagicUser()
+        {
+            return IsMagicUser = LegacyIsMagicUser;
+        }
+
+        public bool LegacyIsMagicUser
         {
             get
             {
@@ -2261,8 +2277,8 @@ namespace TorannMagic
                         }
                     }
                 }
-                if (Pawn.story.traits.allTraits.Any(t => magicTraitIndexes.Contains(t.def.index) 
-                || TM_Calc.IsWanderer(base.Pawn) 
+                if (Pawn.story.traits.allTraits.Any(t => magicTraitIndexes.Contains(t.def.index)
+                || TM_Calc.IsWanderer(base.Pawn)
                 || (this.AdvancedClasses != null && this.AdvancedClasses.Count > 0)))
                 {
                     return true;
@@ -8925,9 +8941,9 @@ namespace TorannMagic
             {
                 this
             });
-            bool flag11 = Scribe.mode == LoadSaveMode.PostLoadInit;
-            if (flag11)
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
+                SetIsMagicUser();
                 Pawn abilityUser = base.Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseMageClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)

@@ -52,6 +52,10 @@ namespace TorannMagic
         public float coolDown = 1;
         public float xpGain = 1;
 
+        // Utils.TM_PawnTracker variables. Set after loading and through harmony patches
+        public bool TickConditionsMet;
+        public bool IsFaceless;
+
         public List<TMDefs.TM_CustomClass> CombinedCustomClasses
         {
             get

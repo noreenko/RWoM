@@ -29,6 +29,9 @@ namespace TorannMagic
         private int mightXPRate = 900;
         private int lastMightXPGain = 0;
 
+        // Utils.TM_PawnTracker variables. Set during loading or through harmony patches
+        public bool IsMightUser;
+
         private int nextSSTend = 0;
 
         private List<IntVec3> deathRing = new List<IntVec3>();
@@ -191,7 +194,20 @@ namespace TorannMagic
                 }
                 mightUsed = value;
             }
-        }        
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+            TM_PawnTracker.ResolveMightComp(this);
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            if (!respawningAfterLoad)
+                TM_PawnTracker.ResolveMightComp(this);
+        }
 
         public bool shouldDraw = true;
         public override void PostDraw()
@@ -1310,7 +1326,12 @@ namespace TorannMagic
             this.ResolveStamina();
         }
 
-        public bool IsMightUser
+        public bool SetIsMightUser()
+        {
+            return IsMightUser = LegacyIsMightUser;
+        }
+
+        public bool LegacyIsMightUser
         {
             get
             {
@@ -5276,9 +5297,9 @@ namespace TorannMagic
                 this
             });
 
-            bool flag11 = Scribe.mode == LoadSaveMode.PostLoadInit;
-            if (flag11)
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
+                SetIsMightUser();
                 Pawn abilityUser = base.Pawn;
                 int index = TM_ClassUtility.CustomClassIndexOfBaseFighterClass(abilityUser.story.traits.allTraits);
                 if (index >= 0)
