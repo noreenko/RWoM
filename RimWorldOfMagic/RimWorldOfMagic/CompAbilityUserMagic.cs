@@ -308,20 +308,6 @@ namespace TorannMagic
             TorannMagicDefOf.TM_Wanderer.index
         };
 
-        /*
-         * These Tick offsets are used so expensive calls aren't happening all on the same tick. PostSpawnSetup is used
-         * as the trigger so we can guarantee ThingIdNumber has been set. They correspond to the TickModulo variables
-         * found within TM_TickManager
-         */
-        private int tickOffset2000;
-        private int tickOffset2500;
-
-        public override void PostSpawnSetup(bool respawningAfterLoad)
-        {
-            base.PostSpawnSetup(respawningAfterLoad);
-            tickOffset2000 = Pawn.GetHashCode() % 2000;
-            tickOffset2500 = Pawn.GetHashCode() % 2500;
-        }
         public class ChainedMagicAbility
         {
             public ChainedMagicAbility(TMAbilityDef _ability, int _expirationTicks, bool _expires)
@@ -513,9 +499,19 @@ namespace TorannMagic
             DeSpawnTick = Find.TickManager.TicksGame;
         }
 
+        /*
+         * These Tick offsets are used so expensive calls aren't happening all on the same tick. PostSpawnSetup is used
+         * as the trigger so we can guarantee ThingIdNumber has been set. They correspond to the TickModulo variables
+         * found within TM_TickManager
+         */
+        private int tickOffset2000;
+        private int tickOffset2500;
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+            tickOffset2000 = Pawn.GetHashCode() % 2000;
+            tickOffset2500 = Pawn.GetHashCode() % 2500;
+
             if (respawningAfterLoad) return;
 
             TM_PawnTracker.ResolveMagicComp(this);
