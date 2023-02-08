@@ -116,7 +116,7 @@ namespace TorannMagic.ModOptions
                     {
                         rhd.Add(hd);
                     }
-                    if(TM_ClassUtility.CustomClassHediffs().Contains(hd.def))
+                    if(TM_ClassUtility.CustomClassHediffIndexes().Contains(hd.def.index))
                     {
                         rhd.Add(hd);
                     }
