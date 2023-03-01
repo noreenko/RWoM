@@ -43,6 +43,7 @@
   </ThingDef>
   
   <PawnKindDef Name="TM_GolemKind_Base" Abstract="True">
+    <FenceBlocked>false</FenceBlocked>
     <aiAvoidCover>true</aiAvoidCover>
     <destroyGearOnDrop>true</destroyGearOnDrop>
   </PawnKindDef>
