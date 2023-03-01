@@ -5169,11 +5169,11 @@ namespace TorannMagic
 
                 mageCount += customMages.Length;
                 fighterCount += customFighters.Length;
-                if (fighterCount > 0 || settingsRef.Gladiator || settingsRef.Bladedancer || settingsRef.Ranger || settingsRef.Sniper || settingsRef.Faceless || settingsRef.DeathKnight || settingsRef.Psionic || settingsRef.Monk || settingsRef.Wayfarer || settingsRef.Commander || settingsRef.SuperSoldier)
+                if (customFighters.Length > 0 || ModOptions.Settings.Instance.Gladiator || ModOptions.Settings.Instance.Bladedancer || ModOptions.Settings.Instance.Ranger || ModOptions.Settings.Instance.Sniper || ModOptions.Settings.Instance.Faceless || ModOptions.Settings.Instance.DeathKnight || ModOptions.Settings.Instance.Psionic || ModOptions.Settings.Instance.Monk || ModOptions.Settings.Instance.Wayfarer || ModOptions.Settings.Instance.Commander || ModOptions.Settings.Instance.SuperSoldier)
                 {
                     anyFightersEnabled = true;
                 }
-                if (mageCount > 0 || settingsRef.Arcanist || settingsRef.FireMage || settingsRef.IceMage || settingsRef.LitMage || settingsRef.Druid || settingsRef.Paladin || settingsRef.Summoner || settingsRef.Priest || settingsRef.Necromancer || settingsRef.Bard || settingsRef.Demonkin || settingsRef.Geomancer || settingsRef.Technomancer || settingsRef.BloodMage || settingsRef.Enchanter || settingsRef.Chronomancer || settingsRef.Wanderer || settingsRef.ChaosMage)
+                if (customMages.Length > 0 || ModOptions.Settings.Instance.Arcanist || ModOptions.Settings.Instance.FireMage || ModOptions.Settings.Instance.IceMage || ModOptions.Settings.Instance.LitMage || ModOptions.Settings.Instance.Druid || ModOptions.Settings.Instance.Paladin || ModOptions.Settings.Instance.Summoner || ModOptions.Settings.Instance.Priest || ModOptions.Settings.Instance.Necromancer || ModOptions.Settings.Instance.Bard || ModOptions.Settings.Instance.Demonkin || ModOptions.Settings.Instance.Geomancer || ModOptions.Settings.Instance.Technomancer || ModOptions.Settings.Instance.BloodMage || ModOptions.Settings.Instance.Enchanter || ModOptions.Settings.Instance.Chronomancer || ModOptions.Settings.Instance.Wanderer || ModOptions.Settings.Instance.ChaosMage)
                 {
                     anyMagesEnabled = true;
                 }
