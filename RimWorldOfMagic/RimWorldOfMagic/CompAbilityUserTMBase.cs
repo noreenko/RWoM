@@ -15,9 +15,34 @@ namespace TorannMagic
         // TODO - This should be moved into customClass. This will make the checks clearer (customClass != null) and allow us to load in immediately instead of checking every time if set.
         public int customIndex = -2;
 
-        public TM_CustomClass customClass = null;
-        private List<TM_CustomClass> advClasses;
-        public List<TM_CustomClass> AdvancedClasses
+        /*
+         * These Tick offsets are used so expensive calls aren't happening all on the same tick. PostSpawnSetup is used
+         * as the trigger so we can guarantee ThingIdNumber has been set. They correspond to the TickModulo variables
+         * found within TM_TickManager
+         */
+        protected int tickOffset6;
+        protected int tickOffset20;
+        protected int tickOffset30;
+        protected int tickOffset60;
+        protected int tickOffset67;
+        protected int tickOffset300;
+        protected int tickOffset600;
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            tickOffset6 = Pawn.GetHashCode() % 6;
+            tickOffset20 = Pawn.GetHashCode() % 20;
+            tickOffset30 = Pawn.GetHashCode() % 30;
+            tickOffset60 = Pawn.GetHashCode() % 60;
+            tickOffset67 = Pawn.GetHashCode() % 67;
+            tickOffset300 = Pawn.GetHashCode() % 300;
+            tickOffset600 = Pawn.GetHashCode() % 600;
+        }
+
+        public TMDefs.TM_CustomClass customClass = null;
+        private List<TMDefs.TM_CustomClass> advClasses;
+        public List<TMDefs.TM_CustomClass> AdvancedClasses
         {
             get => advClasses ?? (advClasses = new List<TM_CustomClass>());
             set => advClasses = value;
