@@ -3412,18 +3412,6 @@ namespace TorannMagic
             }
         }
 
-        public bool IsNecromancer
-        {
-            get
-            {
-                return this.isNecromancer || TM_Calc.IsNecromancer(this.MagicPawn);
-            }
-            set
-            {
-                this.isNecromancer = value;
-            }
-        }
-
         public int DominationCount
         {
             get
