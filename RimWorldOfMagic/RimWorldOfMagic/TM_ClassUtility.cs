@@ -290,9 +290,10 @@ namespace TorannMagic
         {
             for (int i = 0; i < CustomClasses.Length; i++)
             {
-                TM_CustomClass customClass = CustomBaseClassTraitIndexMap.TryGetValue(allTraits[i].def.index);
-                if (customClass == null || !customClass.isMage) continue;
-                return CustomClassTraitIndexes.TryGetValue(customClass.classTrait.index, -2);
+                if (!CustomClasses[i].isMage) continue;
+                for (int j = allTraits.Count - 1; j >= 0; j--)
+                    if (allTraits[j].def == CustomClasses[i].classTrait)
+                        return i;
             }
 
             return -2;
@@ -300,11 +301,12 @@ namespace TorannMagic
 
         public static int CustomClassIndexOfBaseFighterClass(List<Trait> allTraits)
         {
-            for(int i = 0; i < CustomClasses.Length; i++)
+            for (int i = 0; i < CustomClasses.Length; i++)
             {
-                TM_CustomClass customClass = CustomBaseClassTraitIndexMap.TryGetValue(allTraits[i].def.index);
-                if (customClass == null || !customClass.isFighter) continue;
-                return CustomClassTraitIndexes.TryGetValue(customClass.classTrait.index, -2);
+                if (!CustomClasses[i].isFighter) continue;
+                for (int j = allTraits.Count - 1; j >= 0; j--)
+                    if (allTraits[j].def == CustomClasses[i].classTrait)
+                        return i;
             }
 
             return -2;

@@ -52,8 +52,9 @@ namespace TorannMagic
         {
             if (pawn.GetCompAbilityUserMagic()?.customClass != null) return true;
             if (pawn.GetCompAbilityUserMight()?.customClass != null) return true;
-            return pawn.story.traits.allTraits.Select(static t => t.def.index).Any(static index =>
-                TM_ClassUtility.NonCustomMagicAndMightTraitIndexes.Contains(index));
+            for (int i = pawn.story.traits.allTraits.Count - 1; i >= 0; i--)
+                if (TM_ClassUtility.AllClassTraits.Contains(pawn.story.traits.allTraits[i].def)) return true;
+            return false;
         }
 
 

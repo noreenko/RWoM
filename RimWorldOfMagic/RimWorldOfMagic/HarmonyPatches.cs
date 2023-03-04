@@ -459,7 +459,7 @@ namespace TorannMagic
             }
             private static void Postfix(TraitSet __instance, Trait trait, Pawn ___pawn)
             {
-                TM_CustomClass advancedClass = TM_ClassUtility.CustomAdvancedClassTraitIndexMap.TryGetValue(trait.def.index);
+                TM_CustomClass advancedClass = TM_ClassUtility.CustomAdvancedClassTraitMap.TryGetValue(trait.def.index);
                 if (advancedClass == null) return;
                 if (advancedClass.isMage)
                 {
@@ -481,7 +481,7 @@ namespace TorannMagic
         {            
             private static void Postfix(TraitSet __instance, Trait trait, Pawn ___pawn)
             {
-                TM_CustomClass advancedClass = TM_ClassUtility.CustomAdvancedClassTraitIndexMap.TryGetValue(trait.def.index);
+                TM_CustomClass advancedClass = TM_ClassUtility.CustomAdvancedClassTraitMap.TryGetValue(trait.def.index);
                 if (advancedClass == null) return;
 
                 if(advancedClass.isMage)
