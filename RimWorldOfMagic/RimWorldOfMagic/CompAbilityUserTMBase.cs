@@ -154,7 +154,6 @@ namespace TorannMagic
                 {
                     Log.Message("Removing trait " + traits[i].Label);
                     Pawn.story.traits.RemoveTrait(traits[i]);
-                    i--;
                 }
             }
         }
