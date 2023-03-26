@@ -54,11 +54,6 @@ namespace TorannMagic
             TorannMagicDefOf.TM_Wayfarer.index
         };
 
-        public static List<TM_CustomClass> CustomClasses;
-        public static readonly List<TM_CustomClass> CustomBaseClasses = new List<TM_CustomClass>();
-        public static readonly List<TM_CustomClass> CustomMageClasses = new List<TM_CustomClass>();
-        public static readonly List<TM_CustomClass> CustomFighterClasses = new List<TM_CustomClass>();
-        public static readonly List<TM_CustomClass> CustomAdvancedClasses = new List<TM_CustomClass>();
         public static Dictionary<TraitDef, Settings.CheckboxOption> NonCustomMagicTraits = new ()
         {
             { TorannMagicDefOf.Arcanist, Settings.Arcanist },
