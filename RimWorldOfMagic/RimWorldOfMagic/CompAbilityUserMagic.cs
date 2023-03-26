@@ -996,7 +996,6 @@ namespace TorannMagic
                             this.firstTick = true;
                             this.Initialize();
                             this.ResolveMagicTab();
-                            this.ResolveMagicPowers();
                             this.ResolveMana();
                             this.DoOncePerLoad();
                         }
@@ -6544,14 +6543,6 @@ namespace TorannMagic
             }
 
             hediff.Severity = 1f;
-        }
-        public void ResolveMagicPowers()
-        {
-            bool flag = this.magicPowersInitialized;
-            if (!flag)
-            {
-                this.magicPowersInitialized = true;
-            }
         }
         public void ResolveMagicTab()
         {
