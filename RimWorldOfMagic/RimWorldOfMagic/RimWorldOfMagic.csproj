@@ -155,6 +155,9 @@
     <Compile Include="Thoughts\ThoughtWorker_TM_LivingPossessed.cs" />
     <Compile Include="TMDefs\TM_AdvancedClassOptions.cs" />
     <Compile Include="TMPower.cs" />
+    <Compile Include="Utils\Dismiss.cs" />
+    <Compile Include="Utils\DismissList.cs" />
+    <Compile Include="Utils\DismissVar.cs" />
     <Compile Include="Utils\LinqExtensions.cs" />
     <Compile Include="Utils\TraitIconMap.cs" />
     <Compile Include="Utils\SimpleCache.cs" />
