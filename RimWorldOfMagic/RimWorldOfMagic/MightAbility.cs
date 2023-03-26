@@ -62,12 +62,12 @@ namespace TorannMagic
 
         private static float ActualNeedCost (TMAbilityDef mightDef, CompAbilityUserMight mightUser)
         {
-            return mightUser.ActualNeedCost(mightDef);            
+            return mightUser.ActualNeedCost(mightDef);
         }
 
         private static float ActualHediffCost (TMAbilityDef mightDef, CompAbilityUserMight mightUser)
         {
-            return mightUser.ActualHediffCost(mightDef);        
+            return mightUser.ActualHediffCost(mightDef);
         }
 
         public MightAbility()
@@ -93,13 +93,13 @@ namespace TorannMagic
         {
             //base.PostAbilityAttempt();
             
-            if (!this.Pawn.IsColonist && ModOptions.Settings.Instance.AIAggressiveCasting)// for AI
+            if (ModOptions.Settings.Instance.AIAggressiveCasting && !Pawn.IsColonist)// for AI
             {
-                this.CooldownTicksLeft = Mathf.RoundToInt(this.MaxCastingTicks/2f);
+                CooldownTicksLeft = Mathf.RoundToInt(MaxCastingTicks/2f);
             }
             else
             {
-                this.CooldownTicksLeft = Mathf.RoundToInt(this.MaxCastingTicks * this.MightUser.coolDown);
+                CooldownTicksLeft = Mathf.RoundToInt(MaxCastingTicks * MightUser.coolDown);
             }
             if (Rand.Chance(MightUser.arcalleumCooldown))
             {
@@ -114,15 +114,15 @@ namespace TorannMagic
                 }
                 if (mightDef.consumeEnergy)
                 {
-                    if (this.MightUser.Stamina != null)
+                    if (MightUser.Stamina != null)
                     {
-                        if (!this.Pawn.IsColonist && ModOptions.Settings.Instance.AIAggressiveCasting)// for AI
+                        if (ModOptions.Settings.Instance.AIAggressiveCasting && !Pawn.IsColonist)// for AI
                         {
-                            this.MightUser.Stamina.UseMightPower(this.MightUser.ActualStaminaCost(mightDef) / 2f);
+                            MightUser.Stamina.UseMightPower(MightUser.ActualStaminaCost(mightDef) / 2f);
                         }
                         else
                         {
-                            this.MightUser.Stamina.UseMightPower(this.MightUser.ActualStaminaCost(mightDef));
+                            MightUser.Stamina.UseMightPower(MightUser.ActualStaminaCost(mightDef));
                         }
 
                         this.MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.staminaCost * 180) * this.MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier), 0, 9999);
