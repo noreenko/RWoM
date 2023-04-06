@@ -97,19 +97,21 @@ namespace TorannMagic
             get
             {
                 float maxBase = 100f;
-                if(this.pawn.story != null && this.pawn.story.Adulthood.identifier == "tm_ancient_spirit")
+                if(pawn.story != null && pawn.story.Adulthood.identifier == "tm_ancient_spirit")
                 {
                     maxBase += 50f;
                 }
-                if (this.pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SpiritPossessorHD))
+
+                for (int i = pawn.health.hediffSet.hediffs.Count - 1; i >= 0; i--)
                 {
-                    Hediff_Possessor hdp = this.pawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_SpiritPossessorHD) as Hediff_Possessor;
-                    return maxBase + (hdp.SpiritLevel * 2f) + hdp.MaxLevelBonus;
-                }
-                if(this.pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SpiritPossessionHD))
-                {
-                    HediffComp_SpiritPossession hdc = this.pawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_SpiritPossessionHD).TryGetComp<HediffComp_SpiritPossession>();
-                    return maxBase + (hdc.SpiritLevel * 2f) + hdc.MaxLevelBonus;
+                    Hediff hediff = pawn.health.hediffSet.hediffs[i];
+                    if (hediff is Hediff_Possessor hdPossessor)
+                        return maxBase + hdPossessor.SpiritLevel * 2f + hdPossessor.MaxLevelBonus;
+
+                    if (hediff.def != TorannMagicDefOf.TM_SpiritPossessionHD) continue;
+                    HediffComp_SpiritPossession hdcPossession = hediff.TryGetComp<HediffComp_SpiritPossession>();
+                    if (hdcPossession != null)
+                        return maxBase + hdcPossession.SpiritLevel * 2f + hdcPossession.MaxLevelBonus;
                 }
                 return maxBase;
             }

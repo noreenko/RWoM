@@ -13,6 +13,7 @@ namespace TorannMagic.ModOptions
     [StaticConstructorOnStartup]
     public abstract class Constants
     {
+        public const float TOLERANCE = .001f;
         private static bool pawnInFlight = false;
 
         public static bool GetPawnInFlight()
