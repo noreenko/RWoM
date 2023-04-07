@@ -15,11 +15,8 @@ namespace TorannMagic
     {
         private int age = -1;
         public int durationTicks = 600;
-        public int totalWaitDuration = 0;
-        Pawn waitForPawn = null;
-        Thing waitForThing = null;
-        public JobDef targetJobDef = null;
-        public Building_TMMagicCircleBase circle = null;
+        public int totalWaitDuration;
+        public Building_TMMagicCircleBase circle;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {

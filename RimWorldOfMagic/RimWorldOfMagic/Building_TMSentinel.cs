@@ -246,7 +246,7 @@ namespace TorannMagic
                                 }
                                 lord.AddPawn(newPawn);
                             }
-                            catch(NullReferenceException ex)
+                            catch(NullReferenceException)
                             {
                                 //
                             }

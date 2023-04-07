@@ -10,27 +10,23 @@ namespace TorannMagic
 {
     class Verb_Recall : Verb_UseAbility
     {
-        private int pwrVal = 0;
-        CompAbilityUserMagic comp;
-        Map map;
+        private CompAbilityUserMagic comp;
 
         protected override bool TryCastShot()
         {
-            bool result = false;
-            map = this.CasterPawn.Map;
-            comp = this.CasterPawn.GetCompAbilityUserMagic();
+            comp = CasterPawn.GetCompAbilityUserMagic();
 
-            if (this.CasterPawn != null && !this.CasterPawn.Downed && comp != null && comp.recallSet)
+            if (CasterPawn is { Downed: false } && comp is { recallSet: true })
             {
-                TM_Action.DoRecall(this.CasterPawn, comp, false);
+                TM_Action.DoRecall(CasterPawn, comp, false);
             }
             else
             {
                 Log.Warning("failed to TryCastShot");
             }
 
-            this.burstShotsLeft = 0;
-            return result;
+            burstShotsLeft = 0;
+            return false;
         }
 
        

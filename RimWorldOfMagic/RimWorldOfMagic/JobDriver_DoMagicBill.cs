@@ -12,23 +12,6 @@ namespace TorannMagic
 {
     public class JobDriver_DoMagicBill : JobDriver_DoBill
     {
-        private int age = -1;
-        public int durationTicks = 60;
-
-        public float workLeft;
-
-        public int billStartTick;
-
-        public int ticksSpentDoingRecipeWork;
-
-        public const PathEndMode GotoIngredientPathEndMode = PathEndMode.ClosestTouch;
-
-        public const TargetIndex BillGiverInd = TargetIndex.A;
-
-        public const TargetIndex IngredientInd = TargetIndex.B;
-
-        public const TargetIndex IngredientPlaceCellInd = TargetIndex.C;
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -39,15 +22,13 @@ namespace TorannMagic
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            Pawn pawn = base.pawn;
-            LocalTargetInfo target = base.job.GetTarget(TargetIndex.A);
-            Job job = base.job;
+            LocalTargetInfo target = job.GetTarget(TargetIndex.A);
             bool errorOnFailed2 = errorOnFailed;
             if (!pawn.Reserve(target, job, 1, -1, null, errorOnFailed2))
             {
                 return false;
             }
-            base.pawn.ReserveAsManyAsPossible(base.job.GetTargetQueue(TargetIndex.B), base.job);
+            pawn.ReserveAsManyAsPossible(job.GetTargetQueue(TargetIndex.B), job);
             return true;
         }
 
@@ -138,7 +119,7 @@ namespace TorannMagic
                     Bill_Production bill_Production = recount.actor.jobs.curJob.bill as Bill_Production;
                     if (bill_Production != null && bill_Production.repeatMode == BillRepeatModeDefOf.TargetCount)
                     {
-                        base.Map.resourceCounter.UpdateResourceCounts();
+                        Map.resourceCounter.UpdateResourceCounts();
                     }
                 };
                 yield return recount;

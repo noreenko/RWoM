@@ -1,10 +1,6 @@
 ﻿using RimWorld;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using Verse;
-using AbilityUser;
 
 namespace TorannMagic
 {
@@ -16,7 +12,7 @@ namespace TorannMagic
         protected new Vector3 destination;
 
         protected float speed = 20f;
-        private bool drafted = false;
+        private bool drafted;
 
         protected new int ticksToImpact;
 
@@ -27,18 +23,15 @@ namespace TorannMagic
 
         public bool damageLaunched = true;
 
-        public bool explosion = false;
-
-        public int weaponDmg = 0;
+        public bool explosion;
 
         Pawn pawn;
-        CompAbilityUserMagic comp;
 
         protected new int StartingTicksToImpact
         {
             get
             {
-                int num = Mathf.RoundToInt((this.origin - this.destination).magnitude / (this.speed / 100f));
+                int num = Mathf.RoundToInt((origin - destination).magnitude / (speed / 100f));
                 bool flag = num < 1;
                 if (flag)
                 {
@@ -48,71 +41,53 @@ namespace TorannMagic
             }
         }
 
-        protected new IntVec3 DestinationCell
-        {
-            get
-            {
-                return new IntVec3(this.destination);
-            }
-        }
+        protected new IntVec3 DestinationCell => new(destination);
 
         public new Vector3 ExactPosition
         {
             get
             {
-                Vector3 b = (this.destination - this.origin) * (1f - (float)this.ticksToImpact / (float)this.StartingTicksToImpact);
-                return this.origin + b + Vector3.up * this.def.Altitude;
+                Vector3 b = (destination - origin) * (1f - (float)ticksToImpact / StartingTicksToImpact);
+                return origin + b + Vector3.up * def.Altitude;
             }
         }
 
-        public new Quaternion ExactRotation
-        {
-            get
-            {
-                return Quaternion.LookRotation(this.destination - this.origin);
-            }
-        }
+        public new Quaternion ExactRotation => Quaternion.LookRotation(destination - origin);
 
-        public override Vector3 DrawPos
-        {
-            get
-            {
-                return this.ExactPosition;
-            }
-        }
+        public override Vector3 DrawPos => ExactPosition;
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look<Vector3>(ref this.origin, "origin", default(Vector3), false);
-            Scribe_Values.Look<Vector3>(ref this.destination, "destination", default(Vector3), false);
-            Scribe_Values.Look<int>(ref this.ticksToImpact, "ticksToImpact", 0, false);
-            Scribe_Values.Look<bool>(ref this.damageLaunched, "damageLaunched", true, false);
-            Scribe_Values.Look<bool>(ref this.explosion, "explosion", false, false);
-            Scribe_References.Look<Thing>(ref this.assignedTarget, "assignedTarget", false);
-            Scribe_References.Look<Pawn>(ref this.pawn, "pawn", false);
-            Scribe_Deep.Look<Thing>(ref this.flyingThing, "flyingThing", new object[0]);
+            Scribe_Values.Look<Vector3>(ref origin, "origin");
+            Scribe_Values.Look<Vector3>(ref destination, "destination");
+            Scribe_Values.Look<int>(ref ticksToImpact, "ticksToImpact");
+            Scribe_Values.Look<bool>(ref damageLaunched, "damageLaunched", true);
+            Scribe_Values.Look<bool>(ref explosion, "explosion");
+            Scribe_References.Look<Thing>(ref assignedTarget, "assignedTarget");
+            Scribe_References.Look<Pawn>(ref pawn, "pawn");
+            Scribe_Deep.Look<Thing>(ref flyingThing, "flyingThing");
         }
 
         private void Initialize()
         {
             if (pawn != null)
             {
-                FleckMaker.Static(this.origin, this.Map, FleckDefOf.ExplosionFlash, 4f);
+                FleckMaker.Static(origin, Map, FleckDefOf.ExplosionFlash, 4f);
                 SoundDefOf.Ambient_AltitudeWind.sustainFadeoutTime.Equals(30.0f);
-                FleckMaker.ThrowDustPuff(this.origin, this.Map, Rand.Range(2.4f, 3.6f));
+                FleckMaker.ThrowDustPuff(origin, Map, Rand.Range(2.4f, 3.6f));
             }
             //flyingThing.ThingID += Rand.Range(0, 2147).ToString();
         }
 
         public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
         {
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
+            Launch(launcher, Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
         }
 
         public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing)
         {
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, null);
+            Launch(launcher, Position.ToVector3Shifted(), targ, flyingThing, null);
         }
 
         public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing flyingThing, DamageInfo? newDamageInfo = null)
@@ -121,66 +96,53 @@ namespace TorannMagic
             bool spawned = flyingThing.Spawned;            
             pawn = launcher as Pawn;
             drafted = pawn.Drafted;
-            comp = pawn.GetCompAbilityUserMagic();
 
-            if (spawned)
-            {               
-                flyingThing.DeSpawn();
-            }
-            //
+            if (spawned) flyingThing.DeSpawn();
             ModOptions.Constants.SetPawnInFlight(true);
-            //
-            this.origin = origin;
-            this.impactDamage = newDamageInfo;
-            this.flyingThing = flyingThing;
+            impactDamage = newDamageInfo;
 
-            bool flag = targ.Thing != null;
-            if (flag)
+            if (targ.Thing != null)
             {
-                this.assignedTarget = targ.Thing;
+                assignedTarget = targ.Thing;
             }
-            this.destination = targ.Cell.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
-            this.ticksToImpact = this.StartingTicksToImpact;
-            this.Initialize();
+            destination = targ.Cell.ToVector3Shifted() + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f));
+            ticksToImpact = StartingTicksToImpact;
+            Initialize();
         }      
 
         public override void Tick()
         {
             //base.Tick();
-            Vector3 exactPosition = this.ExactPosition;
-            this.ticksToImpact--;
-            bool flag = !this.ExactPosition.InBoundsWithNullCheck(base.Map);
-            if (flag)
+            ticksToImpact--;
+            if (!ExactPosition.InBoundsWithNullCheck(Map))
             {
-                this.ticksToImpact++;
-                base.Position = this.ExactPosition.ToIntVec3();
-                this.Destroy(DestroyMode.Vanish);
+                ticksToImpact++;
+                Position = ExactPosition.ToIntVec3();
+                Destroy();
             }
             else
             {
-                base.Position = this.ExactPosition.ToIntVec3();
+                Position = ExactPosition.ToIntVec3();
                 if(Find.TickManager.TicksGame % 2 == 0)
                 {
-                    FleckMaker.ThrowDustPuff(base.Position, base.Map, Rand.Range(0.8f, 1.2f));
+                    FleckMaker.ThrowDustPuff(Position, Map, Rand.Range(0.8f, 1.2f));
                 }               
                 
                 if (Find.TickManager.TicksGame % 3 == 0)
                 {
-                    Vector3 shiftVec = this.ExactPosition;
+                    Vector3 shiftVec = ExactPosition;
                     shiftVec.x += Rand.Range(-.3f, .3f);
                     shiftVec.z += Rand.Range(-.3f, .3f);
-                    TM_MoteMaker.ThrowArcaneMote(shiftVec, base.Map, Rand.Range(.5f, .6f), .1f, .02f, .2f, 200, .3f);
+                    TM_MoteMaker.ThrowArcaneMote(shiftVec, Map, Rand.Range(.5f, .6f), .1f, .02f, .2f, 200, .3f);
                 }
-                
-                bool flag2 = this.ticksToImpact <= 0;
-                if (flag2)
+
+                if (ticksToImpact <= 0)
                 {
-                    bool flag3 = this.DestinationCell.InBoundsWithNullCheck(base.Map);
-                    if (flag3)
+                    if (DestinationCell.InBoundsWithNullCheck(Map))
                     {
-                        base.Position = this.DestinationCell;
+                        Position = DestinationCell;
                     }
-                    this.ImpactSomething();
+                    ImpactSomething();
                 }
                 
             }
@@ -188,109 +150,92 @@ namespace TorannMagic
 
         public override void Draw()
         {
-            bool flag = this.flyingThing != null;
-            if (flag)
+            if (flyingThing != null)
             {
-                bool flag2 = this.flyingThing is Pawn;
-                if (flag2)
+                if (flyingThing is Pawn)
                 {
-                    Vector3 arg_2B_0 = this.DrawPos;
-                    bool flag4 = !this.DrawPos.ToIntVec3().IsValid;
+                    bool flag4 = !DrawPos.ToIntVec3().IsValid;
                     if (flag4)
                     {
                         return;
                     }
-                    Pawn pawn = this.flyingThing as Pawn;
-                    pawn.Drawer.DrawAt(this.DrawPos);  
+                    Pawn pawn = flyingThing as Pawn;
+                    pawn.Drawer.DrawAt(DrawPos);  
                     
                 }
                 else
                 {
-                    Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.DrawMatSingle, 0);
+                    Graphics.DrawMesh(MeshPool.plane10, DrawPos, ExactRotation, flyingThing.def.DrawMatSingle, 0);
                 }
             }
             else
             {
-                Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.DrawMatSingle, 0);
+                Graphics.DrawMesh(MeshPool.plane10, DrawPos, ExactRotation, flyingThing.def.DrawMatSingle, 0);
             }
-            base.Comps_PostDraw();
-        }
-
-        private void DrawEffects(Vector3 pawnVec, Pawn flyingPawn, int magnitude)
-        {
-            bool flag = !pawn.Dead && !pawn.Downed;
-            if (flag)
-            {
-
-            }
+            Comps_PostDraw();
         }
 
         private void ImpactSomething()
         {
-            bool flag = this.assignedTarget != null;
-            if (flag)
+            if (assignedTarget != null)
             {
-                Pawn targetPawn = this.assignedTarget as Pawn;
-                bool flag2 = targetPawn != null && targetPawn.GetPosture() != PawnPosture.Standing && (this.origin - this.destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f;
-                if (flag2)
+                if (assignedTarget is Pawn targetPawn && targetPawn.GetPosture() != PawnPosture.Standing && (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f)
                 {
-                    this.Impact(null);
+                    Impact(null);
                 }
                 else
                 {
-                    this.Impact(this.assignedTarget);
+                    Impact(assignedTarget);
                 }
             }
             else
             {
-                this.Impact(null);
+                Impact(null);
             }
         }
 
-        protected new void Impact(Thing hitThing)
+        protected void Impact(Thing hitThing)
         {
-            bool flag = hitThing == null;
-            if (flag)
+            if (hitThing == null)
             {
                 Pawn hitPawn;
-                bool flag2 = (hitPawn = (base.Position.GetThingList(base.Map).FirstOrDefault((Thing x) => x == this.assignedTarget) as Pawn)) != null;
+                bool flag2 = (hitPawn = (Position.GetThingList(Map).FirstOrDefault((Thing x) => x == assignedTarget) as Pawn)) != null;
                 if (flag2)
                 {
                     hitThing = hitPawn;
                 }
             }
-            bool hasValue = this.impactDamage.HasValue;
-            if (hasValue)
+            if (impactDamage.HasValue)
             {
-                hitThing.TakeDamage(this.impactDamage.Value);
+                hitThing.TakeDamage(impactDamage.Value);
             }
             try
             {
                 SoundDefOf.Ambient_AltitudeWind.sustainFadeoutTime.Equals(30.0f);                
 
-                GenSpawn.Spawn(this.flyingThing, base.Position, base.Map);
+                GenSpawn.Spawn(flyingThing, Position, Map);
                 ModOptions.Constants.SetPawnInFlight(false);
-                Pawn p = this.flyingThing as Pawn;
+                Pawn p = flyingThing as Pawn;
                 if (p.IsColonist)
                 {
                     if (ModOptions.Settings.Instance.cameraSnap)
                     {
                         CameraJumper.TryJumpAndSelect(p);
                     }
-                    p.drafter.Drafted = this.drafted;
+                    p.drafter.Drafted = drafted;
                 }
-                this.Destroy(DestroyMode.Vanish);
+                Destroy();
             }
             catch
             {
-                GenSpawn.Spawn(this.flyingThing, base.Position, base.Map);
+                GenSpawn.Spawn(flyingThing, Position, Map);
                 ModOptions.Constants.SetPawnInFlight(false);
-                Pawn p = this.flyingThing as Pawn;
+                Pawn p = flyingThing as Pawn;
                 if (p.IsColonist)
                 {
-                    p.drafter.Drafted =this.drafted;
+                    p.drafter.Drafted =drafted;
                 }
-                this.Destroy(DestroyMode.Vanish);
+                Destroy();
             }
         }        
     }

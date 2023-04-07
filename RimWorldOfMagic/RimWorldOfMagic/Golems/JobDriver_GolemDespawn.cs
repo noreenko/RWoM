@@ -10,7 +10,6 @@ namespace TorannMagic.Golems
 {
     internal class JobDriver_GolemDespawn : JobDriver
     {
-        private int age = -1;
         public int durationTicks = 60;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)

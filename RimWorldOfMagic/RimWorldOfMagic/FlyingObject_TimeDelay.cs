@@ -325,7 +325,7 @@ namespace TorannMagic
             this.Impact(null);            
         }
 
-        protected new void Impact(Thing hitThing)
+        protected void Impact(Thing hitThing)
         {
             if (this.Map != null)
             {
