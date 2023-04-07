@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RimWorld;
 using Verse;
 using UnityEngine;
-using AbilityUser;
 using System.Linq;
 
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Verb_TigerStrike : Verb_UseAbility
+    public class Verb_TigerStrike : VFECore.Abilities.Verb_CastAbility
     {
 
         public int verVal = 0;
@@ -99,81 +97,11 @@ namespace TorannMagic
         public int GetAttackDmg(Pawn pawn)
         {
             CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
-            //MightPowerSkill pwr = comp.MightData.MightPowerSkill_TigerStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_TigerStrike_pwr");
-            //MightPowerSkill ver = comp.MightData.MightPowerSkill_TigerStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_TigerStrike_ver");
-            //verVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_TigerStrike, "TM_TigerStrike", "_ver", true);
-            //pwrVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_TigerStrike, "TM_TigerStrike", "_pwr", true);
-            verVal = TM_Calc.GetSkillVersatilityLevel(pawn, this.Ability.Def as TMAbilityDef, false);
-            pwrVal = TM_Calc.GetSkillPowerLevel(pawn, this.Ability.Def as TMAbilityDef, false);
-            MightPowerSkill str = comp.MightData.MightPowerSkill_global_strength.FirstOrDefault((MightPowerSkill x) => x.label == "TM_global_strength_pwr");
-            //this.verVal = ver.level;
-            //this.pwrVal = pwr.level;
-            //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-            //{
-            //    MightPowerSkill mver = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
-            //    MightPowerSkill mpwr = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
-            //    verVal = mver.level;
-            //    pwrVal = mpwr.level;
-            //}
-            int dmgNum = 0;
+            verVal = TM_Calc.GetSkillVersatilityLevel(pawn, ability.def as TMAbilityDef, false);
+            pwrVal = TM_Calc.GetSkillPowerLevel(pawn, ability.def as TMAbilityDef, false);
             float pawnDPS = pawn.GetStatValue(StatDefOf.MeleeDPS, false);
             float skillMultiplier = (.8f + (.08f * pwrVal));
-            return dmgNum = Mathf.RoundToInt(skillMultiplier * (pawnDPS) * comp.mightPwr * Rand.Range(.75f, 1.25f));
+            return Mathf.RoundToInt(skillMultiplier * (pawnDPS) * comp.mightPwr * Rand.Range(.75f, 1.25f));
         }
     }
 }
-
-
-//if (this.CasterPawn.equipment.Primary != null && !this.CasterPawn.equipment.Primary.def.IsRangedWeapon)
-//            {
-//    int dmgNum = GetWeaponDmg(this.CasterPawn);
-//    
-//    if (!this.CasterPawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
-//    {
-//        dmgNum += 10;
-//    }
-
-//    Vector3 strikeVec = this.origin;
-//    DrawBlade(strikeVec, 0);
-//    for (int i = 0; i < this.StartingTicksToImpact; i++)
-//    {
-//        strikeVec = this.ExactPosition;
-//        Pawn victim = strikeVec.ToIntVec3().GetFirstPawn(map);
-//        if (victim != null && victim.Faction != base.CasterPawn.Faction)
-//        {
-//            DrawStrike(strikeVec.ToIntVec3(), strikeVec, map);
-//            damageEntities(victim, null, dmgNum, DamageDefOf.Cut);
-//        }
-//        float angle = (Quaternion.AngleAxis(90, Vector3.up) * TM_Calc.GetVector(this.CasterPawn.DrawPos, this.currentTarget.CenterVector3)).ToAngleFlat();
-//        TM_MoteMaker.ThrowGenericMote(ThingDef.Named("Mote_DirectionalDirt"), strikeVec, this.CasterPawn.Map, .3f + (.08f * i), .05f, .15f, .38f, 0, 5f - (.2f * i), angle, angle);
-//        if (i == 2)
-//        {
-//            TM_MoteMaker.ThrowGenericMote(ThingDef.Named("Mote_Cleave"), strikeVec, this.CasterPawn.Map, .6f + (.05f * i), .05f, .04f + (.03f * i), .15f, -10000, 30, angle, angle);
-//        }
-//        //FleckMaker.ThrowTornadoDustPuff(strikeVec, map, .6f, Color.white);
-//        for (int j = 0; j < 2 + (2 * verVal); j++)
-//        {
-//            IntVec3 searchCell = strikeVec.ToIntVec3() + GenAdj.AdjacentCells8WayRandomized()[j];
-//            TM_MoteMaker.ThrowGenericMote(ThingDef.Named("Mote_DirectionalDirt"), searchCell.ToVector3Shifted(), this.CasterPawn.Map, .1f + (.04f * i), .05f, .04f, .28f, 0, 4f - (.2f * i), angle, angle);
-//            //FleckMaker.ThrowTornadoDustPuff(searchCell.ToVector3(), map, .4f, Color.gray);
-//            victim = searchCell.GetFirstPawn(map);
-//            if (victim != null && victim.Faction != base.CasterPawn.Faction)
-//            {
-//                DrawStrike(searchCell, searchCell.ToVector3(), map);
-//                damageEntities(victim, null, dmgNum, DamageDefOf.Cut);
-//            }
-//        }
-//        this.ticksToImpact--;
-//    }
-//}
-//            else
-//            {
-//    Messages.Message("MustHaveMeleeWeapon".Translate(
-//        this.CasterPawn.LabelCap
-//    ), MessageTypeDefOf.RejectInput);
-//    return false;
-//}
-
-//            this.burstShotsLeft = 0;
-//            this.PostCastShot(flag10, out flag10);
-//            return flag10;

@@ -1,15 +1,12 @@
 ﻿using RimWorld;
-using System;
 using Verse;
-using AbilityUser;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 
 namespace TorannMagic
 {
-    public class Verb_TimeMark : Verb_UseAbility  
+    public class Verb_TimeMark : VFECore.Abilities.Verb_CastAbility
     {
 
         private int pwrVal = 0;
@@ -91,35 +88,16 @@ namespace TorannMagic
                         //Log.Message("sev def is " + rhd.def.defName);
                         if (rhd != null)
                         {
-                            Hediff hediff = new Hediff();                            
-                            //hediff = TM_Calc.Clone<Hediff>(this.CasterPawn.health.hediffSet.hediffs[i]);
+                            Hediff hediff = new Hediff();
                             hediff.def = rhd.def;
                             hediff.loadID = rhd.loadID;
                             hediff.Part = rhd.Part;
-                            //foreach(HediffComp hdc in rhd.comps)
-                            //{                            
-                            //    if(hdc is HediffComp_Disappears)
-                            //    {
-                            //        HediffComp_Disappears rhd_comp = hdc as HediffComp_Disappears;
-                            //        HediffComp_Disappears hdc_d = new HediffComp_Disappears();
-                            //        hdc_d.ticksToDisappear = rhd_comp.ticksToDisappear;
-                            //        hediff.comps.Add(hdc_d);
-                            //    }
-                            //    else
-                            //    {
-                            //        hediff.comps.Add(hdc);
-                            //    }
-                            //}
-                            //Traverse.Create(root: hediff).Field(name: "visible").SetValue(rhd.Visible);
-                            //Traverse.Create(root: hediff).Field(name: "severityInt").SetValue(rhd.Severity);
                             hediff.ageTicks = rhd.ageTicks;
-                            //Log.Message("saving hediff " + hediff.def.defName + " with severity " + rhd.Severity);
                             comp.recallHediffList.Add(hediff);
                             comp.recallHediffDefSeverityList.Add(rhd.Severity);
                             HediffComp_Disappears hdc_d = rhd.TryGetComp<HediffComp_Disappears>();
                             if(hdc_d != null)
                             {
-                                //Log.Message("hediff has disappears at ticks " + hdc_d.ticksToDisappear);
                                 comp.recallHediffDefTicksRemainingList.Add(hdc_d.ticksToDisappear);
                             }
                             else
@@ -127,22 +105,6 @@ namespace TorannMagic
                                 comp.recallHediffDefTicksRemainingList.Add(-1);
                             }
                         }
-                        //else
-                        //{
-                        //    Hediff _rhd = this.CasterPawn.health.hediffSet.hediffs[i];
-                        //    if(_rhd != null)
-                        //    {
-                        //        HediffWithComps hediff = new HediffWithComps();
-                        //        hediff.def = rhd.def;
-                        //        hediff.loadID = rhd.loadID;
-                        //        hediff.Part = rhd.Part;
-                        //        Traverse.Create(root: hediff).Field(name: "visible").SetValue(rhd.Visible);
-                        //        Traverse.Create(root: hediff).Field(name: "severityInt").SetValue(rhd.Severity);
-                        //        hediff.Severity = rhd.Severity;
-                        //        hediff.ageTicks = rhd.ageTicks;
-                        //        comp.recallHediffList.Add(hediff);
-                        //    }
-                        //}
                     }
                     //Log.Message("adding " + this.CasterPawn.health.hediffSet.hediffs[i].def + " at severity " + this.CasterPawn.health.hediffSet.hediffs[i].Severity);
                 }
@@ -153,11 +115,7 @@ namespace TorannMagic
         private void SetRecallNeeds()
         {
             comp.recallNeedDefnames = new List<string>();
-            comp.recallNeedDefnames.Clear();
             comp.recallNeedValues = new List<float>();
-            comp.recallNeedValues.Clear();
-            //comp.recallNeedValues = new List<Need>();
-            //comp.recallNeedValues.Clear();
             for (int i = 0; i < this.CasterPawn.needs.AllNeeds.Count; i++)
             {
                 //Log.Message("" + this.CasterPawn.needs.AllNeeds[i].def.defName);

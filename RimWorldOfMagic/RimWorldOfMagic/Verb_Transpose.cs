@@ -1,14 +1,10 @@
 ﻿using RimWorld;
-using System;
 using Verse;
-using AbilityUser;
 using UnityEngine;
-using System.Linq;
-
 
 namespace TorannMagic
 {
-    class Verb_Transpose : Verb_UseAbility  
+    class Verb_Transpose : VFECore.Abilities.Verb_CastAbility
     {
         bool arg_41_0;
         bool arg_42_0;
@@ -143,11 +139,6 @@ namespace TorannMagic
                             GenSpawn.Spawn(targetPawn, targetCell, map);
                         }
                     }
-                    //this.Ability.PostAbilityAttempt();
-
-                    //this.CasterPawn.SetPositionDirect(this.currentTarget.Cell);
-                    //base.CasterPawn.SetPositionDirect(this.currentTarget.Cell);
-                    //this.CasterPawn.pather.ResetToCurrentPosition();
                     result = true;
                 }
                 else

@@ -1,14 +1,10 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
 using Verse;
-using AbilityUser;
 using UnityEngine;
-using TorannMagic.Conditions;
 
 namespace TorannMagic.Enchantment
 {
-    public class Verb_WeaponWintersFury : Verb_UseAbility  
+    public class Verb_WeaponWintersFury : VFECore.Abilities.Verb_CastAbility
     {        
 
         protected override bool TryCastShot()

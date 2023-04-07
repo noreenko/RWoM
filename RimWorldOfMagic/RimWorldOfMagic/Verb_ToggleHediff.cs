@@ -1,59 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
-using AbilityUser;
+﻿using RimWorld;
 using Verse;
-using UnityEngine;
-
 
 namespace TorannMagic
 {
-    public class Verb_ToggleHediff : Verb_UseAbility
+    public class Verb_ToggleHediff : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
-            Pawn caster = base.CasterPawn;
-            Pawn pawn = this.currentTarget.Thing as Pawn;
+            Pawn casterPawn = CasterPawn;
 
-            bool flag = caster != null && !caster.Dead;
-            if (flag)
+            if (casterPawn is { Dead: false })
             {
-                TMAbilityDef ability = (TMAbilityDef)this.Ability.Def;
-                if (ability != null && ability.abilityHediff != null)
+                TMAbilityDef abilityDef = (TMAbilityDef)ability.def;
+                if (abilityDef?.abilityHediff != null)
                 {
-                    HediffDef hdDef = ability.abilityHediff;
-                    if (caster.health.hediffSet.HasHediff(hdDef))
+                    HediffDef hdDef = abilityDef.abilityHediff;
+                    if (casterPawn.health.hediffSet.HasHediff(hdDef))
                     {
-                        Hediff hd = caster.health.hediffSet.GetFirstHediffOfDef(hdDef);
-                        caster.health.RemoveHediff(hd);
+                        Hediff hd = casterPawn.health.hediffSet.GetFirstHediffOfDef(hdDef);
+                        casterPawn.health.RemoveHediff(hd);
                     }
                     else
                     {
-                        HealthUtility.AdjustSeverity(caster, hdDef, hdDef.initialSeverity);
-                        if (caster.Map != null)
+                        HealthUtility.AdjustSeverity(casterPawn, hdDef, hdDef.initialSeverity);
+                        if (casterPawn.Map != null)
                         {
-                            FleckMaker.ThrowLightningGlow(caster.DrawPos, caster.Map, 1f);
-                            FleckMaker.ThrowDustPuff(caster.Position, caster.Map, 1f);
+                            FleckMaker.ThrowLightningGlow(casterPawn.DrawPos, casterPawn.Map, 1f);
+                            FleckMaker.ThrowDustPuff(casterPawn.Position, casterPawn.Map, 1f);
                         }
                     }
 
-                    CompAbilityUserMagic magicComp = caster.GetCompAbilityUserMagic();
-                    if(magicComp != null && magicComp.MagicData != null)
+                    CompAbilityUserMagic magicComp = casterPawn.GetCompAbilityUserMagic();
+                    if(magicComp?.MagicData != null)
                     {
-                        MagicPower mp = magicComp.MagicData.ReturnMatchingMagicPower(ability);
+                        MagicPower mp = magicComp.MagicData.ReturnMatchingMagicPower(abilityDef);
                         if(mp != null)
                         {
-                            mp.autocast = caster.health.hediffSet.HasHediff(hdDef);
+                            mp.autocast = casterPawn.health.hediffSet.HasHediff(hdDef);
                         }
                     }
-                    CompAbilityUserMight mightComp = caster.GetCompAbilityUserMight();
-                    if (mightComp != null && mightComp.MightData != null)
+                    CompAbilityUserMight mightComp = casterPawn.GetCompAbilityUserMight();
+                    if (mightComp?.MightData != null)
                     {
-                        MightPower mp = mightComp.MightData.ReturnMatchingMightPower(ability);
+                        MightPower mp = mightComp.MightData.ReturnMatchingMightPower(abilityDef);
                         if (mp != null)
                         {
-                            mp.autocast = caster.health.hediffSet.HasHediff(hdDef);
+                            mp.autocast = casterPawn.health.hediffSet.HasHediff(hdDef);
                         }
                     }
 

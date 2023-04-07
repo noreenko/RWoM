@@ -1,13 +1,10 @@
-﻿using System;
-using Verse;
+﻿using Verse;
 using Verse.AI;
-using AbilityUser;
 using RimWorld;
-
 
 namespace TorannMagic
 {
-    public class Verb_Teach : Verb_UseAbility
+    public class Verb_Teach : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used specifically for non-unique verbs that ignore LOS (can be used with shield belt)
@@ -39,7 +36,7 @@ namespace TorannMagic
 
             if(this.currentTarget.Thing is Pawn student && this.currentTarget.Thing != mentor)
             {
-                if (this.Ability.Def == TorannMagicDefOf.TM_TeachMagic)
+                if (ability.def == TorannMagicDefOf.TM_TeachMagic)
                 {
                     if (TM_Calc.IsMagicUser(mentor) && !TM_Calc.IsCrossClass(mentor, true) && student.story != null)
                     {
@@ -72,7 +69,7 @@ namespace TorannMagic
                         Log.Message("undetected might or magic user attempting to teach skill");
                     }
                 }
-                if (this.Ability.Def == TorannMagicDefOf.TM_TeachMight)
+                if (ability.def == TorannMagicDefOf.TM_TeachMight)
                 {
                     if (TM_Calc.IsMightUser(mentor) && !TM_Calc.IsCrossClass(mentor, false) && student.story != null)
                     {
@@ -110,7 +107,7 @@ namespace TorannMagic
             {
                 Messages.Message("TM_InvalidTarget".Translate(
                         mentor.LabelShort,
-                        this.Ability.Def.label
+                        ability.def.label
                     ), MessageTypeDefOf.RejectInput, false);
             }
 

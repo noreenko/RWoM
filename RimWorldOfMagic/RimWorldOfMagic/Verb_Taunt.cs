@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
-using AbilityUser;
-using Verse;
-using UnityEngine;
+﻿using Verse;
 using Verse.Sound;
-using Verse.AI;
-
-
 
 namespace TorannMagic
 {
-    public class Verb_Taunt : Verb_UseAbility
+    public class Verb_Taunt : VFECore.Abilities.Verb_CastAbility
     {
         float radius = 15f;
         float tauntChance = .6f;
@@ -26,12 +17,9 @@ namespace TorannMagic
             bool flag = pawn != null && !pawn.Dead;
             if (flag)
             {
-
                 CompAbilityUserMight comp = caster.GetCompAbilityUserMight();
-                //int verVal = TM_Calc.GetMightSkillLevel(caster, comp.MightData.MightPowerSkill_Custom, "TM_Taunt", "_ver", true);
-                //int pwrVal = TM_Calc.GetMightSkillLevel(caster, comp.MightData.MightPowerSkill_Custom, "TM_Taunt", "_pwr", true);
-                int verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
-                int pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
+                int verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
+                int pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
                 radius += (2f * verVal);
                 tauntChance += (pwrVal * .05f);
                 targetsMax += pwrVal;

@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
-using AbilityUser;
+﻿using RimWorld;
 using Verse;
-using UnityEngine;
-
 
 namespace TorannMagic
 {
-    public class Verb_ThickSkin : Verb_UseAbility
+    public class Verb_ThickSkin : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
-            Pawn caster = base.CasterPawn;
             Pawn pawn = this.currentTarget.Thing as Pawn;
 
             bool flag = pawn != null && !pawn.Dead;

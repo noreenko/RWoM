@@ -1,16 +1,10 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
-using UnityEngine;
-using Verse.AI.Group;
 
 namespace TorannMagic
 {
-    public class Verb_TechnoShield : Verb_UseAbility  
+    public class Verb_TechnoShield : VFECore.Abilities.Verb_CastAbility
     {
         
         int pwrVal;
@@ -50,21 +44,8 @@ namespace TorannMagic
             Pawn pawn = this.currentTarget.Thing as Pawn;
 
             comp = caster.GetCompAbilityUserMagic();
-            //pwrVal = comp.MagicData.MagicPowerSkill_TechnoShield.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_TechnoShield_pwr").level;
-            //verVal = comp.MagicData.MagicPowerSkill_TechnoShield.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_TechnoShield_ver").level;
-            //
-            //if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-            //{
-            //    pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
-            //    verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;
-            //}
-            //if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
-            //{
-            //    pwrVal = 3;
-            //    verVal = 3;
-            //}
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
 
             if (pawn != null)
             {
@@ -83,7 +64,6 @@ namespace TorannMagic
             TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_TechnoShield, pawn.DrawPos, pawn.Map, .3f, .2f, 0, .2f, Rand.Range(-500, 500), 0, 0, Rand.Range(0, 360));
             TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_TechnoShield, pawn.DrawPos, pawn.Map, .6f, .2f, .1f, .1f, Rand.Range(-500, 500), 0, 0, Rand.Range(0, 360));
             TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_TechnoShield, pawn.DrawPos, pawn.Map, 1f, .2f, .2f, .05f, Rand.Range(-500, 500), 0, 0, Rand.Range(0, 360));
-
         }
 
         private void ApplyHediffs(Pawn target)
