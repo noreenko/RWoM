@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Verse;
-using AbilityUserAI;
 using System.Linq;
 
 namespace TorannMagic

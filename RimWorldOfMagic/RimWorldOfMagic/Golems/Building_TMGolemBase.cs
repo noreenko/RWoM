@@ -8,7 +8,6 @@ using Verse;
 using Verse.AI;
 using UnityEngine;
 using TorannMagic.TMDefs;
-using AbilityUser;
 using Verse.Sound;
 using HarmonyLib;
 

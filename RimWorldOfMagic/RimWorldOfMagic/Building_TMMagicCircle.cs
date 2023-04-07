@@ -6,8 +6,6 @@ using Verse.AI;
 using System.Diagnostics;
 using UnityEngine;
 using RimWorld;
-using AbilityUser;
-
 
 namespace TorannMagic
 {

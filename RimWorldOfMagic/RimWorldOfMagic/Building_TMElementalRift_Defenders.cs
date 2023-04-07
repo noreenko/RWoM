@@ -7,7 +7,6 @@ using Verse.AI.Group;
 using System.Diagnostics;
 using UnityEngine;
 using RimWorld;
-using AbilityUser;
 using TorannMagic.ModOptions;
 
 

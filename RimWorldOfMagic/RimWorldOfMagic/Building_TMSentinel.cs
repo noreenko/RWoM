@@ -2,14 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
-using Verse.AI;
 using Verse.AI.Group;
-using System.Diagnostics;
-using UnityEngine;
 using RimWorld;
-using AbilityUser;
-
-
 
 namespace TorannMagic
 {

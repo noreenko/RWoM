@@ -1,5 +1,4 @@
 ﻿using Verse;
-using AbilityUserAI;
 
 namespace TorannMagic
 {
