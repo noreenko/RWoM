@@ -1,17 +1,13 @@
-﻿using System.Linq;
-using AbilityUser;
-using RimWorld;
+﻿using RimWorld;
 using TorannMagic.Utils;
 using UnityEngine;
 using Verse;
 using System.Collections.Generic;
-using HarmonyLib;
 using TorannMagic.TMDefs;
-using AbilityDef=AbilityUser.AbilityDef;
 
 namespace TorannMagic
 {
-    public abstract class CompAbilityUserTMBase : CompAbilityUser
+    public abstract class CompAbilityUserTMBase : VFECore.Abilities.CompAbilities
     {
         public int customIndex = -2;
 
@@ -19,7 +15,7 @@ namespace TorannMagic
         private List<TM_CustomClass> advClasses;
         public List<TM_CustomClass> AdvancedClasses
         {
-            get => advClasses ?? (advClasses = new List<TM_CustomClass>());
+            get => advClasses ??= new List<TM_CustomClass>();
             set => advClasses = value;
         }
 
@@ -38,40 +34,6 @@ namespace TorannMagic
         public float xpGain = 1;
 
         public float weaponDamage = 1;
-
-        //public List<TMDefs.TM_CustomClass> CombinedCustomClasses
-        //{
-        //    get
-        //    {
-        //        List<TMDefs.TM_CustomClass> combinedCustomClasses = new List<TMDefs.TM_CustomClass>();
-        //        combinedCustomClasses.AddRange(AdvancedClasses);
-        //        if (this.customClass != null)
-        //        {
-        //            combinedCustomClasses.Add(this.customClass);
-        //        }
-        //        return combinedCustomClasses;
-        //    }
-        //}
-
-        //public List<TMAbilityDef> CombinedCustomAbilities
-        //{
-        //    get
-        //    {
-        //        List<TMAbilityDef> combinedCustomAbilities = new List<TMAbilityDef>();
-        //        if (this.customClass != null)
-        //        {
-        //            combinedCustomAbilities.AddRange(customClass.classFighterAbilities);
-        //        }
-        //        if (this.AdvancedClasses != null && AdvancedClasses.Count > 0)
-        //        {
-        //            foreach (TMDefs.TM_CustomClass cc in this.AdvancedClasses)
-        //            {
-        //                combinedCustomAbilities.AddRange(cc.classFighterAbilities);
-        //            }
-        //        }
-        //        return combinedCustomAbilities;
-        //    }
-        //}
 
         private static readonly SimpleCache<string, Material> traitCache = new SimpleCache<string, Material>(5);
 
@@ -112,11 +74,15 @@ namespace TorannMagic
             }
         }
 
-        // Safely adds PawnAbility by removing it first
-        public void AddDistinctPawnAbility(AbilityDef abilityDef)
+        public void RemoveAbility(VFECore.Abilities.AbilityDef abilityDef)
         {
-            RemovePawnAbility(abilityDef);
-            AddPawnAbility(abilityDef);
+            for (int i = LearnedAbilities.Count - 1; i >= 0; i--)
+            {
+                if (LearnedAbilities[i].def != abilityDef) continue;
+
+                LearnedAbilities.RemoveAt(i);
+                return;
+            }
         }
 
         public void RemoveTraits()

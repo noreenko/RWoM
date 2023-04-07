@@ -6,7 +6,7 @@ using RimWorld;
 using UnityEngine;
 using Verse.AI;
 using Verse.Sound;
-using AbilityUser;
+
 
 namespace TorannMagic
 {
@@ -176,9 +176,9 @@ namespace TorannMagic
                                             }
                                             if (shouldAddAbilities && addAbilities)
                                             {
-                                                bondedMagicComp.AddPawnAbility(TorannMagicDefOf.TM_Hex_CriticalFail);
-                                                bondedMagicComp.AddPawnAbility(TorannMagicDefOf.TM_Hex_Pain);
-                                                bondedMagicComp.AddPawnAbility(TorannMagicDefOf.TM_Hex_MentalAssault);
+                                                bondedMagicComp.GiveAbility(TorannMagicDefOf.TM_Hex_CriticalFail);
+                                                bondedMagicComp.GiveAbility(TorannMagicDefOf.TM_Hex_Pain);
+                                                bondedMagicComp.GiveAbility(TorannMagicDefOf.TM_Hex_MentalAssault);
                                             }
                                         }
                                         TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_Hex, p.DrawPos, p.Map, .6f, .1f, .2f, .2f, 0, 0, 0, 0);
