@@ -1,5 +1,6 @@
 using AbilityUser;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -25,6 +26,7 @@ namespace TorannMagic
             level = 0;
             TMabilityDefs = newAbilityDefs;
         }
+        protected TMPower(params AbilityDef[] newAbilityDefs) : this(newAbilityDefs.ToList()){}
 
         public bool AutoCast
         {

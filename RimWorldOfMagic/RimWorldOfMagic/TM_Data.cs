@@ -317,7 +317,7 @@ namespace TorannMagic
         }
 
         private static TM_CustomPowerDef[] customMagePowerDefs;
-        public static IEnumerable<TM_CustomPowerDef> CustomMagePowerDefs()
+        public static TM_CustomPowerDef[] CustomMagePowerDefs()
         {
             return customMagePowerDefs ??= DefDatabase<TM_CustomPowerDef>.AllDefs.Where(static def =>
                 def.customPower is { forMage: true }).ToArray();

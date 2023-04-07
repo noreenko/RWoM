@@ -1,5 +1,7 @@
 ﻿using AbilityUser;
 using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using Verse;
 
 namespace TorannMagic 
@@ -36,6 +38,8 @@ namespace TorannMagic
 
             LoadLegacyClassAutocast();
         }
+        public MagicPower(bool requiresScroll, params AbilityDef[] newAbilityDefs) : this(newAbilityDefs.ToList(), requiresScroll){}
+        public MagicPower(params AbilityDef[] newAbilityDefs) : this(newAbilityDefs.ToList()){}
 
         public override void ExposeData()
         {
