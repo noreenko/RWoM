@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using Verse;
 using System;
-using AbilityUser;
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    public class Projectile_AntiArmor : Projectile_AbilityBase
+    public class Projectile_AntiArmor : VFECore.Abilities.AbilityProjectile
     {
 
         float xProb;
