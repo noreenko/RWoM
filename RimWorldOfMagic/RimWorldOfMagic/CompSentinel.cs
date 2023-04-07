@@ -212,7 +212,7 @@ namespace TorannMagic
                     this.shouldDespawn = true;
                 }
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 //Log.Message("Error processing threats" + ex);
             }
