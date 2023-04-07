@@ -1,13 +1,10 @@
 ﻿using Verse;
-using AbilityUser;
 using UnityEngine;
-using System.Linq;
 using RimWorld;
-
 
 namespace TorannMagic
 {
-    public class Verb_Buckshot : Verb_UseAbility  
+    public class Verb_Buckshot : VFECore.Abilities.Verb_CastAbility  
     {
         private int effVal;
         private int shotcount = 0;

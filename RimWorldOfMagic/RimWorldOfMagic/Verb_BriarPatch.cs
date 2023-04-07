@@ -1,15 +1,12 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
-using UnityEngine;
 using System.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Verb_BriarPatch : Verb_UseAbility  
+    class Verb_BriarPatch : VFECore.Abilities.Verb_CastAbility  
     {
         bool validTarg;
 

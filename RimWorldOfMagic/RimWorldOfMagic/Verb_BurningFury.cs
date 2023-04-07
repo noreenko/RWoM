@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using RimWorld;
-using AbilityUser;
 using Verse;
-using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_BurningFury : Verb_UseAbility
+    public class Verb_BurningFury : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
-            Pawn caster = base.CasterPawn;
-            Pawn pawn = this.currentTarget.Thing as Pawn;
+            Pawn pawn = currentTarget.Thing as Pawn;
 
             bool flag = pawn != null && !pawn.Dead;
             if (flag)

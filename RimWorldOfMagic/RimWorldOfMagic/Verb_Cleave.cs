@@ -1,14 +1,11 @@
 ﻿using Verse;
-using AbilityUser;
 using UnityEngine;
 using RimWorld;
-using System.Linq;
-
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Verb_Cleave : Verb_UseAbility_TrueBurst
+    class Verb_Cleave : VFECore.Abilities.Verb_CastAbility_TrueBurst
     {
         DamageInfo dinfo;
 

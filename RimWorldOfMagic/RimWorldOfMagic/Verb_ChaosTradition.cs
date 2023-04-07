@@ -1,15 +1,7 @@
-﻿using RimWorld;
-using System;
-using Verse;
-using AbilityUser;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
-
+﻿using Verse;
 namespace TorannMagic
 {
-    public class Verb_ChaosTradition : Verb_UseAbility  
+    public class Verb_ChaosTradition : VFECore.Abilities.Verb_CastAbility
     {
         private int verVal;
         private int pwrVal;
@@ -21,11 +13,9 @@ namespace TorannMagic
 
         protected override bool TryCastShot()
         {
-            bool result = false;
-            Map map = this.CasterPawn.Map;
-            CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();            
+            CompAbilityUserMagic comp = CasterPawn.GetCompAbilityUserMagic();            
 
-            if (this.CasterPawn != null && !this.CasterPawn.Downed && comp != null && comp.MagicData != null)
+            if (CasterPawn != null && !CasterPawn.Downed && comp != null && comp.MagicData != null)
             {                
                 pwrVal = comp.MagicData.MagicPowerSkill_ChaosTradition.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ChaosTradition_pwr").level;
                 verVal = comp.MagicData.MagicPowerSkill_ChaosTradition.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ChaosTradition_ver").level;
@@ -40,7 +30,7 @@ namespace TorannMagic
 
                 if(effVal >= 3)
                 {
-                    HealthUtility.AdjustSeverity(this.CasterPawn, TorannMagicDefOf.TM_ChaosTraditionHD, 8f);
+                    HealthUtility.AdjustSeverity(CasterPawn, TorannMagicDefOf.TM_ChaosTraditionHD, 8f);
                 }
                 if(effVal >= 2)
                 {
@@ -53,7 +43,7 @@ namespace TorannMagic
                 }
                 if(effVal >= 1)
                 { 
-                    HealthUtility.AdjustSeverity(this.CasterPawn, TorannMagicDefOf.TM_ChaoticMindHD, 24f);
+                    HealthUtility.AdjustSeverity(CasterPawn, TorannMagicDefOf.TM_ChaoticMindHD, 24f);
                 }
 
                 comp.MagicData.MagicAbilityPoints -= ((2*(pwrVal + verVal + effVal)) + gSpirit + gRegen + gEff);
@@ -78,8 +68,8 @@ namespace TorannMagic
                 Log.Warning("failed to TryCastShot");
             }
 
-            this.burstShotsLeft = 0;
-            return result;
+            burstShotsLeft = 0;
+            return false;
         }  
         
         public void ClearSpellRemnants(CompAbilityUserMagic comp)
@@ -94,15 +84,6 @@ namespace TorannMagic
                     if(!comp.Pawn.equipment.Primary.DestroyedOrNull())
                     {
                         comp.Pawn.equipment.Primary.Destroy(DestroyMode.Vanish);
-                    }
-                }                
-
-                if (comp.MagicUserLevel >= 20)
-                {
-                    PawnAbility pa = comp.AbilityData.Powers.FirstOrDefault((PawnAbility x) => x.Def == TorannMagicDefOf.TM_TeachMagic);
-                    if (pa != null)
-                    {
-                        pa.CooldownTicksLeft = Mathf.RoundToInt(pa.MaxCastingTicks * comp.coolDown);
                     }
                 }
 
@@ -136,7 +117,7 @@ namespace TorannMagic
                         Verb_DispelEnchantWeapon.RemoveExistingEnchantment(comp.weaponEnchants[i]);
                     }
                     comp.weaponEnchants.Clear();
-                    comp.RemovePawnAbility(TorannMagicDefOf.TM_DispelEnchantWeapon);
+                    comp.RemoveAbility(TorannMagicDefOf.TM_DispelEnchantWeapon);
                 }
 
                 if (comp.enchanterStones != null && comp.enchanterStones.Count > 0)
@@ -150,7 +131,7 @@ namespace TorannMagic
                         comp.enchanterStones[i].Destroy(DestroyMode.Vanish);
                     }
                     comp.enchanterStones.Clear();
-                    comp.RemovePawnAbility(TorannMagicDefOf.TM_DismissEnchanterStones);
+                    comp.RemoveAbility(TorannMagicDefOf.TM_DismissEnchanterStones);
                 }
 
                 if (comp.summonedSentinels != null && comp.summonedSentinels.Count > 0)
@@ -164,7 +145,7 @@ namespace TorannMagic
                         comp.summonedSentinels[i].Destroy(DestroyMode.Vanish);
                     }
                     comp.summonedSentinels.Clear();
-                    comp.RemovePawnAbility(TorannMagicDefOf.TM_ShatterSentinel);
+                    comp.RemoveAbility(TorannMagicDefOf.TM_ShatterSentinel);
                 }
 
                 if (comp.soulBondPawn != null)

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
 using Verse;
 using UnityEngine;
-using HarmonyLib;
-
 
 namespace TorannMagic
 {
-    public class Verb_CauterizeWound : Verb_UseAbility
+    public class Verb_CauterizeWound : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used specifically for non-unique verbs that ignore LOS (can be used with shield belt)
