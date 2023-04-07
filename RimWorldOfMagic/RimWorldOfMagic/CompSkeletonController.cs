@@ -6,7 +6,6 @@ using RimWorld;
 using UnityEngine;
 using Verse.AI;
 using Verse.Sound;
-using AbilityUser;
 
 namespace TorannMagic
 {
@@ -34,11 +33,6 @@ namespace TorannMagic
         private int scanTick = 279;
 
         private int age = -1;
-
-        //private int actionReady = 0;
-        //private int actionTick = 0;
-
-        //private LocalTargetInfo universalTarget = null;
 
         public override void PostDraw()
         {
@@ -490,18 +484,6 @@ namespace TorannMagic
                                     this.Pawn.CurJob.targetA = this.farThreats.RandomElement();
                                 }
                             }
-
-                            //    if (this.closeThreats.Count() > 1 && ((this.closeThreats.Count() * 2) > this.farThreats.Count() || Rand.Chance(.3f)))
-                            //    {
-                            //        if (Rand.Chance(.8f) && this.NextKnockbackAttack < Find.TickManager.TicksGame)
-                            //        {
-                            //            Pawn randomClosePawn = this.closeThreats.RandomElement();
-                            //            if ((randomClosePawn.Position - this.Pawn.Position).LengthHorizontal < 3 && TargetIsValid(randomClosePawn))
-                            //            {
-                            //                DoKnockbackAttack(this.Pawn.Position, randomClosePawn.Position, 1.4f, Rand.Range(3, 5f));
-                            //            }
-                            //        }
-                            //    }
 
                             if (this.farThreats.Count() > 2 * this.closeThreats.Count() && Rand.Chance(.3f))
                             {

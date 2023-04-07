@@ -5,7 +5,6 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 using Verse.AI;
-using AbilityUser;
 
 namespace TorannMagic
 {

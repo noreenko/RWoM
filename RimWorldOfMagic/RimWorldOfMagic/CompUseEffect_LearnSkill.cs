@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using Verse;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TorannMagic
 {
@@ -108,7 +107,7 @@ namespace TorannMagic
                         {
                             comp.skill_Sprint = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_Sprint).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Sprint);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Sprint);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -116,7 +115,7 @@ namespace TorannMagic
                         {
                             comp.skill_GearRepair = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_GearRepair).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_GearRepair);
+                            comp.GiveAbility(TorannMagicDefOf.TM_GearRepair);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -124,7 +123,7 @@ namespace TorannMagic
                         {
                             comp.skill_InnerHealing = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_InnerHealing).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_InnerHealing);
+                            comp.GiveAbility(TorannMagicDefOf.TM_InnerHealing);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -132,7 +131,7 @@ namespace TorannMagic
                         {
                             comp.skill_StrongBack = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_StrongBack).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_StrongBack);
+                            comp.GiveAbility(TorannMagicDefOf.TM_StrongBack);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -140,7 +139,7 @@ namespace TorannMagic
                         {
                             comp.skill_HeavyBlow = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_HeavyBlow).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_HeavyBlow);
+                            comp.GiveAbility(TorannMagicDefOf.TM_HeavyBlow);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -148,7 +147,7 @@ namespace TorannMagic
                         {
                             comp.skill_ThickSkin = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_ThickSkin).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_ThickSkin);
+                            comp.GiveAbility(TorannMagicDefOf.TM_ThickSkin);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -156,7 +155,7 @@ namespace TorannMagic
                         {
                             comp.skill_FightersFocus = true;
                             comp.MightData.ReturnMatchingMightPower(TorannMagicDefOf.TM_FightersFocus).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_FightersFocus);
+                            comp.GiveAbility(TorannMagicDefOf.TM_FightersFocus);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
@@ -198,7 +197,7 @@ namespace TorannMagic
                         else if (customSkill != null)
                         {
                             comp.MightData.ReturnMatchingMightPower(customSkill).learned = true;
-                            comp.AddPawnAbility(customSkill);
+                            comp.GiveAbility(customSkill);
                             comp.InitializeSkill();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }

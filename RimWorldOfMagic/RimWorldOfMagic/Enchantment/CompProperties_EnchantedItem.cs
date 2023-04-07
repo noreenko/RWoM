@@ -1,16 +1,14 @@
 ﻿using System;
 using Verse;
 using RimWorld;
-using AbilityUser;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+using VFECore.Abilities;
 
 namespace TorannMagic.Enchantment
 {
     public class CompProperties_EnchantedItem : CompProperties, IExposable
     {
-        public List<TMAbilityDef> MagicAbilities = new List<TMAbilityDef>();
+        public List<TMAbilityDef> MagicAbilities = new();
 
         public Type AbilityUserClass;
 
@@ -82,7 +80,7 @@ namespace TorannMagic.Enchantment
         public CompProperties_EnchantedItem()
         {
             this.compClass = typeof(CompEnchantedItem);
-            this.AbilityUserClass = typeof(GenericCompAbilityUser);
+            this.AbilityUserClass = typeof(CompAbilities);
         }
     }
 }

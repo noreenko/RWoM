@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using Verse;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TorannMagic
 {
@@ -51,8 +50,8 @@ namespace TorannMagic
                                 comp.MagicData.AllMagicPowers[i].learned = true;
                                 if(ad.shouldInitialize)
                                 {
-                                    comp.RemovePawnAbility(ad);
-                                    comp.AddPawnAbility(ad);
+                                    comp.RemoveAbility(ad);
+                                    comp.GiveAbility(ad);
                                 }
                                 comp.InitializeSpell();
                                 this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
@@ -66,8 +65,8 @@ namespace TorannMagic
                                     comp.MagicData.AllMagicPowers[i].learned = true;
                                     if(ad.shouldInitialize)
                                     {
-                                        comp.RemovePawnAbility(ad);
-                                        comp.AddPawnAbility(ad);
+                                        comp.RemoveAbility(ad);
+                                        comp.GiveAbility(ad);
                                     }
                                     comp.InitializeSpell();
                                     this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
@@ -122,7 +121,7 @@ namespace TorannMagic
                         {
                             comp.spell_Rain = true;
                             magicPower = comp.MagicData.MagicPowersHoF.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Rainmaker);
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Rainmaker);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Rainmaker);
                             magicPower.learned = true;
                             comp.InitializeSpell();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
@@ -131,7 +130,7 @@ namespace TorannMagic
                         {
                             comp.spell_Blink = true;
                             magicPower = comp.MagicData.MagicPowersA.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Blink);
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Blink);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Blink);
                             if (!user.story.traits.HasTrait(TorannMagicDefOf.ChaosMage))
                             {
                                 magicPower.learned = true;
@@ -143,7 +142,7 @@ namespace TorannMagic
                         {
                             comp.spell_Teleport = true;
                             magicPower = comp.MagicData.MagicPowersA.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Teleport);
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Teleport);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Teleport);
                             if (!user.story.traits.HasTrait(TorannMagicDefOf.ChaosMage))
                             {
                                 magicPower.learned = true;
@@ -155,7 +154,7 @@ namespace TorannMagic
                         {
                             comp.spell_Heal = true;
                             magicPower = comp.MagicData.MagicPowersP.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Heal);
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Heal);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Heal);
                             if (!user.story.traits.HasTrait(TorannMagicDefOf.ChaosMage))
                             {
                                 magicPower.learned = true;
@@ -250,7 +249,7 @@ namespace TorannMagic
                         {
                             comp.spell_SummonMinion = true;
                             magicPower = comp.MagicData.MagicPowersS.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_SummonMinion);
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_SummonMinion);
+                            comp.GiveAbility(TorannMagicDefOf.TM_SummonMinion);
                             if (!user.story.traits.HasTrait(TorannMagicDefOf.ChaosMage))
                             {
                                 magicPower.learned = true;
@@ -389,19 +388,19 @@ namespace TorannMagic
                         else if (parent.def.defName == "SpellOf_TechnoShield" && comp.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_TechnoShield).learned == false && user.story.traits.HasTrait(TorannMagicDefOf.Technomancer))
                         {
                             comp.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_TechnoShield).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_TechnoShield);
+                            comp.GiveAbility(TorannMagicDefOf.TM_TechnoShield);
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
                         else if (parent.def.defName == "SpellOf_Sabotage" && comp.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Sabotage).learned == false && user.story.traits.HasTrait(TorannMagicDefOf.Technomancer))
                         {
                             comp.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Sabotage).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Sabotage);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Sabotage);
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
                         else if (parent.def.defName == "SpellOf_Overdrive" && comp.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Overdrive).learned == false && user.story.traits.HasTrait(TorannMagicDefOf.Technomancer))
                         {
                             comp.MagicData.MagicPowersT.FirstOrDefault<MagicPower>((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Overdrive).learned = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_Overdrive);
+                            comp.GiveAbility(TorannMagicDefOf.TM_Overdrive);
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }
                         else if (parent.def.defName == "SpellOf_BloodMoon" && comp.spell_BloodMoon == false && user.story.traits.HasTrait(TorannMagicDefOf.BloodMage))
@@ -513,7 +512,7 @@ namespace TorannMagic
                         else if (customSkill != null)
                         {                            
                             comp.MagicData.ReturnMatchingMagicPower(customSkill).learned = true;
-                            comp.AddPawnAbility(customSkill);
+                            comp.GiveAbility(customSkill);
                             comp.InitializeSpell();
                             this.parent.SplitOff(1).Destroy(DestroyMode.Vanish);
                         }

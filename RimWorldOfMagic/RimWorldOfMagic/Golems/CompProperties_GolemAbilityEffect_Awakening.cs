@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
 using UnityEngine;
-using Verse.Sound;
 using TorannMagic.TMDefs;
-using AbilityUser;
 
 namespace TorannMagic.Golems
 {
@@ -44,7 +37,7 @@ namespace TorannMagic.Golems
 
                     float manaDamage = 0;
                     float expRad = explosionRadius;
-                    Verb_UseAbility verb = enemyCaster.CurJob.verbToUse as Verb_UseAbility;
+                    VFECore.Abilities.Verb_CastAbility verb = enemyCaster.CurJob.verbToUse as VFECore.Abilities.Verb_CastAbility;
                     if (verb != null && verb.Ability != null)
                     {
                         TMAbilityDef tmAbility = (TMAbilityDef)(verb.Ability.Def);

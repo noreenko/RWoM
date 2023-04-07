@@ -1,10 +1,4 @@
-﻿using System;
-using Verse;
-using RimWorld;
-using AbilityUser;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using Verse;
 
 namespace TorannMagic.Enchantment
 {

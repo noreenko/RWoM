@@ -6,7 +6,6 @@ using RimWorld;
 using UnityEngine;
 using Verse.AI;
 using Verse.Sound;
-using AbilityUser;
 
 namespace TorannMagic
 {
