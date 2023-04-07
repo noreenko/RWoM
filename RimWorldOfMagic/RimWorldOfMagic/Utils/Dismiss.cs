@@ -1,5 +1,3 @@
-using Verse;
-
 namespace TorannMagic.Utils;
 
 public abstract class Dismiss<T>
@@ -10,11 +8,11 @@ public abstract class Dismiss<T>
         {
             if (value)
             {
-                if (!dismissSpellLearned) abilityUser.AddPawnAbility(abilityDef);
+                if (!dismissSpellLearned) abilityUser.GiveAbility(abilityDef);
             }
             else
             {
-                if (dismissSpellLearned) abilityUser.RemovePawnAbility(abilityDef);
+                if (dismissSpellLearned) abilityUser.RemoveAbility(abilityDef);
             }
             dismissSpellLearned = value;
         }

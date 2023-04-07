@@ -1,10 +1,7 @@
 ﻿using RimWorld;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using Verse;
-using AbilityUser;
+
 
 namespace TorannMagic
 {
@@ -13,22 +10,20 @@ namespace TorannMagic
     {
         public override void ImpactOverride()
         {
-            Map map = base.Map;
-            Pawn pawn = this.launcher as Pawn;
-            GenExplosion.DoExplosion(base.Position, map, 0.4f, TMDamageDefOf.DamageDefOf.Iceshard, this.launcher, Mathf.RoundToInt(this.def.projectile.GetDamageAmount(1, null)), 0, this.def.projectile.soundExplode, def, this.equipmentDef, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
-            CellRect cellRect = CellRect.CenteredOn(base.Position, 2);
+            Map map = Map;
+            GenExplosion.DoExplosion(Position, map, 0.4f, TMDamageDefOf.DamageDefOf.Iceshard, launcher, Mathf.RoundToInt(def.projectile.GetDamageAmount(1)), 0, def.projectile.soundExplode, def, equipmentDef);
+            CellRect cellRect = CellRect.CenteredOn(Position, 2);
             cellRect.ClipInsideMap(map);
             for (int i = 0; i < 3; i++)
             {
                 IntVec3 randomCell = cellRect.RandomCell;
-                this.Shrapnel(1, randomCell, map, 0.4f);
+                Shrapnel(1, randomCell, map, 0.4f);
             }
         }
 
         protected void Shrapnel(int pwr, IntVec3 pos, Map map, float radius)
         {
-            ThingDef def = this.def;
-            Explosion(pwr, pos, map, radius, TMDamageDefOf.DamageDefOf.Iceshard, this.launcher, null, def, this.equipmentDef, TorannMagicDefOf.Mote_Base_Smoke, 0.4f, 1, false, null, 0f, 1);
+            Explosion(pwr, pos, map, radius, TMDamageDefOf.DamageDefOf.Iceshard, launcher, null, def, equipmentDef, TorannMagicDefOf.Mote_Base_Smoke, 0.4f);
 
         }
 

@@ -1,84 +1,71 @@
 ﻿using Verse;
-using AbilityUser;
 
-namespace TorannMagic
-{    
-    public class Effect_ValiantCharge : Verb_UseAbility
+namespace TorannMagic;
+
+public class Effect_ValiantCharge : VFECore.Abilities.Verb_CastAbility
+{
+    bool validTarg;
+
+    public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
     {
-        bool validTarg;
-
-        public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
+        if (targ.Thing != null && targ.Thing == caster)
         {
-            if (targ.Thing != null && targ.Thing == this.caster)
+            return verbProps.targetParams.canTargetSelf;
+        }
+        if ( targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
+        {
+            if ((root - targ.Cell).LengthHorizontal < verbProps.range)
             {
-                return this.verbProps.targetParams.canTargetSelf;
-            }
-            if ( targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
-            { //targ.Cell.DistanceToEdge(base.CasterPawn.Map) >= 4 &&
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
-                {
-                    ShootLine shootLine;
-                    validTarg = this.TryFindShootLineFromTo(root, targ, out shootLine);
-                }
-                else
-                {
-                    validTarg = false;
-                }
+                validTarg = TryFindShootLineFromTo(root, targ, out _);
             }
             else
             {
                 validTarg = false;
             }
-            return validTarg;
         }
-
-        public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
+        else
         {
-            needLOSToCenter = true;
-            TargetAoEProperties targetAoEProperties = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties;
-            if (targetAoEProperties == null || !targetAoEProperties.showRangeOnSelect)
-            {
-                CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
-                float adjustedRadius = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1.2f;
-                if (comp != null && comp.MagicData != null)
-                {
-                    int verVal = TM_Calc.GetSkillVersatilityLevel(this.CasterPawn, this.Ability.Def as TMAbilityDef);
-                    adjustedRadius = 1.2f + (.8f * verVal);
-                }
-                return adjustedRadius;
-            }
-            return (float)targetAoEProperties.range;
+            validTarg = false;
         }
+        return validTarg;
+    }
 
-        public virtual void Effect()
+    public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
+    {
+        needLOSToCenter = true;
+        TargetAoEProperties targetAoEProperties = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties;
+        if (targetAoEProperties == null || !targetAoEProperties.showRangeOnSelect)
         {
-            LocalTargetInfo t = this.TargetsAoE[0];
-            bool flag = t.Cell != default(IntVec3);
-            if (flag)
+            CompAbilityUserMagic comp = CasterPawn.GetCompAbilityUserMagic();
+            float adjustedRadius = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1.2f;
+            if (comp != null && comp.MagicData != null)
             {
-                Pawn casterPawn = base.CasterPawn;
-                //this.Ability.PostAbilityAttempt();
-                if (ModCheck.Validate.GiddyUp.Core_IsInitialized())
-                {
-                    ModCheck.GiddyUp.ForceDismount(base.CasterPawn);
-                }
-
-                LongEventHandler.QueueLongEvent(delegate
-                {
-                    FlyingObject_ValiantCharge flyingObject = (FlyingObject_ValiantCharge)GenSpawn.Spawn(ThingDef.Named("FlyingObject_ValiantCharge"), this.CasterPawn.Position, this.CasterPawn.Map);
-                    flyingObject.Launch(this.CasterPawn, t.Cell, this.CasterPawn);
-                }, "LaunchingFlyer", false, null);
+                int verVal = TM_Calc.GetSkillVersatilityLevel(CasterPawn, ability.def as TMAbilityDef);
+                adjustedRadius = 1.2f + (.8f * verVal);
             }
+            return adjustedRadius;
         }
+        return (float)targetAoEProperties.range;
+    }
 
-        public override void PostCastShot(bool inResult, out bool outResult)
+    protected override bool TryCastShot()
+    {
+        bool result = base.TryCastShot();
+        LocalTargetInfo t = (LocalTargetInfo)ability.currentTargets[0];
+        if (t != LocalTargetInfo.Invalid && t.Cell != default)
         {
-            if (inResult)
+            if (ModCheck.Validate.GiddyUp.Core_IsInitialized())
             {
-                this.Effect();
-                outResult = true;
+                ModCheck.GiddyUp.ForceDismount(base.CasterPawn);
             }
-            outResult = inResult;
+
+            LongEventHandler.QueueLongEvent(delegate
+            {
+                FlyingObject_ValiantCharge flyingObject = (FlyingObject_ValiantCharge)GenSpawn.Spawn(ThingDef.Named("FlyingObject_ValiantCharge"), CasterPawn.Position, CasterPawn.Map);
+                flyingObject.Launch(CasterPawn, t.Cell, CasterPawn);
+            }, "LaunchingFlyer", false, null);
         }
-    }    
+
+        return result;
+    }
 }

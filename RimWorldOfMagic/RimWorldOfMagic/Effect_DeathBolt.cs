@@ -1,11 +1,10 @@
 ﻿using Verse;
-using AbilityUser;
 using System.Collections.Generic;
 using RimWorld;
 
 namespace TorannMagic
 {    
-    public class Effect_DeathBolt : Verb_UseAbility
+    public class Effect_DeathBolt : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
 
@@ -13,11 +12,11 @@ namespace TorannMagic
         {
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
-                    if (this.CasterIsPawn && this.CasterPawn.apparel != null)
+                    if (CasterIsPawn && CasterPawn.apparel != null)
                     {
-                        List<Apparel> wornApparel = this.CasterPawn.apparel.WornApparel;
+                        List<Apparel> wornApparel = CasterPawn.apparel.WornApparel;
                         for (int i = 0; i < wornApparel.Count; i++)
                         {
                             if (!wornApparel[i].AllowVerbCast(this))
@@ -45,33 +44,25 @@ namespace TorannMagic
             return validTarg;
         }
 
+        protected override bool TryCastShot()
+        {
+            bool result = base.TryCastShot();
+            Effect();
+            return result;
+        }
+
         public virtual void Effect()
         {
-            LocalTargetInfo t = this.TargetsAoE[0];
-            bool flag = t.Cell != default(IntVec3);
-            if (flag)
+            LocalTargetInfo t = (LocalTargetInfo)ability.currentTargets[0];
+            if (t != LocalTargetInfo.Invalid && t.Cell != default)
             {
-                Thing launchedThing = new Thing()
+                Thing launchedThing = new Thing
                 {
                     def = TorannMagicDefOf.FlyingObject_DeathBolt
                 };
-                Pawn casterPawn = base.CasterPawn;
-                //LongEventHandler.QueueLongEvent(delegate
-                //{
-                    FlyingObject_DeathBolt flyingObject = (FlyingObject_DeathBolt)GenSpawn.Spawn(ThingDef.Named("FlyingObject_DeathBolt"), this.CasterPawn.Position, this.CasterPawn.Map);
-                    flyingObject.Launch(this.CasterPawn, t.Cell, launchedThing);
-                //}, "LaunchingFlyer", false, null);
+                FlyingObject_DeathBolt flyingObject = (FlyingObject_DeathBolt)GenSpawn.Spawn(ThingDef.Named("FlyingObject_DeathBolt"), CasterPawn.Position, CasterPawn.Map);
+                flyingObject.Launch(CasterPawn, t.Cell, launchedThing);
             }
-        }
-
-        public override void PostCastShot(bool inResult, out bool outResult)
-        {
-            if (inResult)
-            {
-                this.Effect();
-                outResult = true;
-            }
-            outResult = inResult;
         }
     }    
 }
