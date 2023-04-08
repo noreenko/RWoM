@@ -1,55 +1,50 @@
 ﻿using System.Collections.Generic;
 using Verse.AI;
-using RimWorld;
 using Verse;
-using AbilityUser;
-using System.Linq;
 
+namespace TorannMagic;
 
-namespace TorannMagic
+internal class JobDriver_DoFor : JobDriver
 {
-    internal class JobDriver_DoFor : JobDriver
+    private int age = -1;
+    public int durationTicks = 60;
+
+    public override bool TryMakePreToilReservations(bool errorOnFailed)
     {
-        private int age = -1;
-        public int durationTicks = 60;
+        return true;
+    }
 
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
+    protected override IEnumerable<Toil> MakeNewToils()
+    {
+        Toil doFor = new Toil()
         {
-            return true;
-        }
-
-        protected override IEnumerable<Toil> MakeNewToils()
-        {
-            Toil doFor = new Toil()
+            initAction = () =>
             {
-                initAction = () =>
+                if(age > durationTicks)
                 {
-                    if(this.age > this.durationTicks)
-                    {
-                        this.EndJobWith(JobCondition.InterruptForced);
-                    }
-                },
-                tickAction = () =>
-                {
-                    if (age > durationTicks)
-                    {
-                        this.EndJobWith(JobCondition.Succeeded);
-                    }
-                    age++;
-                },
-                defaultCompleteMode = ToilCompleteMode.Never
-            };
-            doFor.defaultDuration = this.durationTicks;
-            doFor.WithProgressBar(TargetIndex.A, delegate
-            {
-                if (this.pawn.DestroyedOrNull() || this.pawn.Dead || this.pawn.Downed)
-                {
-                    return 1f;
+                    EndJobWith(JobCondition.InterruptForced);
                 }
-                return 1f - (float)doFor.actor.jobs.curDriver.ticksLeftThisToil / this.durationTicks;
+            },
+            tickAction = () =>
+            {
+                if (age > durationTicks)
+                {
+                    EndJobWith(JobCondition.Succeeded);
+                }
+                age++;
+            },
+            defaultCompleteMode = ToilCompleteMode.Never
+        };
+        doFor.defaultDuration = durationTicks;
+        doFor.WithProgressBar(TargetIndex.A, delegate
+        {
+            if (pawn.DestroyedOrNull() || pawn.Dead || pawn.Downed)
+            {
+                return 1f;
+            }
+            return 1f - (float)doFor.actor.jobs.curDriver.ticksLeftThisToil / durationTicks;
 
-            }, false, 0f);
-            yield return doFor;         
-        }
+        }, false, 0f);
+        yield return doFor;         
     }
 }
