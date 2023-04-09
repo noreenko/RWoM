@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +10,7 @@ using System;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_Resurrection : Projectile_AbilityBase
+    public class Projectile_Resurrection : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private bool validTarget = false;
@@ -267,7 +267,7 @@ namespace TorannMagic
             {
                 LongEventHandler.ExecuteWhenFinished(delegate
                 {
-                    this.sustainer = SoundDef.Named("OrbitalBeam").TrySpawnSustainer(SoundInfo.InMap(this.selectedTarget, MaintenanceType.PerTick));
+                    this.sustainer = SoundDef.Named("OrbitalBeam").TrySpawnSustainer(SoundInfo.InMap(intendedTarget, MaintenanceType.PerTick));
                 });
             }
         }

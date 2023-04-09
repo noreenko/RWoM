@@ -3,29 +3,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_RegrowLimb : Verb_UseAbility
+    public class Verb_RegrowLimb : VFECore.Abilities.Verb_CastAbility
     {
 
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
         {
-            bool validTarg = false;
-            if (targ.Thing != null && targ.Thing == this.caster)
+            bool validTarg;
+            if (targ.Thing != null && targ.Thing == caster)
             {
-                return this.verbProps.targetParams.canTargetSelf;
+                return verbProps.targetParams.canTargetSelf;
             }
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
-                    ShootLine shootLine;
-                    validTarg = this.TryFindShootLineFromTo(root, targ, out shootLine);
+                    validTarg = TryFindShootLineFromTo(root, targ, out _);
                 }
                 else
                 {
@@ -42,12 +41,10 @@ namespace TorannMagic
         protected override bool TryCastShot()
         {
 
-            CellRect cellRect = CellRect.CenteredOn(this.currentTarget.Cell, 1);
-            cellRect.ClipInsideMap(this.CasterPawn.Map);
+            CellRect cellRect = CellRect.CenteredOn(currentTarget.Cell, 1);
+            cellRect.ClipInsideMap(CasterPawn.Map);
             IntVec3 centerCell = cellRect.CenterCell;
-            Map map = this.CasterPawn.Map;
-
-            Pawn caster = base.CasterPawn;
+            Map map = CasterPawn.Map;
 
             if ((centerCell.IsValid && centerCell.Standable(map)))
             {
@@ -64,8 +61,7 @@ namespace TorannMagic
 
         public static void SingleSpawnLoop(SpawnThings spawnables, IntVec3 position, Map map)
         {
-            bool flag = spawnables.def != null;
-            if (flag)
+            if (spawnables.def != null)
             {
                 ThingDef def = spawnables.def;
                 ThingDef stuff = null;
@@ -76,7 +72,6 @@ namespace TorannMagic
                 }
                 Thing thing = ThingMaker.MakeThing(def, stuff);
                 GenPlace.TryPlaceThing(thing, position, map, ThingPlaceMode.Near);
-                //GenSpawn.Spawn(thing, position, map, Rot4.North, WipeMode.Vanish, false);                
             }
         }
     }

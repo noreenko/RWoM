@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    public class Verb_SoL_CreateLight : Verb_UseAbility  
+    public class Verb_SoL_CreateLight : VFECore.Abilities.Verb_CastAbility  
     {
         bool validTarg;
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)

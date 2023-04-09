@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.AI;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_FadeEmotions : Verb_UseAbility
+    public class Verb_FadeEmotions : VFECore.Abilities.Verb_CastAbility
     {
 
         bool validTarg;
@@ -19,7 +19,7 @@ namespace TorannMagic
         {
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
                     validTarg = true;
                 }
@@ -39,11 +39,11 @@ namespace TorannMagic
         protected override bool TryCastShot()
         {
             bool flag = false;
-            Pawn caster = this.CasterPawn;
-            Pawn hitPawn = this.currentTarget.Thing as Pawn;
+            Pawn casterPawn = CasterPawn;
+            Pawn hitPawn = currentTarget.Thing as Pawn;
 
-            if(hitPawn != null && hitPawn.RaceProps != null && hitPawn.needs != null && hitPawn.needs.mood != null && hitPawn.needs.mood.thoughts != null && 
-                hitPawn.RaceProps.Humanlike && !TM_Calc.IsUndead(hitPawn) && hitPawn.Faction == caster.Faction)
+            if(hitPawn != null && hitPawn.RaceProps != null && hitPawn.needs != null && hitPawn.needs.mood != null && hitPawn.needs.mood.thoughts != null &&
+                hitPawn.RaceProps.Humanlike && !TM_Calc.IsUndead(hitPawn) && hitPawn.Faction == casterPawn.Faction)
             {
                 List<Thought_Memory> thoughts = hitPawn.needs.mood.thoughts.memories.Memories;
                 Need n = hitPawn.needs.mood;
@@ -61,11 +61,10 @@ namespace TorannMagic
             }
             else
             {
-                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, this.Ability.Def.label), MessageTypeDefOf.RejectInput);
+                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, ability.def.label), MessageTypeDefOf.RejectInput);
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
 
         public void Effects(IntVec3 position)
@@ -76,7 +75,7 @@ namespace TorannMagic
                 rndPos.x += Rand.Range(-.5f, .5f);
                 rndPos.z += Rand.Range(.1f, .5f);
                 rndPos.y += Rand.Range(-.3f, .3f);
-                FleckMaker.ThrowLightningGlow(position.ToVector3Shifted(), this.CasterPawn.Map, Rand.Range(.5f, .8f));
+                FleckMaker.ThrowLightningGlow(position.ToVector3Shifted(), CasterPawn.Map, Rand.Range(.5f, .8f));
             }
         }
     }

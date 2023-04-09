@@ -5,19 +5,19 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 
 
 namespace TorannMagic
 {
-    public class Verb_RangerShot : Verb_UseAbility
+    public class Verb_RangerShot : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
             if ( this.CasterPawn.equipment.Primary !=null && this.CasterPawn.equipment.Primary.def.IsRangedWeapon)
             {
                 Thing wpn = this.CasterPawn.equipment.Primary;
-                if (TM_Calc.HasLoSFromTo(this.CasterPawn.Position, this.currentTarget.Cell, this.CasterPawn, 0, this.Ability.Def.MainVerb.range))
+                if (TM_Calc.HasLoSFromTo(this.CasterPawn.Position, this.currentTarget.Cell, this.CasterPawn, 0, ability.def.verbProperties.range))
                 {
                     if (TM_Calc.IsUsingBow(this.CasterPawn))
                     {

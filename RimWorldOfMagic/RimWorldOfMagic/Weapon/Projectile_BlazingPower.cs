@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using Verse;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using UnityEngine;
 
 namespace TorannMagic.Weapon
 {
-    public class Projectile_BlazingPower : Projectile_AbilityBase
+    public class Projectile_BlazingPower : VFECore.Abilities.AbilityProjectile
     {
         private float arcaneDmg = 1;
 

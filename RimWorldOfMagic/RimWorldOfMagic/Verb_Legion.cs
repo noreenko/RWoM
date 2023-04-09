@@ -1,14 +1,14 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_Legion : Verb_UseAbility  
+    class Verb_Legion : VFECore.Abilities.Verb_CastAbility
     {
         private bool validTarg = false;
 
@@ -81,10 +81,10 @@ namespace TorannMagic
                                             mp.autocast = false;
                                         }
                                     }
-                                    mightComp.RemovePawnAbility(mightComp.mimicAbility);
+                                    mightComp.RemoveAbility(mightComp.mimicAbility);
                                 }
                                 mightComp.mimicAbility = tempAbility;
-                                mightComp.AddPawnAbility(tempAbility);
+                                mightComp.GiveAbility(tempAbility);
                             }
                             else
                             {

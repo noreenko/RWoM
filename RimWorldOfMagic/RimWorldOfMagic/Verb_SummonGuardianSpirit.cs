@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse.AI;
 using Verse;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_SummonGuardianSpirit : Verb_UseAbility
+    public class Verb_SummonGuardianSpirit : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used for non-unique abilities that can be used with shieldbelt
@@ -53,9 +53,9 @@ namespace TorannMagic
             //pwrVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_GuardianSpirit, "TM_GuardianSpirit", "_pwr", true);
             //verVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_GuardianSpirit, "TM_GuardianSpirit", "_ver", true);
             //effVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_GuardianSpirit, "TM_GuardianSpirit", "_eff", true);
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
-            effVal = TM_Calc.GetSkillEfficiencyLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
+            effVal = TM_Calc.GetSkillEfficiencyLevel(caster, ability.def as TMAbilityDef);
 
             if (cell != null && (cell.IsValid && cell.Walkable(map)))
             {

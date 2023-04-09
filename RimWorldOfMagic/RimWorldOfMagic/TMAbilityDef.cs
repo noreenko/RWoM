@@ -1,12 +1,11 @@
 ﻿using System.Text;
-using AbilityUser;
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-	public class TMAbilityDef : AbilityUser.AbilityDef
+	public class TMAbilityDef : VFECore.Abilities.AbilityDef
 	{
         //Add new variables here to control skill levels
         public float manaCost = 0f;                             //hardcoded mana cost of ability
@@ -48,13 +47,6 @@ namespace TorannMagic
         public List<TraitDef> chainedAbilityTraitRequirements = null;
         public List<TMAbilityDef> abilitiesRemovedWhenUsed = new List<TMAbilityDef>();       //removes all listed abilities when this ability is used; useful for resetting an ability chain
 
-        public string GetPointDesc()
-		{
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(this.GetDescription());
-			return stringBuilder.ToString();
-		}
-
         private bool cacheRestriction = true;
         private int nextRestrictionCheckTick = 0;
         public bool IsRestrictedByEquipment(Pawn p)
@@ -67,94 +59,60 @@ namespace TorannMagic
                     cacheRestriction = true;
                     foreach (string str in requiredWeaponsOrCategories)
                     {
-                        if (str == "Unarmed")
+                        switch (str)
                         {
-                            if (p.equipment != null && p.equipment.Primary == null)
-                            {
+                            case "Unarmed" when p.equipment?.Primary == null:
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "MeleeAndUnarmed")
-                        {
-                            if (TM_Calc.IsUsingMelee(p))
-                            {
-                                return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "Melee")
-                        {
-                            if (p.equipment != null && p.equipment.Primary == null)
-                            {
+                            case "Unarmed":
                                 return true;
-                            }
-                            if (TM_Calc.IsUsingMelee(p))
-                            {
+                            case "MeleeAndUnarmed" when TM_Calc.IsUsingMelee(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "Ranged")
-                        {
-                            if (TM_Calc.IsUsingRanged(p))
-                            {
+                            case "MeleeAndUnarmed":
+                            case "Melee" when p.equipment?.Primary == null:
+                                return true;
+                            case "Melee" when TM_Calc.IsUsingMelee(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "Bows")
-                        {
-                            if (TM_Calc.IsUsingBow(p))
-                            {
+                            case "Melee":
+                                return true;
+                            case "Ranged" when TM_Calc.IsUsingRanged(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "Pistols")
-                        {
-                            if (TM_Calc.IsUsingPistol(p))
-                            {
+                            case "Ranged":
+                                return true;
+                            case "Bows" when TM_Calc.IsUsingBow(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "Rifles")
-                        {
-                            if (TM_Calc.IsUsingRifle(p))
-                            {
+                            case "Bows":
+                                return true;
+                            case "Pistols" when TM_Calc.IsUsingPistol(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "Shotguns")
-                        {
-                            if (TM_Calc.IsUsingShotgun(p))
-                            {
+                            case "Pistols":
+                                return true;
+                            case "Rifles" when TM_Calc.IsUsingRifle(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else if (str == "MagicalFoci")
-                        {
-                            if (TM_Calc.IsUsingMagicalFoci(p))
-                            {
+                            case "Rifles":
+                                return true;
+                            case "Shotguns" when TM_Calc.IsUsingShotgun(p):
                                 return (cacheRestriction = false);
-                            }
-                            return true;
-                        }
-                        else
-                        {
-                            if (p.equipment != null && p.equipment.Primary != null)
+                            case "Shotguns":
+                                return true;
+                            case "MagicalFoci" when TM_Calc.IsUsingMagicalFoci(p):
+                                return (cacheRestriction = false);
+                            case "MagicalFoci":
+                                return true;
+                            default:
                             {
-                                if (p.equipment.Primary.def.defName == str)
+                                if (p.equipment?.Primary != null)
                                 {
-                                    return (cacheRestriction = false);
-                                }
-                                else if(TM_Calc.IsUsingCustomWeaponCategory(p, str))
-                                {
+                                    if (p.equipment.Primary.def.defName == str)
+                                    {
+                                        return (cacheRestriction = false);
+                                    }
+                                    else if(TM_Calc.IsUsingCustomWeaponCategory(p, str))
+                                    {
 
+                                    }
                                 }
+
+                                break;
                             }
                         }
                     }

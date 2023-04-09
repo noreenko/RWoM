@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using RimWorld;
 
 namespace TorannMagic
 {
-    public class Projectile_Spite : Projectile_AbilityBase
+    public class Projectile_Spite : VFECore.Abilities.AbilityProjectile
     {
 
         private int pwrVal = 0;

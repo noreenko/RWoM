@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using System.Linq;
 using Verse;
@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-	public class Projectile_LightningStorm : Projectile_AbilityBase
+	public class Projectile_LightningStorm : VFECore.Abilities.AbilityProjectile
 	{
 
 		private IntVec3 strikeLoc = IntVec3.Invalid;

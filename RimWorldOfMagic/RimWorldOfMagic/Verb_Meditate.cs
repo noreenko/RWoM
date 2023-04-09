@@ -1,26 +1,22 @@
 ﻿using System;
 using Verse;
 using Verse.AI;
-using AbilityUser;
+
 
 
 
 namespace TorannMagic
 {
-    public class Verb_Meditate : Verb_UseAbility
+    public class Verb_Meditate : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
-            Map map = base.CasterPawn.Map;
             Pawn pawn = base.CasterPawn;
 
             pawn.jobs.EndCurrentJob(JobCondition.InterruptForced);
-            Job job = new Job(TorannMagicDefOf.JobDriver_TM_Meditate, this.CasterPawn.Position);
+            Job job = new Job(TorannMagicDefOf.JobDriver_TM_Meditate, CasterPawn.Position);
             pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
-            
-            this.Ability.PostAbilityAttempt();
-
-            this.burstShotsLeft = 0;
+            burstShotsLeft = 0;
             return false;
         }
     }

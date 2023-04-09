@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.AI;
 using TorannMagic.TMDefs;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_BrandAwareness : Verb_UseAbility
+    public class Verb_BrandAwareness : VFECore.Abilities.Verb_CastAbility
     {
 
         private int verVal = 0;
@@ -58,16 +58,15 @@ namespace TorannMagic
                 }
                 else
                 {
-                    Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, this.Ability.Def.label), MessageTypeDefOf.RejectInput);
+                    Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, ability.def.label), MessageTypeDefOf.RejectInput);
                 }
             }
             else
             {
-                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, this.Ability.Def.label), MessageTypeDefOf.RejectInput);
+                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, ability.def.label), MessageTypeDefOf.RejectInput);
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
 
         private void UpdateHediffComp(Pawn hitPawn)

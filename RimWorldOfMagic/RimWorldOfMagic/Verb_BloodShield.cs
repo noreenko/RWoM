@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 using UnityEngine;
 using Verse.AI.Group;
 
 namespace TorannMagic
 {
-    public class Verb_BloodShield : Verb_UseAbility  
+    public class Verb_BloodShield : VFECore.Abilities.Verb_CastAbility
     {
         
         int pwrVal;

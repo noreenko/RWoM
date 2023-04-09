@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using HarmonyLib;
@@ -15,26 +15,25 @@ namespace TorannMagic
         int rallyBonus = 0;
         protected override bool TryCastShot()
         {
-            Pawn caster = this.CasterPawn;
-            Map map = this.CasterPawn.Map;
+            Pawn casterPawn = CasterPawn;
+            Map map = CasterPawn.Map;
             
-            if(caster.story != null && caster.story.Adulthood != null && caster.story.Adulthood.identifier == "tm_lost_spirit")
+            if(casterPawn.story != null && casterPawn.story.Adulthood != null && casterPawn.story.Adulthood.identifier == "tm_lost_spirit")
             {
                 rallyBonus = 1;
             }
-            CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
-            int pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            int verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);            
+            CompAbilityUserMagic comp = casterPawn.GetCompAbilityUserMagic();
+            int pwrVal = TM_Calc.GetSkillPowerLevel(casterPawn, ability.def as TMAbilityDef);
+            int verVal = TM_Calc.GetSkillVersatilityLevel(casterPawn, ability.def as TMAbilityDef);            
             int radius = 8 + (2 * verVal) + rallyBonus;
             int maxCount = 7 + (2 * pwrVal) + rallyBonus;
-            List<IntVec3> tmpList = GenRadial.RadialCellsAround(caster.Position, radius, true).ToList();
+            List<IntVec3> tmpList = GenRadial.RadialCellsAround(casterPawn.Position, radius, true).ToList();
             List<Corpse> corpseList = new List<Corpse>();
-            corpseList.Clear();
-            if (tmpList != null && tmpList.Count > 0)
+            if (tmpList.Count > 0)
             {
                 foreach (IntVec3 c in tmpList)
                 {
-                    if (c != null && (c.IsValid && c.InBoundsWithNullCheck(map) && c.Walkable(map)))
+                    if (c.IsValid && c.InBoundsWithNullCheck(map) && c.Walkable(map))
                     {
                         foreach(Thing t in c.GetThingList(map))
                         {
@@ -51,7 +50,7 @@ namespace TorannMagic
                 }
                 ExitSearch:;
                 Effecter effecter = TorannMagicDefOf.TM_SpiritPulseED.Spawn();
-                effecter.Trigger(new TargetInfo(caster.Position, map, false), new TargetInfo(caster.Position, map, false));
+                effecter.Trigger(new TargetInfo(casterPawn.Position, map, false), new TargetInfo(casterPawn.Position, map, false));
                 effecter.Cleanup();
                 for (int i = 0; i < corpseList.Count; i++)
                 {
@@ -66,13 +65,13 @@ namespace TorannMagic
 
                     Thing newPawn = null;
                     int duration = Rand.Range(880, 920) + (180 * (verVal + rallyBonus));
-                    newPawn = TM_Action.SingleSpawnLoop(caster, tempPod, cell, map, duration, true, false, caster.Faction, false);
+                    newPawn = TM_Action.SingleSpawnLoop(casterPawn, tempPod, cell, map, duration, true, false, casterPawn.Faction, false);
                     Pawn animal = newPawn as Pawn;
 
                     HealthUtility.AdjustSeverity(animal, TorannMagicDefOf.TM_AntiMovement, 6f - ((1.5f * pwrVal) * comp.arcaneDmg) - rallyBonus);
                     HealthUtility.AdjustSeverity(animal, TorannMagicDefOf.TM_Manipulation, rallyBonus + (pwrVal * comp.arcaneDmg));
 
-                    foreach(Pawn item in PawnUtility.SpawnedMasteredPawns(caster))
+                    foreach(Pawn item in PawnUtility.SpawnedMasteredPawns(casterPawn))
                     {
                         if(item.caller != null)
                         {
@@ -87,7 +86,7 @@ namespace TorannMagic
                     }
                 }
             }
-            this.burstShotsLeft = 0;
+            burstShotsLeft = 0;
             return false;
         }
     }

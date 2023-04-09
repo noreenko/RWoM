@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Verse;
 using Verse.AI;
-using AbilityUser;
+
 using Verse.AI.Group;
 
 namespace TorannMagic

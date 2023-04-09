@@ -2,32 +2,32 @@
 using RimWorld.Planet;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_ShadowStep : Verb_UseAbility  
+    class Verb_ShadowStep : VFECore.Abilities.Verb_CastAbility  
     {
 
         protected override bool TryCastShot()
         {
             bool result = false;
-            CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
+            CompAbilityUserMagic comp = CasterPawn.GetCompAbilityUserMagic();
             Pawn soulPawn = comp.soulBondPawn;
 
             if(soulPawn != null && !soulPawn.Dead && !soulPawn.Destroyed)
             {
-                Pawn p = this.CasterPawn;
-                bool drafted = this.CasterPawn.Drafted;
+                Pawn p = CasterPawn;
+                bool drafted = CasterPawn.Drafted;
                 bool soulPawnSpawned = soulPawn.Spawned;
-                Map map = this.CasterPawn.Map;
+                Map map = CasterPawn.Map;
                 Map sMap = soulPawn.Map;
                 if (sMap == null)
                 {
-                    Hediff bondHediff = null;
-                    bondHediff = soulPawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_SoulBondPhysicalHD"), false);
+                    Hediff bondHediff;
+                    bondHediff = soulPawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_SoulBondPhysicalHD"));
                     if (bondHediff != null)
                     {
                         HediffComp_SoulBondHost compS = bondHediff.TryGetComp<HediffComp_SoulBondHost>();
@@ -39,7 +39,7 @@ namespace TorannMagic
                     }
                     bondHediff = null;
 
-                    bondHediff = soulPawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_SoulBondMentalHD"), false);
+                    bondHediff = soulPawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_SoulBondMentalHD"));
                     if (bondHediff != null)
                     {
                         HediffComp_SoulBondHost compS = bondHediff.TryGetComp<HediffComp_SoulBondHost>();
@@ -58,7 +58,7 @@ namespace TorannMagic
                         goto fin;
                     }
                 }
-                IntVec3 casterCell = this.CasterPawn.Position;
+                IntVec3 casterCell = CasterPawn.Position;
                 IntVec3 targetCell = soulPawn.Position;
                 if (p.Spawned && soulPawnSpawned)
                 {
@@ -81,7 +81,6 @@ namespace TorannMagic
                         GenSpawn.Spawn(p, casterCell, map);
 
                     }
-                    this.Ability.PostAbilityAttempt();
                 }
                 else
                 {
@@ -95,9 +94,9 @@ namespace TorannMagic
                 Log.Warning("No soul bond found to shadow call.");
             }
             
-            //this.ability.TicksUntilCasting = (int)base.UseAbilityProps.SecondsToRecharge * 60;
+            //ability.TicksUntilCasting = (int)base.UseAbilityProps.SecondsToRecharge * 60;
             fin:;
-            this.burstShotsLeft = 0;
+            burstShotsLeft = 0;
             return result;
         }
     }

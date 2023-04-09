@@ -1,5 +1,5 @@
 ﻿using RimWorld;
-using AbilityUser;
+
 using Verse;
 using System.Linq;
 using Verse.AI;
@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace TorannMagic
 {
-    public class Projectile_TechnoTurret : Projectile_AbilityBase
+    public class Projectile_TechnoTurret : VFECore.Abilities.AbilityProjectile
     {
 
         private int verVal;

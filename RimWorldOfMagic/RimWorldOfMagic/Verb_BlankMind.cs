@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -10,7 +10,7 @@ using Verse.AI;
 
 namespace TorannMagic
 {
-    public class Verb_BlankMind : Verb_UseAbility
+    public class Verb_BlankMind : VFECore.Abilities.Verb_CastAbility
     {
 
         bool validTarg;

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using RimWorld;
 using Verse;
 using UnityEngine;
-using AbilityUser;
+
 using System.Linq;
 
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Verb_PommelStrike : Verb_UseAbility
+    public class Verb_PommelStrike : VFECore.Abilities.Verb_CastAbility
     {
 
 

@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Projectile_WetGround : Projectile_AbilityBase
+    public class Projectile_WetGround : VFECore.Abilities.AbilityProjectile
     {
 
         protected override void Impact(Thing hitThing, bool blockedByShield = false)

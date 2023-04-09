@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 using UnityEngine;
 
 namespace TorannMagic
 {
-	class Projectile_Icebolt : Projectile_AbilityBase
+	class Projectile_Icebolt : VFECore.Abilities.AbilityProjectile
 	{
         private int verVal;
         private int pwrVal;

@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System;
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Projectile_TempestStrike : Projectile_AbilityBase
+    class Projectile_TempestStrike : VFECore.Abilities.AbilityProjectile
     {
         private int rotationOffset = 0;
         public bool shouldSpin = true;

@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using RimWorld;
@@ -8,7 +8,7 @@ using System;
 
 namespace TorannMagic
 {
-    public class Verb_MedicalSupply : Verb_UseAbility
+    public class Verb_MedicalSupply : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)

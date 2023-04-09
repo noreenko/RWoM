@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse.AI;
 using Verse;
 using UnityEngine;
@@ -10,11 +10,8 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_60mmMortar : Verb_UseAbility
+    public class Verb_60mmMortar : VFECore.Abilities.Verb_CastAbility
     {
-        int pwrVal = 0;
-        int verVal = 0;
-        int effVal = 0;
         Thing mortar = null;
 
         protected override bool TryCastShot()
@@ -23,12 +20,6 @@ namespace TorannMagic
             Map map = pawn.Map;
 
             CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
-            //pwrVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_60mmMortar, "TM_60mmMortar", "_pwr", true);
-            //verVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_60mmMortar, "TM_60mmMortar", "_ver", true);
-            //effVal = TM_Calc.GetMightSkillLevel(pawn, comp.MightData.MightPowerSkill_60mmMortar, "TM_60mmMortar", "_eff", true);
-            pwrVal = TM_Calc.GetSkillPowerLevel(pawn, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(pawn, this.Ability.Def as TMAbilityDef);
-            effVal = TM_Calc.GetSkillEfficiencyLevel(pawn, this.Ability.Def as TMAbilityDef);
 
             if ((pawn.Position.IsValid && pawn.Position.Standable(map)))
             {
@@ -77,7 +68,7 @@ namespace TorannMagic
 
             if ((mortar != null && mortar.Spawned && mortar.Position.IsValid))
             {
-                this.Ability.PostAbilityAttempt();
+                ability.PostAbilityAttempt();
                 mortar.def.interactionCellOffset = (caster.Position - mortar.Position);
                 Job job = new Job(JobDefOf.ManTurret, mortar);
                 pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);

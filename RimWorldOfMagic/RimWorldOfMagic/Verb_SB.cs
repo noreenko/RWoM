@@ -1,9 +1,9 @@
 ﻿using Verse;
-using AbilityUser;
+
 
 namespace TorannMagic
 {
-    public class Verb_SB : Verb_UseAbility
+    public class Verb_SB : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used for non-unique abilities that can be used with shieldbelt

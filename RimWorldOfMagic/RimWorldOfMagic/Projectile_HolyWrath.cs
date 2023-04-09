@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using TorannMagic.Utils;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_HolyWrath : Projectile_AbilityBase
+    public class Projectile_HolyWrath : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private int verVal = 0;

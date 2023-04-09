@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Verb_MageLight : Verb_UseAbility  
+    class Verb_MageLight : VFECore.Abilities.Verb_CastAbility  
     {
         protected override bool TryCastShot()
         {

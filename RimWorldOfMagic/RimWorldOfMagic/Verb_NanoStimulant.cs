@@ -2,12 +2,12 @@
 using System;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_NanoStimulant : Verb_UseAbility  
+    class Verb_NanoStimulant : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {

@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 using System.Linq;
 using UnityEngine;
 
 namespace TorannMagic
 {
-    class Laser_LightningBolt : Projectile_AbilityLaser 
+    class Laser_LightningBolt : Projectile_AbilityLaser
     {
         private int verVal;
         private int pwrVal;

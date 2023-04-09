@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace TorannMagic
     //    propagationSpeed:, excludeRadius:, doSoundEffects:, postExplosionSpawnThingDefWater:, screenShakeFactor:
     //    );
 
-    public class Projectile_Fireball : Projectile_AbilityBase
+    public class Projectile_Fireball : VFECore.Abilities.AbilityProjectile
 	{
         private int verVal;
         private int pwrVal;

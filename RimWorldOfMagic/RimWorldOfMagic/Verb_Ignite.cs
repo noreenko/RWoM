@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using Verse.Sound;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Verb_Ignite : Verb_UseAbility  
+    class Verb_Ignite : VFECore.Abilities.Verb_CastAbility
     {
         private float arcaneDmg = 1f;
         bool validTarg;
@@ -22,7 +22,7 @@ namespace TorannMagic
         {
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
                     //out of range
                     validTarg = true;
@@ -41,34 +41,33 @@ namespace TorannMagic
 
         protected override bool TryCastShot()
         {
-            Pawn p = this.CasterPawn;
-            Map map = this.CasterPawn.Map;
-            CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
+            Pawn p = CasterPawn;
+            Map map = CasterPawn.Map;
+            CompAbilityUserMagic comp = CasterPawn.GetCompAbilityUserMagic();
             corpses.Clear();
             pawns.Clear();
             plants.Clear();
-            GenClamor.DoClamor(p, this.UseAbilityProps.TargetAoEProperties.range, ClamorDefOf.Ability);
+            GenClamor.DoClamor(p, ability.GetRangeForPawn(), ClamorDefOf.Ability);
             Effecter igniteED = TorannMagicDefOf.TM_IgniteED.Spawn();
-            igniteED.Trigger(new TargetInfo(this.currentTarget.Cell, map, false), new TargetInfo(this.currentTarget.Cell, map, false));
+            igniteED.Trigger(new TargetInfo(currentTarget.Cell, map, false), new TargetInfo(currentTarget.Cell, map, false));
             igniteED.Cleanup();
-            SoundInfo info = SoundInfo.InMap(new TargetInfo(this.currentTarget.Cell, map, false), MaintenanceType.None);            
+            SoundInfo info = SoundInfo.InMap(new TargetInfo(currentTarget.Cell, map, false), MaintenanceType.None);            
             info.pitchFactor = 1.1f;
             info.volumeFactor = 1.8f;
             TorannMagicDefOf.TM_FireWooshSD.PlayOneShot(info);
-            TargetInfo ti = new TargetInfo(this.currentTarget.Cell, map, false);            
+            TargetInfo ti = new TargetInfo(currentTarget.Cell, map, false);            
             TM_MoteMaker.MakeOverlay(ti, TorannMagicDefOf.TM_Mote_PsycastAreaEffect, map, Vector3.zero, .2f, 0f, .1f, .4f, .4f, 4.3f);
             float classBonus = 1f;
             if (p.story != null && p.story.traits != null && p.story.traits.HasTrait(TorannMagicDefOf.InnerFire))
             {
                 classBonus = 1.5f;
             }
-            if (this.currentTarget != null && p != null && comp != null)
+            if (currentTarget != null && p != null && comp != null)
             {
-                this.arcaneDmg = comp.arcaneDmg;                
-                this.TargetsAoE.Clear();
-                this.FindTargets();
-                float energy = 200000 * this.arcaneDmg * classBonus;
-                GenTemperature.PushHeat(this.currentTarget.Cell, p.Map, energy);
+                arcaneDmg = comp.arcaneDmg;
+                FindTargets();
+                float energy = 200000 * arcaneDmg * classBonus;
+                GenTemperature.PushHeat(currentTarget.Cell, p.Map, energy);
                 
                 for (int i = 0; i < pawns.Count; i++)
                 {
@@ -79,7 +78,7 @@ namespace TorannMagic
                         {
                             distanceModifier = 1f;
                         }
-                        if (Rand.Chance(TM_Calc.GetSpellSuccessChance(this.CasterPawn, pawns[i], true)) && Rand.Chance(distanceModifier))
+                        if (Rand.Chance(TM_Calc.GetSpellSuccessChance(CasterPawn, pawns[i], true)) && Rand.Chance(distanceModifier))
                         {
                             pawns[i].TryAttachFire(Rand.Range(distanceModifier / 2f, distanceModifier));
                         }
@@ -87,12 +86,8 @@ namespace TorannMagic
                 }
                 for (int i = 0; i < corpses.Count; i++)
                 {
-                    //if (corpses[i].CanEverAttachFire())
-                    //{
                     float distanceModifier = 1f / (corpses[i].Position - currentTarget.Cell).LengthHorizontal;
-                    //    corpses[i].TryAttachFire(Rand.Range(distanceModifier / 2f, distanceModifier));
                         FireUtility.TryStartFireIn(corpses[i].Position, map, Rand.Range(distanceModifier / 2f, distanceModifier));
-                    //}
                 }
                 for (int i = 0; i < plants.Count; i++)
                 {
@@ -118,7 +113,7 @@ namespace TorannMagic
                         }
                     }                    
                 }
-                List<IntVec3> cellList = GenRadial.RadialCellsAround(this.currentTarget.Cell, this.UseAbilityProps.TargetAoEProperties.range, true).ToList();
+                List<IntVec3> cellList = GenRadial.RadialCellsAround(currentTarget.Cell, ability.GetRangeForPawn(), true).ToList();
                 bool raining = map.weatherManager.RainRate > 0f || map.weatherManager.SnowRate > 0f;
                 for(int i = 0; i< cellList.Count; i++)
                 {
@@ -127,35 +122,29 @@ namespace TorannMagic
                     {
                         map.snowGrid.SetDepth(cellList[i], 0f);
                         FleckMaker.ThrowSmoke(cellList[i].ToVector3Shifted(), map, Rand.Range(.8f, 1.6f));
-                        Thing smoke = ThingMaker.MakeThing(TorannMagicDefOf.Mote_Base_Smoke, null);
+                        Thing smoke = ThingMaker.MakeThing(TorannMagicDefOf.Mote_Base_Smoke);
                         GenSpawn.Spawn(smoke, cellList[i], map, WipeMode.Vanish);
                     }
                     else if(raining || cellList[i].GetTerrain(map).IsWater)
                     {
-                        Thing smoke = ThingMaker.MakeThing(TorannMagicDefOf.Mote_Base_Smoke, null);
+                        Thing smoke = ThingMaker.MakeThing(TorannMagicDefOf.Mote_Base_Smoke);
                         GenSpawn.Spawn(smoke, cellList[i], map, WipeMode.Vanish);
                     }
                     TM_MoteMaker.ThrowGenericFleck(FleckDefOf.AirPuff, cellList[i].ToVector3Shifted(), map, 2.5f, .05f, .05f, Rand.Range(2f,3f), Rand.Range(-60, 60), .5f, -70, Rand.Range(0, 360));
                 }
             }
 
-            this.burstShotsLeft = 0;
+            burstShotsLeft = 0;
             return true;
         }
 
 
         private void FindTargets()
         {
+            IntVec3 aoeStartPosition = currentTarget.Cell;
 
-            IntVec3 aoeStartPosition = this.currentTarget.Cell;
-            int radius = this.UseAbilityProps.TargetAoEProperties.range;
-
-            List<Thing> list = new List<Thing>();            
-            
-            bool flag4 = !this.UseAbilityProps.TargetAoEProperties.friendlyFire;
-
-            list = (from x in this.caster.Map.listerThings.AllThings
-                    where x.Position.InHorDistOf(aoeStartPosition, (float)radius)
+            List<Thing> list = (from x in caster.Map.listerThings.AllThings
+                    where x.Position.InHorDistOf(aoeStartPosition, ability.GetRangeForPawn())
                     select x).ToList<Thing>();
 
             for(int i = 0; i < list.Count; i++)

@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using HarmonyLib;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_Refraction : Projectile_AbilityBase
+    public class Projectile_Refraction : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private bool wallActive = false;
@@ -64,10 +64,10 @@ namespace TorannMagic
         private void GetSecondTarget()
         {
             Find.Targeter.StopTargeting();
-            this.BeginTargetingWithVerb(TorannMagicDefOf.TM_CompVerb, TorannMagicDefOf.TM_CompVerb.MainVerb.targetParams, delegate (LocalTargetInfo info)
+            BeginTargetingWithVerb(TorannMagicDefOf.TM_CompVerb, TorannMagicDefOf.TM_CompVerb.MainVerb.targetParams, delegate (LocalTargetInfo info)
             {
                 secondTarget = info;
-            }, caster, null, null);
+            }, caster);
         }
 
         private void GetWallCells()

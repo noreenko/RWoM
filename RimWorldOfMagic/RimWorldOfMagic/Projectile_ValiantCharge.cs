@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using RimWorld;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_ValiantCharge : Projectile_AbilityBase
+    public class Projectile_ValiantCharge : VFECore.Abilities.AbilityProjectile
     {
         private static readonly Color wingColor = new Color(160f, 160f, 160f);
         private static readonly Material wingsNS = MaterialPool.MatFrom("Other/angelwings_up", ShaderDatabase.Transparent, Projectile_ValiantCharge.wingColor);

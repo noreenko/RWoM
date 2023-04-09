@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 using Verse.Sound;
@@ -11,7 +11,7 @@ using Verse.AI;
 
 namespace TorannMagic
 {
-    public class Verb_MindKiller : Verb_UseAbility
+    public class Verb_MindKiller : VFECore.Abilities.Verb_CastAbility
     {
         float radius = 15f;
         float penetrationChance = .5f;
@@ -30,8 +30,8 @@ namespace TorannMagic
                 int verVal = 0;
                 if (comp != null && comp.MagicData != null)
                 {
-                    pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef, false);
-                    verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef, false);
+                    pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef, false);
+                    verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef, false);
                 }
                 radius += (verVal * 2);
                 penetrationChance += (verVal * .1f);

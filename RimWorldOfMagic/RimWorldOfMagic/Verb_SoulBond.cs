@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_SoulBond : Verb_UseAbility  
+    class Verb_SoulBond : VFECore.Abilities.Verb_CastAbility  
     {
         bool flagSD = false;
         bool flagWD = false;
@@ -53,8 +53,8 @@ namespace TorannMagic
             //MagicPowerSkill ver = comp.MagicData.MagicPowerSkill_SoulBond.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_SoulBond_ver");
             //verVal = ver.level;
             //pwrVal = pwr.level;
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
 
             bool flag = pawn != null && !pawn.Dead && pawn.RaceProps.Humanlike && pawn != caster;
             if (flag)
@@ -81,8 +81,8 @@ namespace TorannMagic
                                 comp.soulBondPawn = null;
                                 comp.spell_ShadowCall = false;
                                 comp.spell_ShadowStep = false;
-                                comp.RemovePawnAbility(TorannMagicDefOf.TM_ShadowCall);
-                                comp.RemovePawnAbility(TorannMagicDefOf.TM_ShadowStep);
+                                comp.RemoveAbility(TorannMagicDefOf.TM_ShadowCall);
+                                comp.RemoveAbility(TorannMagicDefOf.TM_ShadowStep);
                             }
                             else
                             {
@@ -113,8 +113,8 @@ namespace TorannMagic
                             ApplyHediffs();
                             comp.spell_ShadowCall = true;
                             comp.spell_ShadowStep = true;
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_ShadowCall);
-                            comp.AddPawnAbility(TorannMagicDefOf.TM_ShadowStep);                            
+                            comp.GiveAbility(TorannMagicDefOf.TM_ShadowCall);
+                            comp.GiveAbility(TorannMagicDefOf.TM_ShadowStep);                            
                             comp.soulBondPawn = pawn;
                         }
                     }

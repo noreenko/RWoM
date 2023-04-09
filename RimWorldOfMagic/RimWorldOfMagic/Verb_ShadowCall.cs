@@ -2,13 +2,13 @@
 using System;
 using RimWorld.Planet;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_ShadowCall : Verb_UseAbility  
+    class Verb_ShadowCall : VFECore.Abilities.Verb_CastAbility
     {
         bool arg_41_0;
         bool arg_42_0;

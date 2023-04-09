@@ -835,11 +835,11 @@ namespace TorannMagic
         //                        enumerator.Current.learned = true;
         //                        if (!(enumerator.Current.abilityDef.defName == "TM_TechnoBit"))
         //                        {
-        //                            compMagic.AddPawnAbility(enumerator.Current.abilityDef);
+        //                            compMagic.GiveAbility(enumerator.Current.abilityDef);
         //                        }
         //                        if ((enumerator.Current.abilityDef.defName == "TM_TechnoWeapon"))
         //                        {
-        //                            compMagic.AddPawnAbility(TorannMagicDefOf.TM_NanoStimulant);
+        //                            compMagic.GiveAbility(TorannMagicDefOf.TM_NanoStimulant);
         //                        }
         //                        compMagic.MagicData.MagicAbilityPoints -= enumerator.Current.learnCost;
         //                    }
@@ -1925,11 +1925,11 @@ namespace TorannMagic
                             TMAbilityDef abilityLearned = (TMAbilityDef)abilityDef;
                             if (abilityDef.defName != "TM_TechnoBit" && abilityLearned.shouldInitialize)
                             {
-                                compMagic.AddPawnAbility(abilityDef);
+                                compMagic.GiveAbility(abilityDef);
                             }
                             if (abilityDef.defName == "TM_TechnoWeapon")
                             {
-                                compMagic.AddPawnAbility(TorannMagicDefOf.TM_NanoStimulant);
+                                compMagic.GiveAbility(TorannMagicDefOf.TM_NanoStimulant);
                                 compMagic.MagicData.MagicPowersStandalone.First(static mp => mp.abilityDef == TorannMagicDefOf.TM_NanoStimulant).learned = true;
                             }
                             if(abilityLearned.childAbilities != null && abilityLearned.childAbilities.Count > 0)
@@ -1938,7 +1938,7 @@ namespace TorannMagic
                                 {
                                     if (abilityLearned.childAbilities[c].shouldInitialize)
                                     {
-                                        compMagic.AddPawnAbility(abilityLearned.childAbilities[c]);
+                                        compMagic.GiveAbility(abilityLearned.childAbilities[c]);
                                     }
                                 }
                             }
@@ -2061,11 +2061,11 @@ namespace TorannMagic
                             {
                                 if (skill.level == 1)
                                 {
-                                    compMagic.AddPawnAbility(TorannMagicDefOf.TM_LightSkipMass);
+                                    compMagic.GiveAbility(TorannMagicDefOf.TM_LightSkipMass);
                                 }
                                 if (skill.level == 2)
                                 {
-                                    compMagic.AddPawnAbility(TorannMagicDefOf.TM_LightSkipGlobal);
+                                    compMagic.GiveAbility(TorannMagicDefOf.TM_LightSkipGlobal);
                                 }
                             }
                         }

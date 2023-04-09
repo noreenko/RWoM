@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 using TorannMagic.Utils;
 
 namespace TorannMagic
 {
-    class Verb_ConsumeCorpse : Verb_UseAbility
+    class Verb_ConsumeCorpse : VFECore.Abilities.Verb_CastAbility
     {
 
         bool validTarg;

@@ -2,7 +2,7 @@
 using Verse.Sound;
 using RimWorld;
 using RimWorld.Planet;
-using AbilityUser;
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using UnityEngine;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_Sunfire : Projectile_AbilityBase
+    public class Projectile_Sunfire : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private int verVal = 0;

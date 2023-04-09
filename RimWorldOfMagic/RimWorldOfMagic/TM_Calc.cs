@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using AbilityUser;
+
 using TorannMagic.Enchantment;
 using System.Text;
 using TorannMagic.TMDefs;
@@ -631,7 +631,7 @@ namespace TorannMagic
                 {
                     return false;
                 }
-                MagicAbility ma = (MagicAbility)comp.AbilityData.AllPowers.FirstOrDefault((PawnAbility x) => x.Def == ability);
+                MagicAbility ma = (MagicAbility)comp.LearnedAbilities.FirstOrDefault(a => a.def == ability);
                 if(ma == null)
                 {
                     return false;
@@ -3509,7 +3509,7 @@ namespace TorannMagic
             //return val;
         }
 
-        public static bool IsIconAbility_02(AbilityUser.AbilityDef def)
+        public static bool IsIconAbility_02(VFECore.Abilities.AbilityDef def)
         {
             if((def == TorannMagicDefOf.TM_RayofHope || def == TorannMagicDefOf.TM_RayofHope_I || def == TorannMagicDefOf.TM_RayofHope_II ||
                         def == TorannMagicDefOf.TM_Soothe || def == TorannMagicDefOf.TM_Soothe_I || def == TorannMagicDefOf.TM_Soothe_II ||
@@ -3546,7 +3546,7 @@ namespace TorannMagic
             return false;
         }
 
-        public static bool IsIconAbility_03(AbilityUser.AbilityDef def)
+        public static bool IsIconAbility_03(VFECore.Abilities.AbilityDef def)
         {
             if(TM_Calc.IsIconAbility_02(def))
             {
@@ -3568,7 +3568,7 @@ namespace TorannMagic
             return false;
         }
 
-        public static bool IsMasterAbility(AbilityUser.AbilityDef def)
+        public static bool IsMasterAbility(VFECore.Abilities.AbilityDef def)
         {
             if(def == TorannMagicDefOf.TM_Firestorm ||
                 def == TorannMagicDefOf.TM_Blizzard  ||
@@ -3616,19 +3616,19 @@ namespace TorannMagic
                     MagicPower p = comp.MagicData.AllMagicPowersForChaosMage.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Heal);
                     p.learned = true;
                     comp.chaosPowers.Add(new TM_ChaosPowers((TMAbilityDef)p.abilityDef, TM_ClassUtility.GetAssociatedMagicPowerSkill(comp, p)));
-                    comp.AddPawnAbility(p.abilityDef);
+                    comp.GiveAbility(p.abilityDef);
                     p = comp.MagicData.AllMagicPowersForChaosMage.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_LightningBolt);
                     p.learned = true;
                     comp.chaosPowers.Add(new TM_ChaosPowers((TMAbilityDef)p.abilityDef, TM_ClassUtility.GetAssociatedMagicPowerSkill(comp, p)));
-                    comp.AddPawnAbility(p.abilityDef);
+                    comp.GiveAbility(p.abilityDef);
                     p = comp.MagicData.AllMagicPowersForChaosMage.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Shield);
                     p.learned = true;
                     comp.chaosPowers.Add(new TM_ChaosPowers((TMAbilityDef)p.abilityDef, TM_ClassUtility.GetAssociatedMagicPowerSkill(comp, p)));
-                    comp.AddPawnAbility(p.abilityDef);
+                    comp.GiveAbility(p.abilityDef);
                     p = comp.MagicData.AllMagicPowersForChaosMage.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_Fireball);
                     p.learned = true;
                     comp.chaosPowers.Add(new TM_ChaosPowers((TMAbilityDef)p.abilityDef, TM_ClassUtility.GetAssociatedMagicPowerSkill(comp, p)));
-                    comp.AddPawnAbility(p.abilityDef);
+                    comp.GiveAbility(p.abilityDef);
                     p = TM_Calc.GetRandomMagicPower(comp);
                     comp.chaosPowers.Add(new TM_ChaosPowers((TMAbilityDef)p.abilityDef, null));
                 }
@@ -3642,7 +3642,7 @@ namespace TorannMagic
                         TMAbilityDef tmad = power.abilityDef as TMAbilityDef;
                         if (tmad.shouldInitialize) //power.abilityDef != TorannMagicDefOf.TM_TechnoBit && power.abilityDef != TorannMagicDefOf.TM_WandererCraft && power.abilityDef != TorannMagicDefOf.TM_Cantrips)
                         {
-                            comp.AddPawnAbility(power.abilityDef);                            
+                            comp.GiveAbility(power.abilityDef);                            
                         }
                         if (tmad.childAbilities != null && tmad.childAbilities.Count > 0)
                         {
@@ -3650,7 +3650,7 @@ namespace TorannMagic
                             {
                                 if (ad.shouldInitialize)
                                 {
-                                    comp.AddPawnAbility(ad);
+                                    comp.GiveAbility(ad);
                                 }
                             }
                         }
@@ -4016,11 +4016,11 @@ namespace TorannMagic
                     {
                         if (i + 1 < enchantedItem.MagicAbilities.Count)
                         {
-                            stringBuilder2.Append(enchantedItem.MagicAbilities[i].LabelCap + ", ");
+                            stringBuilder2.Append(enchantedItem.MagicAbilities[i].def.LabelCap + ", ");
                         }
                         else
                         {
-                            stringBuilder2.Append(enchantedItem.MagicAbilities[i].LabelCap);
+                            stringBuilder2.Append(enchantedItem.MagicAbilities[i].def.LabelCap);
                         }
                     }
                     stringBuilder.AppendInNewLine(stringBuilder2.ToString());

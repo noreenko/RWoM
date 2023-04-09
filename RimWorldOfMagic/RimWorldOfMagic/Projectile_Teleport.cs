@@ -1,5 +1,5 @@
 ﻿using RimWorld;
-using AbilityUser;
+
 using Verse;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Projectile_Teleport : Projectile_AbilityBase , IExposable
+    class Projectile_Teleport : VFECore.Abilities.AbilityProjectile , IExposable
     {
 
         private int destructTimer = 4800;

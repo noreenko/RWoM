@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using Verse.AI.Group;
 
 namespace TorannMagic
 {
-    public class Projectile_Headshot : Projectile_AbilityBase
+    public class Projectile_Headshot : VFECore.Abilities.AbilityProjectile
     {
 
         public float destroyParentPartPctTo = 0.50f;

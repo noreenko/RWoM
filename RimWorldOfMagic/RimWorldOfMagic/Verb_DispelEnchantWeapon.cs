@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 
 
 namespace TorannMagic
 {
-    public class Verb_DispelEnchantWeapon : Verb_UseAbility
+    public class Verb_DispelEnchantWeapon : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
@@ -26,12 +26,11 @@ namespace TorannMagic
                         i--;
                     }
                     comp.weaponEnchants.Clear();
-                    comp.RemovePawnAbility(TorannMagicDefOf.TM_DispelEnchantWeapon);
+                    comp.RemoveAbility(TorannMagicDefOf.TM_DispelEnchantWeapon);
                 }
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
 
         public static void RemoveExistingEnchantment(Pawn pawn)

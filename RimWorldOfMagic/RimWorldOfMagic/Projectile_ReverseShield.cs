@@ -7,14 +7,14 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using RimWorld;
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_ReverseShield : Projectile_AbilityBase
+    public class Projectile_ReverseShield : VFECore.Abilities.AbilityProjectile
     {
 
         public int age = -1;

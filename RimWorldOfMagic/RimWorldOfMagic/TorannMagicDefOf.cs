@@ -1,7 +1,7 @@
 ﻿using System;
 using RimWorld;
 using Verse;
-using AbilityUser;
+
 
 namespace TorannMagic
 {
@@ -182,9 +182,9 @@ namespace TorannMagic
         public static ThingDef TM_Artifact_OrbOfConviction;
         public static TMAbilityDef TM_Artifact_Conviction;
         public static ThingDef TM_Artifact_OrbOfSouls;
-        public static AbilityUser.AbilityDef TM_Artifact_TraitThief;
+        public static VFECore.Abilities.AbilityDef TM_Artifact_TraitThief;
         public static ThingDef TM_Artifact_OrbOfSouls_Full;
-        public static AbilityUser.AbilityDef TM_Artifact_TraitInfuse;
+        public static VFECore.Abilities.AbilityDef TM_Artifact_TraitInfuse;
         public static HediffDef TM_TraitInfusionHD;
         public static ThingDef TM_Artifact_NecroticOrb;
 
@@ -1536,7 +1536,7 @@ namespace TorannMagic
         public static WorkTypeDef TM_Magic;
 
         //Structures
-        public static AbilityUser.AbilityDef Forge_Verb;
+        public static VFECore.Abilities.AbilityDef Forge_Verb;
         public static ThingDef TableArcaneForge;
         public static RecipeDef ArcaneForge_Replication;
         public static RecipeDef ArcaneForge_Replication_Restore;

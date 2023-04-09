@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
@@ -14,19 +14,14 @@ namespace TorannMagic
         public override float HighlightFieldRadiusAroundTarget(out bool needLOSToCenter)
         {
             needLOSToCenter = false;
-            TargetAoEProperties targetAoEProperties = UseAbilityProps.abilityDef.MainVerb.TargetAoEProperties;
-            if (targetAoEProperties == null || !targetAoEProperties.showRangeOnSelect)
+            CompAbilityUserMagic comp = ability.Comp as CompAbilityUserMagic;
+            float adjustedRadius = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1f;
+            if (comp != null && comp.MagicData != null)
             {
-                CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
-                float adjustedRadius = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 1f;
-                if (comp != null && comp.MagicData != null)
-                {
-                    int verVal = TM_Calc.GetSkillVersatilityLevel(this.CasterPawn, this.Ability.Def as TMAbilityDef);
-                    adjustedRadius += verVal;
-                }
-                return adjustedRadius;
+                int verVal = TM_Calc.GetSkillVersatilityLevel(this.CasterPawn, ability.def as TMAbilityDef);
+                adjustedRadius += verVal;
             }
-            return (float)targetAoEProperties.range;
+            return adjustedRadius;
         }
     }
 }

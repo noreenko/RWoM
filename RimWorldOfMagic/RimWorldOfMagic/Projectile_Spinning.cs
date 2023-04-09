@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using RimWorld;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Projectile_Spinning : Projectile_AbilityBase
+    class Projectile_Spinning : VFECore.Abilities.AbilityProjectile
     {
         private int rotationOffset = 0;
         public int daggerCount = 2;

@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace TorannMagic
 {
-	public class Projectile_SmokeCloud : Projectile_AbilityBase
+	public class Projectile_SmokeCloud : VFECore.Abilities.AbilityProjectile
 	{
 		protected override void Impact(Thing hitThing, bool blockedByShield = false)
 		{            

@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using RimWorld;
 
 namespace TorannMagic
 {
-    class Projectile_Repulsion : Projectile_AbilityBase
+    class Projectile_Repulsion : VFECore.Abilities.AbilityProjectile
     {
         int age = -1;
         int duration = 20;

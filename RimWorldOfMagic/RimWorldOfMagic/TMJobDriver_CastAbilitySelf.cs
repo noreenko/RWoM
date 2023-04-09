@@ -4,42 +4,42 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 using Verse.AI;
-using AbilityUser;
+
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class TMJobDriver_CastAbilitySelf : JobDriver_CastAbilityVerb
+    public class TMJobDriver_CastAbilitySelf : VFECore.Abilities.JobDriver_CastAbilityOnce
     {
-        public Verb_UseAbility verb = new Verb_UseAbility();
+        public VFECore.Abilities.Verb_CastAbility verb = new VFECore.Abilities.Verb_CastAbility();
         bool cooldownFlag = false;
-        bool energyFlag = false;
-        bool validCastFlag = false;
-        private bool wildCheck = false;
+        bool energyFlag;
+        bool validCastFlag;
+        private bool wildCheck;
         private int duration;
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
             yield return Toils_Misc.ThrowColonistAttackingMote(TargetIndex.A);
-            verb = this.pawn.CurJob.verbToUse as Verb_UseAbility;
+            verb = pawn.CurJob.verbToUse as VFECore.Abilities.Verb_CastAbility;
            
-            //if (this.Context == AbilityContext.Player)
+            //if (Context == AbilityContext.Player)
             //{
             Find.Targeter.targetingSource = verb;
             //}
-            if (this.verb != null && this.verb.Ability != null && this.verb.Ability.Def is TMAbilityDef tmAbility)
+            if (verb?.ability?.def is TMAbilityDef tmAbility)
             {
-                CompAbilityUserMight compMight = this.pawn.GetCompAbilityUserMight();
-                CompAbilityUserMagic compMagic = this.pawn.GetCompAbilityUserMagic();
-                if (tmAbility.manaCost > 0 && pawn.story != null && pawn.story.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
+                CompAbilityUserMight compMight = pawn.GetCompAbilityUserMight();
+                CompAbilityUserMagic compMagic = pawn.GetCompAbilityUserMagic();
+                if (tmAbility.manaCost > 0 && pawn.story?.traits != null && !pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
-                    if (this.pawn.Map.gameConditionManager.ConditionIsActive(TorannMagicDefOf.TM_ManaStorm))
+                    if (pawn.Map.gameConditionManager.ConditionIsActive(TorannMagicDefOf.TM_ManaStorm))
                     {
                         int amt = Mathf.RoundToInt(compMagic.ActualManaCost(tmAbility) * 100f);
                         if (amt > 5)
                         {
-                            this.pawn.Map.weatherManager.eventHandler.AddEvent(new TM_WeatherEvent_MeshFlash(this.Map, this.pawn.Position, TM_MatPool.blackLightning, TMDamageDefOf.DamageDefOf.TM_Arcane, this.pawn, amt, Mathf.Clamp((float)amt / 5f, 1f, 5f)));
+                            pawn.Map.weatherManager.eventHandler.AddEvent(new TM_WeatherEvent_MeshFlash(Map, pawn.Position, TM_MatPool.blackLightning, TMDamageDefOf.DamageDefOf.TM_Arcane, pawn, amt, Mathf.Clamp((float)amt / 5f, 1f, 5f)));
                         }
                     }
                     if (compMagic != null && compMagic.Mana != null)
@@ -83,39 +83,39 @@ namespace TorannMagic
             Toil combatToil = new Toil();
             combatToil.initAction = delegate
             {
-                this.verb = combatToil.actor.jobs.curJob.verbToUse as Verb_UseAbility;
+                verb = combatToil.actor.jobs.curJob.verbToUse as VFECore.Abilities.Verb_CastAbility;
                 if (verb != null && verb.verbProps != null)
                 {
                     try
                     {
-                        this.duration = (int)((this.verb.verbProps.warmupTime * 60) * this.pawn.GetStatValue(StatDefOf.AimingDelayFactor, false));
+                        duration = (int)((verb.verbProps.warmupTime * 60) * pawn.GetStatValue(StatDefOf.AimingDelayFactor, false));
                     }
                     catch
                     {
-                        this.duration = (int)(this.verb.verbProps.warmupTime * 60);
+                        duration = (int)(verb.verbProps.warmupTime * 60);
                     }
                     LocalTargetInfo target = combatToil.actor.jobs.curJob.GetTarget(TargetIndex.A);
                     if (target != null && !validCastFlag)
                     {
-                        if (this.pawn.IsColonist)
+                        if (pawn.IsColonist)
                         {
-                            verb.TryStartCastOn(target, false, true);
+                            verb.TryStartCastOn(target);
                         }
                         else
                         {
-                            this.duration = 0;
+                            duration = 0;
                             verb.WarmupComplete();
                         }
                     }
                 }
                 else
                 {
-                    this.EndJobWith(JobCondition.Errored);
+                    EndJobWith(JobCondition.Errored);
                 }
             };
             combatToil.tickAction = delegate
             {
-                if (this.pawn.Downed)
+                if (pawn.Downed)
                 {
                     EndJobWith(JobCondition.InterruptForced);
                 }
@@ -124,37 +124,27 @@ namespace TorannMagic
                     TM_MoteMaker.ThrowCastingMote(pawn.DrawPos, pawn.Map, Rand.Range(1.2f, 2f));                    
                 }
 
-                this.duration--;
-                if (!wildCheck && this.duration <= 6)
+                duration--;
+                if (!wildCheck && duration <= 6)
                 {
                     wildCheck = true;
-                    if (this.pawn.story != null && this.pawn.story.traits != null && this.pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) && Rand.Chance(.1f))
+                    if (pawn.story != null && pawn.story.traits != null && pawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage) && Rand.Chance(.1f))
                     {
-                        verb.Ability.PostAbilityAttempt();
-                        TM_Action.DoWildSurge(this.pawn, this.pawn.GetCompAbilityUserMagic(), (MagicAbility)verb.Ability, (TMAbilityDef)verb.Ability.Def, TargetA);
+                        TM_Action.DoWildSurge(pawn, pawn.GetCompAbilityUserMagic(), (MagicAbility)verb.ability, (TMAbilityDef)verb.ability.def, TargetA);
                         EndJobWith(JobCondition.InterruptForced);
                     }
                 }
             };
             combatToil.AddFinishAction(delegate
             {
-                if (this.duration <= 5 && !this.pawn.DestroyedOrNull() && !this.pawn.Dead && !this.pawn.Downed)
+                if (duration <= 5 && !pawn.DestroyedOrNull() && !pawn.Dead && !pawn.Downed)
                 {
-                    verb.Ability.PostAbilityAttempt();
-                    this.pawn.ClearReservationsForJob(this.job);
+                    pawn.ClearReservationsForJob(job);
                 }
             });
             combatToil.defaultCompleteMode = ToilCompleteMode.FinishedBusy;
-            this.pawn.ClearReservationsForJob(this.job);
+            pawn.ClearReservationsForJob(job);
             yield return combatToil;
-            //
-            //Toil toil = new Toil()
-            //{
-            //    initAction = () => verb.Ability.PostAbilityAttempt(),
-            //    defaultCompleteMode = ToilCompleteMode.Instant
-            //};
-            //yield return toil;
-            
         }
         
     }

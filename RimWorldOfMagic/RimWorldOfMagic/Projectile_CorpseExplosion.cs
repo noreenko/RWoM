@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using RimWorld;
 
 namespace TorannMagic
 {
-    class Projectile_CorpseExplosion : Projectile_AbilityBase
+    class Projectile_CorpseExplosion : VFECore.Abilities.AbilityProjectile
     {
         int age = 300;
         int verVal = 0;

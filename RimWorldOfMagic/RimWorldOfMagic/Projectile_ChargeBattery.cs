@@ -1,11 +1,11 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using TorannMagic.Golems;
 
 namespace TorannMagic
 {
-    public class Projectile_ChargeBattery : Projectile_AbilityBase
+    public class Projectile_ChargeBattery : VFECore.Abilities.AbilityProjectile
     {
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {

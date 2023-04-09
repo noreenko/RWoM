@@ -1,7 +1,7 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_Mimic : Verb_UseAbility  
+    class Verb_Mimic : VFECore.Abilities.Verb_CastAbility  
     {
         private bool validTarg = false;
 
@@ -105,11 +105,11 @@ namespace TorannMagic
                                         mp.autocast = false;
                                     }
                                 }
-                                mightComp.RemovePawnAbility(mightComp.mimicAbility);
+                                mightComp.RemoveAbility(mightComp.mimicAbility);
                             }
                             TM_Action.ClearSustainedMagicHediffs(magicComp);
                             mightComp.mimicAbility = tempAbility;
-                            mightComp.AddPawnAbility(tempAbility);
+                            mightComp.GiveAbility(tempAbility);
                         }
                         else
                         {
@@ -144,15 +144,15 @@ namespace TorannMagic
                                         mp.autocast = false;
                                     }
                                 }
-                                mightComp.RemovePawnAbility(mightComp.mimicAbility);
+                                mightComp.RemoveAbility(mightComp.mimicAbility);
                             }
                             if(magicComp.mimicAbility != null)
                             {                                
-                                magicComp.RemovePawnAbility(magicComp.mimicAbility);
+                                magicComp.RemoveAbility(magicComp.mimicAbility);
                             }
                             TM_Action.ClearSustainedMagicHediffs(magicComp);
                             mightComp.mimicAbility = tempAbility;
-                            mightComp.AddPawnAbility(tempAbility);
+                            mightComp.GiveAbility(tempAbility);
                         }
                         else
                         {

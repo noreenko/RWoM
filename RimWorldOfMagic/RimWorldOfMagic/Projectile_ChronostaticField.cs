@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using RimWorld;
 
 namespace TorannMagic
 {
-    class Projectile_ChronostaticField : Projectile_AbilityBase
+    class Projectile_ChronostaticField : VFECore.Abilities.AbilityProjectile
     {
         int age = -1;
         int duration = 20;

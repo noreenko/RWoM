@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -38,7 +38,7 @@ namespace TorannMagic
         {
             if (Properties == null)
             {
-                Log.Warning("The TorannMagic.Verb_ApplyRandomHediffFromList cannot be used outside a TorannMagic.Verb_ApplyRandomHediffFromList_Properties, check abilityDef " + this.Ability.Def.defName);
+                Log.Warning("The TorannMagic.Verb_ApplyRandomHediffFromList cannot be used outside a TorannMagic.Verb_ApplyRandomHediffFromList_Properties, check abilityDef " + ability.def.defName);
                 return false;
             }
             if (target != null)

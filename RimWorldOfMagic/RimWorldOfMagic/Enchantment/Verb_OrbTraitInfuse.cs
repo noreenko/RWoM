@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic.Enchantment
 {
-    public class Verb_OrbTraitInfuse : Verb_UseAbility  
+    public class Verb_OrbTraitInfuse : VFECore.Abilities.Verb_CastAbility  
     {
 
         bool validTarg;

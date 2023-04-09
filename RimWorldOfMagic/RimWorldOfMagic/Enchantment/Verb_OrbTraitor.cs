@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic.Enchantment
 {
-    public class Verb_OrbTraitor : Verb_UseAbility  
+    public class Verb_OrbTraitor : VFECore.Abilities.Verb_CastAbility  
     {
 
         bool validTarg;
@@ -123,7 +123,7 @@ namespace TorannMagic.Enchantment
                 CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
                 if(comp != null)
                 {
-                    comp.RemovePawnAbility(TorannMagicDefOf.TM_Artifact_Conviction);
+                    comp.RemoveAbility(TorannMagicDefOf.TM_Artifact_Conviction);
                 }
             }
         }

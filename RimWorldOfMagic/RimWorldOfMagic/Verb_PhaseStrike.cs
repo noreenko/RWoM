@@ -1,7 +1,7 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Verb_PhaseStrike : Verb_UseAbility  
+    class Verb_PhaseStrike : VFECore.Abilities.Verb_CastAbility  
     {
         bool arg_41_0;
         bool arg_42_0;
@@ -67,8 +67,8 @@ namespace TorannMagic
             bool arg_40_0;
 
             CompAbilityUserMight comp = this.CasterPawn.GetCompAbilityUserMight();
-            verVal = TM_Calc.GetSkillVersatilityLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
-            pwrVal = TM_Calc.GetSkillPowerLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(CasterPawn, ability.def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(CasterPawn, ability.def as TMAbilityDef);
             //pwr = comp.MightData.MightPowerSkill_PhaseStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PhaseStrike_pwr");
             //ver = comp.MightData.MightPowerSkill_PhaseStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PhaseStrike_ver");
             //verVal = ver.level;
@@ -82,7 +82,7 @@ namespace TorannMagic
             //}
             if (this.CasterPawn.equipment.Primary != null && !this.CasterPawn.equipment.Primary.def.IsRangedWeapon)
             {
-                TMAbilityDef ad = (TMAbilityDef)this.Ability.Def;
+                TMAbilityDef ad = (TMAbilityDef)ability.def;
                 this.dmgNum = Mathf.RoundToInt(comp.weaponDamage * ad.weaponDamageFactor);
                 
                 if (!this.CasterPawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)

@@ -1,12 +1,12 @@
 ﻿using System;
 using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic.Weapon
 {
-    class Projectile_IceWand : Projectile_AbilityBase
+    class Projectile_IceWand : VFECore.Abilities.AbilityProjectile
     {
         private float arcaneDmg = 1;
 

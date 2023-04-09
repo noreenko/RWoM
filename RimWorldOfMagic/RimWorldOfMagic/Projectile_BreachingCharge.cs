@@ -2,12 +2,12 @@
 using System;
 using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic
 {
-	public class Projectile_BreachingCharge : Projectile_AbilityBase
+	public class Projectile_BreachingCharge : VFECore.Abilities.AbilityProjectile
 	{
 
         private bool initialized = false;

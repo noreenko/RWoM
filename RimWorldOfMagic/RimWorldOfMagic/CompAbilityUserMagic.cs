@@ -552,23 +552,7 @@ namespace TorannMagic
 
         public override void CompTick()
         {
-            if (Pawn == null) return;
-            if (!Pawn.Spawned)
-            {
-                if (!Pawn.IsHashIntervalTick(600) || Pawn.Map != null || !IsMagicUser) return;
-                if (!(AbilityData?.AllPowers?.Count > 0)) return;
-
-                foreach (PawnAbility allPower in AbilityData.AllPowers)
-                {
-                    allPower.CooldownTicksLeft -= 600;
-                    if (allPower.CooldownTicksLeft <= 0)
-                    {
-                        allPower.CooldownTicksLeft = 0;
-                    }
-                }
-
-                return;
-            }
+            if (Pawn is not { Spawned: true }) return;
 
             if (IsMagicUser && !Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless) && !Pawn.IsWildMan())
             {
@@ -791,30 +775,18 @@ namespace TorannMagic
 
         public void PostInitializeTick()
         {
-            bool flag = Pawn != null;
-            if (flag)
+            if (Pawn is not { Spawned: true } || Pawn.story == null) return;
+            Trait t = Pawn.story.traits.GetTrait(TorannMagicDefOf.TM_Possessed);
+            if (t != null && !Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SpiritPossessionHD))
             {
-                bool spawned = Pawn.Spawned;
-                if (spawned)
-                {
-                    bool flag2 = Pawn.story != null;
-                    if (flag2)
-                    {
-                        Trait t = Pawn.story.traits.GetTrait(TorannMagicDefOf.TM_Possessed);
-                        if (t != null && !Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_SpiritPossessionHD))
-                        {
-                            Pawn.story.traits.RemoveTrait(t);
-                        }
-                        else
-                        {
-                            firstTick = true;
-                            Initialize();
-                            ResolveMagicTab();
-                            ResolveMana();
-                            DoOncePerLoad();
-                        }
-                    }
-                }
+                Pawn.story.traits.RemoveTrait(t);
+            }
+            else
+            {
+                firstTick = true;
+                ResolveMagicTab();
+                ResolveMana();
+                DoOncePerLoad();
             }
         }
 

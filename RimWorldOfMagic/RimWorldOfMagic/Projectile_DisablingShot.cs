@@ -1,7 +1,7 @@
 ﻿using RimWorld;
 using Verse;
 using System;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using Verse.AI;
@@ -10,7 +10,7 @@ using Verse.AI.Group;
 
 namespace TorannMagic
 {
-    public class Projectile_DisablingShot : Projectile_AbilityBase
+    public class Projectile_DisablingShot : VFECore.Abilities.AbilityProjectile
     {
 
         BodyPartRecord vitalPart = null;

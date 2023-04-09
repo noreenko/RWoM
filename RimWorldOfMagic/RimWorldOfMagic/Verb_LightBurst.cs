@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using Verse.Sound;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    public class Verb_LightBurst : Verb_UseAbility  
+    public class Verb_LightBurst : VFECore.Abilities.Verb_CastAbility  
     {
         private int verVal;
         private int pwrVal;
@@ -22,8 +22,8 @@ namespace TorannMagic
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             //pwrVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_LightBurst, "TM_LightBurst", "_pwr", TorannMagicDefOf.TM_LightBurst.canCopy);
             //verVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_LightBurst, "TM_LightBurst", "_ver", TorannMagicDefOf.TM_LightBurst.canCopy);
-            pwrVal = TM_Calc.GetSkillPowerLevel(pawn, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(pawn, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(pawn, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(pawn, ability.def as TMAbilityDef);
             this.burstCount = 2;
             if (verVal >= 1)
             {
@@ -54,7 +54,7 @@ namespace TorannMagic
 
             Map map = this.CasterPawn.Map;
             IntVec3 targetVariation = this.currentTarget.Cell;
-            float radius = (this.Ability.Def.MainVerb.TargetAoEProperties.range / 2f) + (.3f*pwrVal);
+            float radius = (ability.GetRadiusForPawn() / 2f) + (.3f*pwrVal);
             targetVariation.x += Mathf.RoundToInt(Rand.Range(-radius, radius));
             targetVariation.z += Mathf.RoundToInt(Rand.Range(-radius, radius));
             this.CreateLightBurst(targetVariation, map, radius);

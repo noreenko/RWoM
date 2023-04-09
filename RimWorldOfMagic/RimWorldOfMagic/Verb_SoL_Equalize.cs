@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    public class Verb_SoL_Equalize : Verb_UseAbility  
+    public class Verb_SoL_Equalize : VFECore.Abilities.Verb_CastAbility  
     {
         
         protected override bool TryCastShot()

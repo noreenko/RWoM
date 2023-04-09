@@ -7,7 +7,7 @@ using Verse.AI.Group;
 using Verse.Sound;
 using RimWorld;
 using System;
-using AbilityUser;
+
 using HarmonyLib;
 using TorannMagic.Enchantment;
 using TorannMagic.TMDefs;
@@ -784,63 +784,59 @@ namespace TorannMagic
 
         public static Thing SingleSpawnLoop(Pawn caster, SpawnThings spawnables, IntVec3 position, Map map, int duration, bool temporary, bool hostile = false, Faction spawnableFaction = null, bool hasFaction = true, ThingDef makeFromStuff = null)
         {
-            bool flag = spawnables.def != null;
+            if (spawnables.def == null) return null;
+
             Thing thing = null;
-            if (flag)
+            Faction faction = spawnableFaction;
+            if (hasFaction)
             {
-                Faction faction = spawnableFaction;
-                if (hasFaction)
+                faction = ResolveFaction(caster, spawnables, spawnableFaction, hostile);
+            }
+            if (spawnables.def.race != null)
+            {
+                if (spawnables.kindDef == null)
                 {
-                    faction = TM_Action.ResolveFaction(caster, spawnables, spawnableFaction, hostile);
-                }
-                bool flag2 = spawnables.def.race != null;
-                if (flag2)
-                {
-                    bool flag3 = spawnables.kindDef == null;
-                    if (flag3)
-                    {
-                        Log.Error("Missing kinddef");
-                    }
-                    else
-                    {
-                        thing = TM_Action.SpawnPawn(caster, spawnables, faction, position, duration, map);
-                    }
+                    Log.Error("Missing kinddef");
                 }
                 else
                 {
-                    ThingDef def = spawnables.def;
-                    ThingDef stuff = null;
-                    bool madeFromStuff = def.MadeFromStuff;
-                    if (madeFromStuff)
+                    thing = SpawnPawn(caster, spawnables, faction, position, duration, map);
+                }
+            }
+            else
+            {
+                ThingDef def = spawnables.def;
+                ThingDef stuff = null;
+                bool madeFromStuff = def.MadeFromStuff;
+                if (madeFromStuff)
+                {
+                    if (makeFromStuff != null)
                     {
-                        if (makeFromStuff != null)
-                        {
-                            stuff = makeFromStuff;
-                        }
-                        else
-                        {
-                            stuff = ThingDefOf.Steel;
-                        }
+                        stuff = makeFromStuff;
                     }
-                    thing = ThingMaker.MakeThing(def, stuff);
-                    if (thing != null)
+                    else
                     {
-                        if (thing.def.defName != "Portfuel" && spawnables.kindDef != null)
-                        {
-                            thing.SetFaction(faction, null);
-                        }
-                        else if(faction != null)
-                        {
-                            thing.SetFaction(faction, null);
-                        }
-                        CompSummoned bldgComp = thing.TryGetComp<CompSummoned>();
-                        if (bldgComp != null)
-                        {
-                            bldgComp.TicksToDestroy = duration;
-                            bldgComp.Temporary = temporary;
-                        }
-                        GenSpawn.Spawn(thing, position, map, Rot4.North, WipeMode.Vanish, false);
+                        stuff = ThingDefOf.Steel;
                     }
+                }
+                thing = ThingMaker.MakeThing(def, stuff);
+                if (thing != null)
+                {
+                    if (thing.def.defName != "Portfuel" && spawnables.kindDef != null)
+                    {
+                        thing.SetFaction(faction);
+                    }
+                    else if(faction != null)
+                    {
+                        thing.SetFaction(faction);
+                    }
+                    CompSummoned bldgComp = thing.TryGetComp<CompSummoned>();
+                    if (bldgComp != null)
+                    {
+                        bldgComp.TicksToDestroy = duration;
+                        bldgComp.Temporary = temporary;
+                    }
+                    GenSpawn.Spawn(thing, position, map, Rot4.North);
                 }
             }
             return thing;
@@ -899,31 +895,11 @@ namespace TorannMagic
             }
             newPawn.Temporary = spawnables.temporary;
             newPawn.TicksToDestroy = duration;
-            //Faction val = default(Faction);
-            //int num;
-            //if (newPawn.Faction != Faction.OfPlayerSilentFail)
-            //{
-            //    Faction obj = null;
-
-            //    obj = ((caster != null) ? caster.Faction : null);
-
-            //    val = obj;
-            //    num = ((obj != null) ? 1 : 0);
-            //}
-            //else
-            //{
-            //    num = 0;
-            //}
-            //if (num != 0)
-            //{
-            //    newPawn.SetFaction(val, null);
-            //}
-            Pawn np = (Pawn)GenSpawn.Spawn(newPawn, position, map, 0);
+            Pawn np = (Pawn)GenSpawn.Spawn(newPawn, position, map);
             if (np.playerSettings != null)
             {
                 np.playerSettings.hostilityResponse = HostilityResponseMode.Attack;
             }
-            //np.playerSettings.medCare = MedicalCareCategory.NoCare;
 
             if (newPawn.Faction != null && newPawn.Faction != Faction.OfPlayer)
             {
@@ -931,14 +907,13 @@ namespace TorannMagic
                 if (newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction).Any((Pawn p) => p != newPawn))
                 {
                     Predicate<Thing> validator = (Thing p) => p != newPawn && ((Pawn)p).GetLord() != null;
-                    Pawn p2 = (Pawn)GenClosest.ClosestThing_Global(newPawn.Position, newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction), 99999f, validator, null);
+                    Pawn p2 = (Pawn)GenClosest.ClosestThing_Global(newPawn.Position, newPawn.Map.mapPawns.SpawnedPawnsInFaction(faction), 99999f, validator);
                     lord = p2.GetLord();
                 }
-                bool flag4 = lord == null;
-                if (flag4)
+                if (lord == null)
                 {
                     LordJob_DefendPoint lordJob = new LordJob_DefendPoint(newPawn.Position);
-                    lord = LordMaker.MakeNewLord(faction, lordJob, newPawn.Map, null);
+                    lord = LordMaker.MakeNewLord(faction, lordJob, newPawn.Map);
                 }
                 else
                 {
@@ -1192,10 +1167,10 @@ namespace TorannMagic
                                     {
                                         spiritLevelChange += ((fp.level - mp.level) * mp.costToLevel);
                                     }
-                                    spiritComp.RemovePawnAbility(mp.abilityDef);
+                                    spiritComp.RemoveAbility(mp.abilityDef);
                                     mp.level = fp.level;
-                                    spiritComp.RemovePawnAbility(fp.abilityDef);
-                                    spiritComp.AddPawnAbility(fp.abilityDef);
+                                    spiritComp.RemoveAbility(fp.abilityDef);
+                                    spiritComp.GiveAbility(fp.abilityDef);
                                     break;
                                 }
                             }
@@ -1478,7 +1453,7 @@ namespace TorannMagic
             ResetPowers(pawn, comp);
             comp.recallSet = false;
             comp.recallSpell = false;
-            comp.RemovePawnAbility(TorannMagicDefOf.TM_Recall);
+            comp.RemoveAbility(TorannMagicDefOf.TM_Recall);
             TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_AlterFate, pawn.DrawPos, pawn.Map, 1.6f, .2f, .1f, .8f, 500, 0, 0, Rand.Range(0, 360));
             Effecter RecallToEffect = TorannMagicDefOf.TM_RecallToED.Spawn();
             RecallToEffect.Trigger(new TargetInfo(pawn), new TargetInfo(pawn));
@@ -1590,13 +1565,13 @@ namespace TorannMagic
 
         private static void ResetPowers(Pawn pawn, CompAbilityUserMagic comp)
         {
-            foreach (PawnAbility current in comp.AbilityData.Powers)
+            foreach (VFECore.Abilities.Ability current in comp.LearnedAbilities)
             {
-                if (current.Def != TorannMagicDefOf.TM_Recall && current.Def != TorannMagicDefOf.TM_TimeMark)
+                if (current.def != TorannMagicDefOf.TM_Recall && current.def != TorannMagicDefOf.TM_TimeMark)
                 {
-                    current.CooldownTicksLeft = 0;
+                    current.cooldown = 0;
                 }
-                else if (current.Def == TorannMagicDefOf.TM_TimeMark)
+                else if (current.def == TorannMagicDefOf.TM_TimeMark)
                 {
                     current.CooldownTicksLeft = Mathf.RoundToInt(current.MaxCastingTicks * comp.coolDown);
                 }
@@ -1770,7 +1745,7 @@ namespace TorannMagic
                         completeJob = true;
                         break;
                     case 2:
-                        ability.CooldownTicksLeft = 0;
+                        ability.cooldown = 0;
                         TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_PowerWave, p.DrawPos, p.Map, .8f, .2f, .1f, .1f, 0, 1f, 0, Rand.Chance(.5f) ? 0 : 180);
                         surgeText = "Ability Reset";
                         completeJob = true;
@@ -1795,12 +1770,11 @@ namespace TorannMagic
                                 CompAbilityUserMagic apComp = allPawns[i].GetCompAbilityUserMagic();
                                 if (apComp != null)
                                 {
-                                    for (int j = 0; j < apComp.AbilityData.AllPowers.Count; j++)
+                                    for (int j = 0; j < apComp.LearnedAbilities.Count; j++)
                                     {
-                                        MagicAbility ma = apComp.AbilityData.AllPowers[j] as MagicAbility;
-                                        if (ma != null)
+                                        if (apComp.LearnedAbilities[j] is MagicAbility ma)
                                         {
-                                            ma.CooldownTicksLeft = (int)(ma.Def.MainVerb.SecondsToRecharge * 60);
+                                            ma.cooldown = ma.def.MainVerb.SecondsToRecharge * 60;
                                         }
                                     }
                                 }

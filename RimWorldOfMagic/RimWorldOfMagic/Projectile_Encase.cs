@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace TorannMagic
 {
 
     [StaticConstructorOnStartup]
-    public class Projectile_Encase : Projectile_AbilityBase
+    public class Projectile_Encase : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private bool wallActive = false;

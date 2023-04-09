@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 
 
 namespace TorannMagic
 {
-    public class Verb_SpellMending : Verb_UseAbility
+    public class Verb_SpellMending : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used specifically for non-unique verbs that ignore LOS (can be used with shield belt)
@@ -72,7 +72,7 @@ namespace TorannMagic
             {
                 Messages.Message("TM_InvalidTarget".Translate(
                     this.CasterPawn.LabelShort,
-                    this.Ability.Def.label
+                    ability.def.label
                 ), MessageTypeDefOf.RejectInput);
             }
             this.PostCastShot(flag, out flag);

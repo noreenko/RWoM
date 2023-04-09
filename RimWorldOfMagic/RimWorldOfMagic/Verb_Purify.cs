@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 using TorannMagic.Utils;
@@ -10,7 +10,7 @@ using TorannMagic.Utils;
 
 namespace TorannMagic
 {
-    public class Verb_Purify : Verb_UseAbility
+    public class Verb_Purify : VFECore.Abilities.Verb_CastAbility
     {
         private int verVal;
         private int pwrVal;
@@ -49,8 +49,8 @@ namespace TorannMagic
             Pawn pawn = this.currentTarget.Thing as Pawn;
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
             arcaneDmg = comp.arcaneDmg;
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
 
             if (pawn == null || pawn.Dead) return true;
 

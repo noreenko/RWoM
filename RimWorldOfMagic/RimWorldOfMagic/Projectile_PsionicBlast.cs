@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using RimWorld;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Projectile_PsionicBlast : Projectile_AbilityBase
+    class Projectile_PsionicBlast : VFECore.Abilities.AbilityProjectile
     {
         ColorInt colorInt = new ColorInt(0, 128, 255);
         private bool initialized = false;

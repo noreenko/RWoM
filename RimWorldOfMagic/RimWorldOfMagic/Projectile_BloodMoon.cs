@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +9,7 @@ using UnityEngine;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_BloodMoon : Projectile_AbilityBase
+    public class Projectile_BloodMoon : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private bool validTarget = false;

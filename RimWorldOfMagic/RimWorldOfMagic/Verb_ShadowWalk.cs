@@ -1,14 +1,14 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    class Verb_ShadowWalk : Verb_UseAbility  
+    class Verb_ShadowWalk : VFECore.Abilities.Verb_CastAbility
     {
 
         private bool validTarg = false;

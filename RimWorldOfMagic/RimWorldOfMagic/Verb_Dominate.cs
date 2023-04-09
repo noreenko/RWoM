@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    class Verb_Dominate : Verb_UseAbility  
+    class Verb_Dominate : VFECore.Abilities.Verb_CastAbility
     {
 
         private int verVal;
@@ -43,9 +43,9 @@ namespace TorannMagic
             Pawn p = this.CasterPawn;
             Pawn hitPawn = this.currentTarget.Thing as Pawn;
             CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
-            verVal = TM_Calc.GetSkillVersatilityLevel(p, this.Ability.Def as TMAbilityDef, true);
-            pwrVal = TM_Calc.GetSkillPowerLevel(p, this.Ability.Def as TMAbilityDef);
-            effVal = TM_Calc.GetSkillEfficiencyLevel(p, this.Ability.Def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(p, ability.def as TMAbilityDef, true);
+            pwrVal = TM_Calc.GetSkillPowerLevel(p, ability.def as TMAbilityDef);
+            effVal = TM_Calc.GetSkillEfficiencyLevel(p, ability.def as TMAbilityDef);
             //MagicPowerSkill pwr = comp.MagicData.MagicPowerSkill_Dominate.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Dominate_pwr");
             //MagicPowerSkill ver = comp.MagicData.MagicPowerSkill_Dominate.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Dominate_ver");
             //MagicPowerSkill eff = comp.MagicData.MagicPowerSkill_Dominate.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Dominate_eff");

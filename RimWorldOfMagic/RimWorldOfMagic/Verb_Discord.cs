@@ -1,11 +1,11 @@
 ﻿using Verse;
-using AbilityUser;
+
 using System;
 using Verse.AI;
 
 namespace TorannMagic
 {
-    public class Verb_Discord : Verb_UseAbility
+    public class Verb_Discord : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used specifically for non-unique verbs that ignore LOS (can be used with shield belt)
@@ -13,7 +13,7 @@ namespace TorannMagic
         {
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {                    
                     validTarg = true;
                 }
@@ -44,10 +44,8 @@ namespace TorannMagic
                     pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
                 }
             }
-            this.Ability.PostAbilityAttempt();
-
-
-            this.burstShotsLeft = 0;
+            
+            burstShotsLeft = 0;
             return false;
         }
     }

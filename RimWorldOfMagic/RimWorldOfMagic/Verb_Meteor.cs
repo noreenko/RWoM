@@ -1,14 +1,14 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_Meteor : Verb_UseAbility
+    class Verb_Meteor : VFECore.Abilities.Verb_CastAbility
     {
 
         int pwrVal = 0;
@@ -26,7 +26,7 @@ namespace TorannMagic
             {
                 if( targ.Cell.IsValid && !targ.Cell.Fogged(base.caster.Map))
                 {
-                    if ((casterPos - targ.Cell).LengthHorizontal > this.verbProps.range)
+                    if ((casterPos - targ.Cell).LengthHorizontal > verbProps.range)
                     {
                         result = false;
                     }
@@ -48,17 +48,17 @@ namespace TorannMagic
         protected override bool TryCastShot()
         {
             Map map = base.CasterPawn.Map;
-            IntVec3 centerCell = this.currentTarget.Cell;
+            IntVec3 centerCell = currentTarget.Cell;
 
-            verVal = this.CasterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Meteor.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Meteor_ver").level;
-            pwrVal = this.UseAbilityProps.TargetAoEProperties.range;
+            verVal = CasterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Meteor.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Meteor_ver").level;
+            pwrVal = (int)ability.GetRadiusForPawn();
 
             bool result = false;
             bool arg_40_0;
-            if (this.currentTarget != null && base.CasterPawn != null)
+            if (currentTarget != null && base.CasterPawn != null)
             {
-                IntVec3 arg_29_0 = this.currentTarget.Cell;
-                arg_40_0 = this.currentTarget.Cell.IsValid;
+                IntVec3 arg_29_0 = currentTarget.Cell;
+                arg_40_0 = currentTarget.Cell.IsValid;
             }
             else
             {
@@ -93,8 +93,8 @@ namespace TorannMagic
             {
                 Log.Warning("failed to TryCastShot");
             }
-            this.burstShotsLeft = 0;
-            return result;
+            burstShotsLeft = 0;
+            return false;
         }
 
         public List<Thing> GenerateMeteoriteComposition(int radius)
@@ -191,11 +191,11 @@ namespace TorannMagic
                 {
                     if (Rand.Chance(.05f))
                     {
-                        tmpThing = ThingMaker.MakeThing(ThingDef.Named("MineableSteel"), null);
+                        tmpThing = ThingMaker.MakeThing(ThingDef.Named("MineableSteel"));
                     }
                     else
                     {
-                        tmpThing = ThingMaker.MakeThing(thingDef, null);
+                        tmpThing = ThingMaker.MakeThing(thingDef);
                     }
                 }
                 meteoriteComposition.Add(tmpThing);

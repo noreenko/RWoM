@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 
 
 namespace TorannMagic
 {
-    public class Verb_HarvestPassion : Verb_UseAbility
+    public class Verb_HarvestPassion : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
         {
-            if (targ.Thing != null && targ.Thing == this.caster)
+            if (targ.Thing != null && targ.Thing == caster)
             {
-                return this.verbProps.targetParams.canTargetSelf;
+                return verbProps.targetParams.canTargetSelf;
             }
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
-                    ShootLine shootLine;
-                    validTarg = this.TryFindShootLineFromTo(root, targ, out shootLine);
+                    validTarg = TryFindShootLineFromTo(root, targ, out _);
                 }
                 else
                 {
@@ -38,19 +37,18 @@ namespace TorannMagic
 
         protected override bool TryCastShot()
         {
-            Map map = base.CasterPawn.Map;
-            Pawn hitPawn = (Pawn)this.currentTarget;
-            Pawn caster = base.CasterPawn;
+            Pawn hitPawn = (Pawn)currentTarget;
+            Pawn casterPawn = base.CasterPawn;
 
             bool flag = hitPawn != null && !hitPawn.Dead && !hitPawn.RaceProps.Animal && hitPawn.skills != null && hitPawn.health != null && hitPawn.health.hediffSet != null;
             if (flag && !TM_Calc.IsUndead(hitPawn))
             {
-                if (caster.Inspired)
+                if (casterPawn.Inspired)
                 {
                     HealthUtility.AdjustSeverity(hitPawn, TorannMagicDefOf.TM_HarvestPassionHD, .5f);
-                    hitPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_HarvestPassionHD).TryGetComp<HediffComp_HarvestPassion>().caster = caster;
-                    caster.mindState.inspirationHandler.EndInspiration(caster.Inspiration);
-                    if(!hitPawn.HostileTo(caster.Faction))
+                    hitPawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_HarvestPassionHD).TryGetComp<HediffComp_HarvestPassion>().caster = casterPawn;
+                    casterPawn.mindState.inspirationHandler.EndInspiration(casterPawn.Inspiration);
+                    if(!hitPawn.HostileTo(casterPawn.Faction))
                     {
                         
                     }
@@ -58,19 +56,18 @@ namespace TorannMagic
                 else
                 {
                     Messages.Message("TM_MustHaveInspiration".Translate(
-                    this.CasterPawn.LabelShort,
-                    this.Ability.Def.label
+                    CasterPawn.LabelShort,
+                    ability.def.label
                 ), MessageTypeDefOf.RejectInput);
                 }
             }
             else
             {
                 Messages.Message("TM_InvalidTarget".Translate(
-                    this.CasterPawn.LabelShort,
-                    this.Ability.Def.label
+                    CasterPawn.LabelShort,
+                    ability.def.label
                 ), MessageTypeDefOf.RejectInput);
             }
-            this.PostCastShot(flag, out flag);
             return false;
         }
     }

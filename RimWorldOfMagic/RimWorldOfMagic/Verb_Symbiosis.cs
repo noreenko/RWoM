@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.AI;
 
 
 namespace TorannMagic
 {
-    public class Verb_Symbiosis : Verb_UseAbility
+    public class Verb_Symbiosis : VFECore.Abilities.Verb_CastAbility
     {
 
         private int verVal = 0;
@@ -45,7 +45,7 @@ namespace TorannMagic
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
             if (comp != null && comp.MagicData != null)
             {
-                pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);                
+                pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);                
             }
 
             if(hitPawn != null && hitPawn.RaceProps != null && hitPawn.RaceProps.Humanlike && !TM_Calc.IsUndead(hitPawn) && hitPawn.Faction == caster.Faction)
@@ -80,7 +80,7 @@ namespace TorannMagic
             }
             else
             {
-                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, this.Ability.Def.label), MessageTypeDefOf.RejectInput);
+                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, ability.def.label), MessageTypeDefOf.RejectInput);
             }
 
             this.PostCastShot(flag, out flag);

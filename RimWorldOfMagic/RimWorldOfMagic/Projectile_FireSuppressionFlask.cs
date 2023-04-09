@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-	public class Projectile_FireSuppressionFlask : Projectile_AbilityBase
+	public class Projectile_FireSuppressionFlask : VFECore.Abilities.AbilityProjectile
 	{
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {

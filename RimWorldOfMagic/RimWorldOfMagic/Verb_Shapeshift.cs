@@ -2,19 +2,19 @@
 using System;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_Shapeshift : Verb_UseAbility  
+    public class Verb_Shapeshift : VFECore.Abilities.Verb_CastAbility  
     {
         float arcaneDmg = 1f;
-        public int verVal = 0;
-        public int pwrVal = 0;
-        public int effVal = 0;
+        public int verVal;
+        public int pwrVal;
+        public int effVal;
 
         private int min;
         private int max;
@@ -23,18 +23,18 @@ namespace TorannMagic
 
         protected override bool TryCastShot()
         {
-            Pawn caster = base.CasterPawn;
+            Pawn casterPawn = base.CasterPawn;
 
-            CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
+            CompAbilityUserMagic comp = casterPawn.GetCompAbilityUserMagic();
             verVal = comp.MagicData.MagicPowerSkill_Shapeshift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Shapeshift_ver").level;
             pwrVal = comp.MagicData.MagicPowerSkill_Shapeshift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Shapeshift_pwr").level;
             effVal = comp.MagicData.MagicPowerSkill_Shapeshift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Shapeshift_eff").level;
-            this.duration = Mathf.RoundToInt((this.duration + (360 * effVal))*comp.arcaneDmg);
-            bool flag = caster != null && !caster.Dead;
+            duration = Mathf.RoundToInt((duration + (360 * effVal))*comp.arcaneDmg);
+            bool flag = casterPawn != null && !casterPawn.Dead;
             if (flag)
             {
                 
-                CompPolymorph compPoly = caster.GetComp<CompPolymorph>();
+                CompPolymorph compPoly = casterPawn.GetComp<CompPolymorph>();
                 if (compPoly != null && compPoly.Original != null && compPoly.TicksLeft > 0)
                 {
                     compPoly.Temporary = true;
@@ -43,18 +43,18 @@ namespace TorannMagic
                 else
                 {
                     FactionDef fDef = TorannMagicDefOf.TM_SummonedFaction;
-                    if (caster.Faction != null)
+                    if (casterPawn.Faction != null)
                     {
-                        fDef = caster.Faction.def;
+                        fDef = casterPawn.Faction.def;
                     }
                     SpawnThings spawnThing = new SpawnThings();
                     spawnThing.factionDef = fDef;
                     spawnThing.spawnCount = 1;
                     spawnThing.temporary = false;
 
-                    GetPolyMinMax(caster);
+                    GetPolyMinMax(casterPawn);
 
-                    spawnThing = TM_Action.AssignRandomCreatureDef(spawnThing, this.min, this.max);
+                    spawnThing = TM_Action.AssignRandomCreatureDef(spawnThing, min, max);
                     if (spawnThing.def == null || spawnThing.kindDef == null)
                     {
                         spawnThing.def = ThingDef.Named("Rat");
@@ -62,52 +62,46 @@ namespace TorannMagic
                         Log.Message("random creature was null");
                     }
 
-                    Pawn polymorphedPawn = TM_Action.PolymorphPawn(this.CasterPawn, caster, caster, spawnThing, caster.Position, true, duration, caster.Faction);
+                    Pawn polymorphedPawn = TM_Action.PolymorphPawn(CasterPawn, casterPawn, casterPawn, spawnThing, casterPawn.Position, true, duration, casterPawn.Faction);
 
-                    if (this.effVal >= 3)
+                    if (effVal >= 3)
                     {
                         polymorphedPawn.GetComp<CompPolymorph>().Temporary = false;
                     }
 
-                    FleckMaker.ThrowSmoke(polymorphedPawn.DrawPos, caster.Map, 2);
-                    FleckMaker.ThrowMicroSparks(polymorphedPawn.DrawPos, caster.Map);
-                    FleckMaker.ThrowHeatGlow(polymorphedPawn.Position, caster.Map, 2);
+                    FleckMaker.ThrowSmoke(polymorphedPawn.DrawPos, casterPawn.Map, 2);
+                    FleckMaker.ThrowMicroSparks(polymorphedPawn.DrawPos, casterPawn.Map);
+                    FleckMaker.ThrowHeatGlow(polymorphedPawn.Position, casterPawn.Map, 2);
                     //caster.DeSpawn();
 
                     HealthUtility.AdjustSeverity(polymorphedPawn, HediffDef.Named("TM_ShapeshiftHD"), .5f + (1f * pwrVal));
 
                 }
-
-                //SoundInfo info = SoundInfo.InMap(new TargetInfo(caster.Position, caster.Map, false), MaintenanceType.None);
-                //info.pitchFactor = 1.0f;
-                //info.volumeFactor = 1.0f;
-                //TorannMagicDefOf.TM_FastReleaseSD.PlayOneShot(info);
-                //TM_MoteMaker.ThrowGenericMote(ThingDef.Named("Mote_PowerWave"), caster.DrawPos, caster.Map, .8f, .2f, .1f, .1f, 0, 1f, 0, Rand.Chance(.5f) ? 0 : 180);
             }
             return true;
         }
 
         private void GetPolyMinMax(Pawn pawn)
         {
-            if (this.verVal >= 3)
+            if (verVal >= 3)
             {
-                this.min = Mathf.RoundToInt(200 * this.arcaneDmg);
-                this.max = Mathf.RoundToInt(500 * this.arcaneDmg);
+                min = Mathf.RoundToInt(200 * arcaneDmg);
+                max = Mathf.RoundToInt(500 * arcaneDmg);
             }
-            else if (this.verVal >= 2)
+            else if (verVal >= 2)
             {
-                this.min = Mathf.RoundToInt(150 * this.arcaneDmg);
-                this.max = Mathf.RoundToInt(420 * this.arcaneDmg);
+                min = Mathf.RoundToInt(150 * arcaneDmg);
+                max = Mathf.RoundToInt(420 * arcaneDmg);
             }
-            else if (this.verVal >= 1)
+            else if (verVal >= 1)
             {
-                this.min = Mathf.RoundToInt(120 * this.arcaneDmg);
-                this.max = Mathf.RoundToInt(320 * this.arcaneDmg);
+                min = Mathf.RoundToInt(120 * arcaneDmg);
+                max = Mathf.RoundToInt(320 * arcaneDmg);
             }
             else
             {
-                this.min = Mathf.RoundToInt(80 * this.arcaneDmg);
-                this.max = Mathf.RoundToInt(250 * this.arcaneDmg);
+                min = Mathf.RoundToInt(80 * arcaneDmg);
+                max = Mathf.RoundToInt(250 * arcaneDmg);
             }
         }
     }

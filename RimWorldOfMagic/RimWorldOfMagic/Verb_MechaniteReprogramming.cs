@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_MechaniteReprogramming : Verb_UseAbility
+    public class Verb_MechaniteReprogramming : VFECore.Abilities.Verb_CastAbility
     {
 
         bool validTarg;
@@ -21,7 +21,7 @@ namespace TorannMagic
         {
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
                     validTarg = true;
                 }
@@ -40,8 +40,7 @@ namespace TorannMagic
 
         protected override bool TryCastShot()
         {
-            Pawn caster = base.CasterPawn;
-            Pawn pawn = this.currentTarget.Thing as Pawn;
+            Pawn pawn = currentTarget.Thing as Pawn;
             CompAbilityUserMagic comp = pawn.TryGetComp <CompAbilityUserMagic>();
 
             bool flag = pawn != null;
@@ -49,7 +48,7 @@ namespace TorannMagic
             {
                 int num = 1;
 
-                if(!pawn.DestroyedOrNull() && pawn.health != null || pawn.health.hediffSet != null && !pawn.Dead) 
+                if(!pawn.DestroyedOrNull() && pawn.health?.hediffSet != null && !pawn.Dead)
                 {
                     bool success = false;
                     List<TMDefs.TM_CategoryHediff> mechaniteList = HediffCategoryList.Named("TM_Category_Hediffs").mechanites;
@@ -58,8 +57,6 @@ namespace TorannMagic
                         while (enumerator.MoveNext())
                         {
                             Hediff rec = enumerator.Current;
-                            bool flag2 = num > 0;
-
 
                             if (TM_Data.MechaniteSet().Contains(rec.def))
                             {
@@ -149,17 +146,17 @@ namespace TorannMagic
                     if (success)
                     {
                         TM_MoteMaker.ThrowRegenMote(pawn.Position.ToVector3(), pawn.Map, 1.5f);
-                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Mechanite Reprogramming" + ": " + StringsToTranslate.AU_CastSuccess, -1f);
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Mechanite Reprogramming: Cast Success");
                     }
                     else
                     {
                         Messages.Message("TM_CureDiseaseTypeFail".Translate(), MessageTypeDefOf.NegativeEvent);
-                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Mechanite Reprogramming" + ": " + StringsToTranslate.AU_CastFailure, -1f);
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Mechanite Reprogramming: Cast Failed");
                     }
                 }
                 else
                 {
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Mechanite Reprogramming" + ": " + StringsToTranslate.AU_CastFailure, -1f);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Mechanite Reprogramming: Cast Failed");
                 }
                 
             }

@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace TorannMagic
                 foreach (TM_CustomPowerDef powerDef in customPowerDefs)
                 {
                     bool newPower = false;
-                    List<AbilityUser.AbilityDef> abilityList = powerDef.customPower.abilityDefs;
+                    List<VFECore.Abilities.AbilityDef> abilityList = powerDef.customPower.abilityDefs;
                     bool requiresScroll = powerDef.customPower.requiresScroll;
                     MagicPower mp = new MagicPower(abilityList, requiresScroll)
                     {
@@ -624,7 +624,7 @@ namespace TorannMagic
                 }
                 if (hasPaladinBuff) return magicPowerP;
 
-                MagicPower pBuff = new MagicPower(new List<AbilityUser.AbilityDef>
+                MagicPower pBuff = new MagicPower(new List<VFECore.Abilities.AbilityDef>
                 {
                     TorannMagicDefOf.TM_P_RayofHope,
                     TorannMagicDefOf.TM_P_RayofHope_I,
@@ -793,40 +793,40 @@ namespace TorannMagic
                 {
                     magicPowerN = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_RaiseUndead
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_DeathMark,
                             TorannMagicDefOf.TM_DeathMark_I,
                             TorannMagicDefOf.TM_DeathMark_II,
                             TorannMagicDefOf.TM_DeathMark_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_FogOfTorment
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_ConsumeCorpse,
                             TorannMagicDefOf.TM_ConsumeCorpse_I,
                             TorannMagicDefOf.TM_ConsumeCorpse_II,
                             TorannMagicDefOf.TM_ConsumeCorpse_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_CorpseExplosion,
                             TorannMagicDefOf.TM_CorpseExplosion_I,
                             TorannMagicDefOf.TM_CorpseExplosion_II,
                             TorannMagicDefOf.TM_CorpseExplosion_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_LichForm
                         },true),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_DeathBolt,
                             TorannMagicDefOf.TM_DeathBolt_I,
@@ -964,29 +964,29 @@ namespace TorannMagic
                 {
                     magicPowerPR = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_AdvancedHeal
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Purify
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_HealingCircle,
                             TorannMagicDefOf.TM_HealingCircle_I,
                             TorannMagicDefOf.TM_HealingCircle_II,
                             TorannMagicDefOf.TM_HealingCircle_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BestowMight,
                             TorannMagicDefOf.TM_BestowMight_I,
                             TorannMagicDefOf.TM_BestowMight_II,
                             TorannMagicDefOf.TM_BestowMight_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Resurrection
                         },true),
@@ -1087,26 +1087,26 @@ namespace TorannMagic
                 {
                     magicPowerB = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BardTraining
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Entertain
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Inspire
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Lullaby,
                             TorannMagicDefOf.TM_Lullaby_I,
                             TorannMagicDefOf.TM_Lullaby_II,
                             TorannMagicDefOf.TM_Lullaby_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BattleHymn
                         },true),
@@ -1206,33 +1206,33 @@ namespace TorannMagic
                 {
                     magicPowerWD = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_SoulBond
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_ShadowBolt,
                             TorannMagicDefOf.TM_ShadowBolt_I,
                             TorannMagicDefOf.TM_ShadowBolt_II,
                             TorannMagicDefOf.TM_ShadowBolt_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Dominate
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Repulsion,
                             TorannMagicDefOf.TM_Repulsion_I,
                             TorannMagicDefOf.TM_Repulsion_II,
                             TorannMagicDefOf.TM_Repulsion_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_PsychicShock
                         },true),
-                        //new MagicPower(new List<AbilityUser.AbilityDef>
+                        //new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         //{
                         //    TorannMagicDefOf.TM_SummonDemon
                         //}),
@@ -1335,33 +1335,33 @@ namespace TorannMagic
                 {
                     magicPowerSD = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_SoulBond
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_ShadowBolt,
                             TorannMagicDefOf.TM_ShadowBolt_I,
                             TorannMagicDefOf.TM_ShadowBolt_II,
                             TorannMagicDefOf.TM_ShadowBolt_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Dominate
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Attraction,
                             TorannMagicDefOf.TM_Attraction_I,
                             TorannMagicDefOf.TM_Attraction_II,
                             TorannMagicDefOf.TM_Attraction_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Scorn
                         },true),
-                        //new MagicPower(new List<AbilityUser.AbilityDef>
+                        //new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         //{
                         //    TorannMagicDefOf.TM_SummonDemon
                         //}),
@@ -1414,30 +1414,30 @@ namespace TorannMagic
                 {
                     magicPowerG = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Stoneskin
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Encase,
                             TorannMagicDefOf.TM_Encase_I,
                             TorannMagicDefOf.TM_Encase_II,
                             TorannMagicDefOf.TM_Encase_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_EarthSprites
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_EarthernHammer
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Sentinel
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Meteor,
                             TorannMagicDefOf.TM_Meteor_I,
@@ -1561,31 +1561,31 @@ namespace TorannMagic
                 {
                     magicPowerT = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_TechnoBit
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_TechnoTurret
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_TechnoWeapon
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_TechnoShield
                         },true),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Overdrive
                         },true),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Sabotage
                         },true),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_OrbitalStrike,
                             TorannMagicDefOf.TM_OrbitalStrike_I,
@@ -1726,30 +1726,30 @@ namespace TorannMagic
                 {
                     magicPowerBM = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BloodGift
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_IgniteBlood
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BloodForBlood
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BloodShield
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Rend,
                             TorannMagicDefOf.TM_Rend_I,
                             TorannMagicDefOf.TM_Rend_II,
                             TorannMagicDefOf.TM_Rend_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_BloodMoon,
                             TorannMagicDefOf.TM_BloodMoon_I,
@@ -1874,30 +1874,30 @@ namespace TorannMagic
                 {
                     magicPowerE = new List<MagicPower>
                     {
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_EnchantedBody
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Transmutate
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_EnchanterStone
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_EnchantWeapon
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Polymorph,
                             TorannMagicDefOf.TM_Polymorph_I,
                             TorannMagicDefOf.TM_Polymorph_II,
                             TorannMagicDefOf.TM_Polymorph_III
                         }),
-                        new MagicPower(new List<AbilityUser.AbilityDef>
+                        new MagicPower(new List<VFECore.Abilities.AbilityDef>
                         {
                             TorannMagicDefOf.TM_Shapeshift
                         }, true),

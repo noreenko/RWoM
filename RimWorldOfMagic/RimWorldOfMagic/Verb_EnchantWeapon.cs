@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 using UnityEngine;
 using Verse.AI.Group;
 
 namespace TorannMagic
 {
-    public class Verb_EnchantWeapon : Verb_UseAbility  
+    public class Verb_EnchantWeapon : VFECore.Abilities.Verb_CastAbility  
     {
         
         int pwrVal;
@@ -49,7 +49,7 @@ namespace TorannMagic
             Pawn pawn = this.currentTarget.Thing as Pawn;
 
             comp = caster.GetCompAbilityUserMagic();
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
             //MagicPowerSkill pwr = comp.MagicData.MagicPowerSkill_EnchantWeapon.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EnchantWeapon_pwr");
             //pwrVal = pwr.level;
             //

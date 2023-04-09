@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +11,7 @@ using System;
 
 namespace TorannMagic
 {
-    public class Projectile_Possess : Projectile_AbilityBase
+    public class Projectile_Possess : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private int age = 0;

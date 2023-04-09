@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
@@ -20,8 +20,8 @@ namespace TorannMagic
             Pawn caster = base.CasterPawn;
             Pawn pawn = this.currentTarget.Thing as Pawn;
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
 
             bool flag = pawn != null;
             if (flag)
@@ -163,17 +163,17 @@ namespace TorannMagic
                     if (success == true)
                     {                        
                         TM_MoteMaker.ThrowRegenMote(pawn.Position.ToVector3(), pawn.Map, 1.5f);
-                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Cure Disease" + ": " + StringsToTranslate.AU_CastSuccess, -1f);
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Cure Disease: Cast Success");
                     }
                     else
                     {
                         Messages.Message("TM_CureDiseaseTypeFail".Translate(), MessageTypeDefOf.NegativeEvent);
-                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Cure Disease" + ": " + StringsToTranslate.AU_CastFailure, -1f);
+                        MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Cure Disease: Cast Failed");
                     }
                 }
                 else
                 {
-                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Cure Disease" + ": " + StringsToTranslate.AU_CastFailure, -1f);
+                    MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Cure Disease: Cast Failed");
                 }
                 
             }

@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-	class Projectile_PsychicShock : Projectile_AbilityBase
+	class Projectile_PsychicShock : VFECore.Abilities.AbilityProjectile
 	{
         private bool initialized = false;
         private int age = 0;

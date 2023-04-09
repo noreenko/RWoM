@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 
 namespace TorannMagic
 {
-	class Projectile_Fireclaw : Projectile_AbilityBase
+	class Projectile_Fireclaw : VFECore.Abilities.AbilityProjectile
 	{
 		private IntVec3 strikeLoc = IntVec3.Invalid;
 

@@ -1,6 +1,6 @@
 ﻿using Verse;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using System;
@@ -9,7 +9,7 @@ using UnityEngine;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_HealingCircle : Projectile_AbilityBase
+    public class Projectile_HealingCircle : VFECore.Abilities.AbilityProjectile
     {
         int pwrVal = 0;
         int verVal = 0;

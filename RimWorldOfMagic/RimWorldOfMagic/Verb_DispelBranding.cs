@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 using TorannMagic.TMDefs;
@@ -10,7 +10,7 @@ using TorannMagic.TMDefs;
 
 namespace TorannMagic
 {
-    public class Verb_DispelBranding : Verb_UseAbility
+    public class Verb_DispelBranding : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
@@ -44,8 +44,7 @@ namespace TorannMagic
                 }
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
 
         private void RemoveBrandCasterGraphics()

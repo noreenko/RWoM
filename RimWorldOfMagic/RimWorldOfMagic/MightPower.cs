@@ -1,5 +1,5 @@
-﻿using AbilityUser;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using VFECore.Abilities;
 
 namespace TorannMagic 
 {

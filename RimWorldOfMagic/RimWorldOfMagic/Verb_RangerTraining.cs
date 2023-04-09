@@ -1,14 +1,14 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TorannMagic
 {
-    public class Verb_RangerTraining : Verb_UseAbility
+    public class Verb_RangerTraining : VFECore.Abilities.Verb_CastAbility
     {
 
         protected override bool TryCastShot()

@@ -1,9 +1,9 @@
 ﻿using Verse;
-using AbilityUser;
+
 
 namespace TorannMagic
 {
-    public class Verb_BLOS : Verb_UseAbility
+    public class Verb_BLOS : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used specifically for non-unique verbs that ignore LOS (can be used with shield belt)

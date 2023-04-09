@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 using UnityEngine;
 
 namespace TorannMagic
 {
-    class Verb_Disguise : Verb_UseAbility  
+    class Verb_Disguise : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {

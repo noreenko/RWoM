@@ -1,12 +1,12 @@
 ﻿using System;
 using Verse;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 
 namespace TorannMagic.Weapon
 {
-    public class SeerRing_Fire : Projectile_AbilityBase
+    public class SeerRing_Fire : VFECore.Abilities.AbilityProjectile
     {
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {

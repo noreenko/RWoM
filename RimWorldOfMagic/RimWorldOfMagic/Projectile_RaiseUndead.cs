@@ -1,6 +1,6 @@
 ﻿using Verse;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +10,7 @@ using TorannMagic.TMDefs;
 
 namespace TorannMagic
 {
-    class Projectile_RaiseUndead : Projectile_AbilityBase
+    class Projectile_RaiseUndead : VFECore.Abilities.AbilityProjectile
     {
         MagicPowerSkill pwr;
         MagicPowerSkill ver;
@@ -197,7 +197,7 @@ namespace TorannMagic
                                             RedoSkills(undeadPawn, pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_LichHD")));
                                             if (undeadPawn.story.traits.HasTrait(TorannMagicDefOf.ChaosMage))
                                             {
-                                                compMagic.RemovePawnAbility(TorannMagicDefOf.TM_ChaosTradition);
+                                                compMagic.RemoveAbility(TorannMagicDefOf.TM_ChaosTradition);
                                             }
                                             RemoveTraits(undeadPawn, undeadPawn.story.traits.allTraits);
                                             undeadPawn.story.traits.GainTrait(new Trait(TraitDef.Named("Undead"), 0, false));

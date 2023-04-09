@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Verse;
 using UnityEngine;
-using AbilityUser;
+
 using TorannMagic.Golems;
 
 namespace TorannMagic.TMDefs

@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,32 +9,12 @@ using TorannMagic.Ideology;
 
 namespace TorannMagic
 {
-    public class MightAbility : PawnAbility
-    {        
+    public class MightAbility : VFECore.Abilities.Ability
+    {
 
-        public int CastingTicks
-        {
-            get
-            {
-                return this.MaxCastingTicks;
-            }
-        }
-       
-        public CompAbilityUserMight MightUser
-        {
-            get
-            {
-                return MightUserUtility.GetMightUser(base.Pawn);
-            }
-        }
+        public CompAbilityUserMight MightUser => MightUserUtility.GetMightUser(pawn);
 
-        public TMAbilityDef mightDef
-        {
-            get
-            {
-                return base.Def as TMAbilityDef;
-            }
-        }
+        public TMAbilityDef mightDef => def as TMAbilityDef;
 
         private float ActualStaminaCost
         {
@@ -42,7 +22,7 @@ namespace TorannMagic
             {
                 if (mightDef != null)
                 {
-                    return this.MightUser.ActualStaminaCost(mightDef);
+                    return MightUser.ActualStaminaCost(mightDef);
                 }
                 return mightDef.staminaCost;         
             }
@@ -54,7 +34,7 @@ namespace TorannMagic
             {
                 if (mightDef != null)
                 {
-                    return this.MightUser.ActualChiCost(mightDef);
+                    return MightUser.ActualChiCost(mightDef);
                 }
                 return mightDef.chiCost;
             }
@@ -70,21 +50,7 @@ namespace TorannMagic
             return mightUser.ActualHediffCost(mightDef);
         }
 
-        public MightAbility()
-        {
-        }
-
-        public MightAbility(CompAbilityUser abilityUser) : base(abilityUser)
-		{
-            this.abilityUser = (abilityUser as CompAbilityUserMight);
-        }
-
-        public MightAbility(AbilityData abilityData) : base(abilityData)
-		{
-            this.abilityUser = (abilityData.Pawn.AllComps.FirstOrDefault((ThingComp x) => x.GetType() == abilityData.AbilityClass) as CompAbilityUserMight);
-        }
-
-        public MightAbility(Pawn user, AbilityUser.AbilityDef pdef) : base(user, pdef)
+        public MightAbility(Pawn user, VFECore.Abilities.AbilityDef pdef) : base(user, pdef)
 		{
 
         }
@@ -103,14 +69,14 @@ namespace TorannMagic
             }
             if (Rand.Chance(MightUser.arcalleumCooldown))
             {
-                this.CooldownTicksLeft = 4;
+                CooldownTicksLeft = 4;
             }
-            bool flag = this.mightDef != null;
+            bool flag = mightDef != null;
             if (flag)
             {
-                if (this.Pawn.IsColonist)
+                if (Pawn.IsColonist)
                 {
-                    Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_UsedManeuver, this.Pawn.Named(HistoryEventArgsNames.Doer)));
+                    Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_UsedManeuver, Pawn.Named(HistoryEventArgsNames.Doer)));
                 }
                 if (mightDef.consumeEnergy)
                 {
@@ -125,57 +91,57 @@ namespace TorannMagic
                             MightUser.Stamina.UseMightPower(MightUser.ActualStaminaCost(mightDef));
                         }
 
-                        this.MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.staminaCost * 180) * this.MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier), 0, 9999);
+                        MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.staminaCost * 180) * MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier), 0, 9999);
 
                         TM_EventRecords er = new TM_EventRecords();
-                        er.eventPower = this.mightDef.manaCost;
+                        er.eventPower = mightDef.manaCost;
                         er.eventTick = Find.TickManager.TicksGame;
-                        this.MightUser.MightUsed.Add(er);
+                        MightUser.MightUsed.Add(er);
 
                     }
-                    if (this.mightDef.manaCost != 0)
+                    if (mightDef.manaCost != 0)
                     {
-                        CompAbilityUserMagic magicComp = this.Pawn.GetCompAbilityUserMagic();
+                        CompAbilityUserMagic magicComp = Pawn.GetCompAbilityUserMagic();
                         if(magicComp != null && magicComp.Mana != null)
                         {
                             magicComp.Mana.UseMagicPower(mightDef.manaCost);
-                            //this.MagicUser.Mana.UseMagicPower(this.MagicUser.ActualManaCost(magicDef)
+                            //MagicUser.Mana.UseMagicPower(MagicUser.ActualManaCost(magicDef)
                         }
                     }
-                    if (this.mightDef.chiCost != 0)
+                    if (mightDef.chiCost != 0)
                     {
-                        HealthUtility.AdjustSeverity(this.Pawn, TorannMagicDefOf.TM_ChiHD, -100 * this.ActualChiCost);
-                        this.MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.chiCost * 100) * this.MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier),0 , 9999);
+                        HealthUtility.AdjustSeverity(Pawn, TorannMagicDefOf.TM_ChiHD, -100 * ActualChiCost);
+                        MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.chiCost * 100) * MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier),0 , 9999);
                     }
                     if (mightDef.requiredHediff != null)
                     {
-                        Hediff reqHediff = TM_Calc.GetLinkedHediff(this.Pawn, mightDef.requiredHediff);
+                        Hediff reqHediff = TM_Calc.GetLinkedHediff(Pawn, mightDef.requiredHediff);
                         if (reqHediff != null)
                         {
-                            reqHediff.Severity -= ActualHediffCost(mightDef, this.MightUser);
-                            this.MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.hediffXPFactor * this.MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier) * mightDef.hediffCost), 0 , 9999);
+                            reqHediff.Severity -= ActualHediffCost(mightDef, MightUser);
+                            MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.hediffXPFactor * MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier) * mightDef.hediffCost), 0 , 9999);
                         }
                         else
                         {
-                            Log.Warning("" + this.Pawn.LabelShort + " attempted to use an ability requiring the hediff " + mightDef.requiredHediff.label + " but does not have the hediff; should never happen since we required the hediff to use the ability.");
+                            Log.Warning("" + Pawn.LabelShort + " attempted to use an ability requiring the hediff " + mightDef.requiredHediff.label + " but does not have the hediff; should never happen since we required the hediff to use the ability.");
                         }
                     }
                     if (mightDef.requiredNeed != null)
                     {
-                        if (this.Pawn.needs != null && this.Pawn.needs.AllNeeds != null && this.Pawn.needs.TryGetNeed(this.mightDef.requiredNeed) != null)
+                        if (Pawn.needs != null && Pawn.needs.AllNeeds != null && Pawn.needs.TryGetNeed(mightDef.requiredNeed) != null)
                         {
-                            Need nd = this.Pawn.needs.TryGetNeed(this.mightDef.requiredNeed);
-                            nd.CurLevel -= ActualNeedCost(mightDef, this.MightUser);
-                            this.MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.needXPFactor * this.MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier) * mightDef.needCost), 0, 9999);
+                            Need nd = Pawn.needs.TryGetNeed(mightDef.requiredNeed);
+                            nd.CurLevel -= ActualNeedCost(mightDef, MightUser);
+                            MightUser.MightUserXP += Mathf.Clamp((int)((mightDef.needXPFactor * MightUser.xpGain * ModOptions.Settings.Instance.xpMultiplier) * mightDef.needCost), 0, 9999);
                         }
                         else
                         {
-                            Log.Warning("" + this.Pawn.LabelShort + " attempted to use an ability requiring the need " + mightDef.requiredNeed.label + " but does not have the need; should never happen since we required the need to use the ability.");
+                            Log.Warning("" + Pawn.LabelShort + " attempted to use an ability requiring the need " + mightDef.requiredNeed.label + " but does not have the need; should never happen since we required the need to use the ability.");
                         }
                     }
                     if ((mightDef.requiredInspiration != null || mightDef.requiresAnyInspiration) && mightDef.consumesInspiration)
                     {
-                        this.Pawn.mindState.inspirationHandler.EndInspiration(this.Pawn.Inspiration);
+                        Pawn.mindState.inspirationHandler.EndInspiration(Pawn.Inspiration);
                     }
                 }
                 if (mightDef.chainedAbility != null)
@@ -198,13 +164,13 @@ namespace TorannMagic
                 }
                 if (mightDef.removeAbilityAfterUse)
                 {
-                    MightUser.RemovePawnAbility(mightDef);
+                    MightUser.RemoveAbility(mightDef);
                 }
                 if (mightDef.abilitiesRemovedWhenUsed != null && mightDef.abilitiesRemovedWhenUsed.Count > 0)
                 {
                     foreach (TMAbilityDef rem in mightDef.abilitiesRemovedWhenUsed)
                     {
-                        this.MightUser.RemovePawnAbility(rem);
+                        MightUser.RemoveAbility(rem);
                     }
                 }
             }
@@ -212,7 +178,7 @@ namespace TorannMagic
 
         private void AddChainedAbility(TMAbilityDef mightDef)
         {
-            this.MightUser.TryAddPawnAbility(mightDef.chainedAbility);
+            MightUser.TryGiveAbility(mightDef.chainedAbility);
             bool expires = false;
             int expireTicks = -1;
             if (mightDef.chainedAbilityExpiresAfterTicks >= 0)
@@ -223,19 +189,19 @@ namespace TorannMagic
             else if (mightDef.chainedAbilityExpiresAfterCooldown)
             {
                 expires = true;
-                expireTicks = this.CooldownTicksLeft;
+                expireTicks = CooldownTicksLeft;
             }
             if (expires)
             {
                 CompAbilityUserMight.ChainedMightAbility cab = new CompAbilityUserMight.ChainedMightAbility(mightDef.chainedAbility, expireTicks, expires);
-                this.MightUser.chainedAbilitiesList.Add(cab);
+                MightUser.chainedAbilitiesList.Add(cab);
             }
         }
 
         public override string PostAbilityVerbCompDesc(VerbProperties_Ability verbDef)
         {
             TMAbilityDef mightAbilityDef = (TMAbilityDef)verbDef.abilityDef;            
-            return PostAbilityDesc(mightAbilityDef, this.MightUser, this.MaxCastingTicks);
+            return PostAbilityDesc(mightAbilityDef, MightUser, MaxCastingTicks);
         }
 
         public static string PostAbilityDesc(TMAbilityDef mightAbilityDef, CompAbilityUserMight mightUser, int maxCastingTicks)
@@ -506,10 +472,10 @@ namespace TorannMagic
                 bool flag1 = base.Def != null && (tmAbilityDef = (base.Def as TMAbilityDef)) != null;
                 if (flag1)
                 {
-                    bool flag4 = this.MightUser.Stamina != null;
+                    bool flag4 = MightUser.Stamina != null;
                     if (flag4)
                     {
-                        bool flag5 = mightDef.staminaCost > 0f && this.ActualStaminaCost > this.MightUser.Stamina.CurLevel;
+                        bool flag5 = mightDef.staminaCost > 0f && ActualStaminaCost > MightUser.Stamina.CurLevel;
                         if (flag5)
                         {
                             reason = "TM_NotEnoughStamina".Translate(
@@ -535,7 +501,7 @@ namespace TorannMagic
                         }
                         if (mightDef.chiCost > 0f)
                         {
-                            bool flag6 = this.MightUser.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_ChiHD, false) ? (this.ActualChiCost * 100) > this.MightUser.Pawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD, false).Severity : true;
+                            bool flag6 = MightUser.Pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_ChiHD, false) ? (ActualChiCost * 100) > MightUser.Pawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ChiHD, false).Severity : true;
                             if (flag6)
                             {
                                 reason = "TM_NotEnoughChi".Translate(
@@ -548,9 +514,9 @@ namespace TorannMagic
                         bool flagNeed = mightDef.requiredNeed != null;
                         if (flagNeed)
                         {
-                            if (this.MightUser.Pawn.needs.TryGetNeed(mightDef.requiredNeed) != null)
+                            if (MightUser.Pawn.needs.TryGetNeed(mightDef.requiredNeed) != null)
                             {
-                                if (this.MightUser.Pawn.needs.TryGetNeed(mightDef.requiredNeed).CurLevel < ActualNeedCost(mightDef, MightUser))
+                                if (MightUser.Pawn.needs.TryGetNeed(mightDef.requiredNeed).CurLevel < ActualNeedCost(mightDef, MightUser))
                                 {
                                     reason = "TM_NotEnoughEnergy".Translate(
                                         base.Pawn.LabelShort,
@@ -633,8 +599,8 @@ namespace TorannMagic
                     }
                 }
                 if(MightUser.specWpnRegNum == -1 && 
-                    (this.mightDef == TorannMagicDefOf.TM_PistolWhip || this.mightDef == TorannMagicDefOf.TM_SuppressingFire || this.mightDef == TorannMagicDefOf.TM_Mk203GL ||
-                    this.mightDef == TorannMagicDefOf.TM_Buckshot || this.mightDef == TorannMagicDefOf.TM_BreachingCharge))
+                    (mightDef == TorannMagicDefOf.TM_PistolWhip || mightDef == TorannMagicDefOf.TM_SuppressingFire || mightDef == TorannMagicDefOf.TM_Mk203GL ||
+                    mightDef == TorannMagicDefOf.TM_Buckshot || mightDef == TorannMagicDefOf.TM_BreachingCharge))
                 {
                     if (MightUser.Pawn.equipment != null && MightUser.Pawn.equipment.Primary != null)
                     {
@@ -653,17 +619,17 @@ namespace TorannMagic
                 List<Apparel> wornApparel = base.Pawn.apparel.WornApparel;
                 for (int i = 0; i < wornApparel.Count; i++)
                 {
-                    if (!wornApparel[i].AllowVerbCast(this.Verb) && 
-                        (this.mightDef.defName == "TM_Headshot" || 
-                        this.mightDef.defName == "TM_DisablingShot" || this.mightDef.defName == "TM_DisablingShot_I" || this.mightDef.defName == "TM_DisablingShot_II" || this.mightDef.defName == "TM_DisablingShot_III" || 
-                        this.mightDef.defName == "TM_AntiArmor" || 
-                        this.mightDef.defName == "TM_ArrowStorm" || this.mightDef.defName == "TM_ArrowStorm_I" || this.mightDef.defName == "TM_ArrowStorm_II" || this.mightDef.defName == "TM_ArrowStorm_III" ||
-                        this.mightDef == TorannMagicDefOf.TM_PsionicStorm ||
-                        this.mightDef.defName == "TM_PsionicBlast" || this.mightDef.defName == "TM_PsionicBlast_I" || this.mightDef.defName == "TM_PsionicBlast_II" || this.mightDef.defName == "TM_PsionicBlast_III" || 
-                        this.mightDef == TorannMagicDefOf.TM_TempestStrike ||
-                        this.mightDef == TorannMagicDefOf.TM_SuppressingFire || this.mightDef == TorannMagicDefOf.TM_Mk203GL ||
-                        this.mightDef == TorannMagicDefOf.TM_Buckshot ||
-                        this.mightDef.defName == "TM_Mimic"))
+                    if (!wornApparel[i].AllowVerbCast(Verb) && 
+                        (mightDef.defName == "TM_Headshot" || 
+                        mightDef.defName == "TM_DisablingShot" || mightDef.defName == "TM_DisablingShot_I" || mightDef.defName == "TM_DisablingShot_II" || mightDef.defName == "TM_DisablingShot_III" || 
+                        mightDef.defName == "TM_AntiArmor" || 
+                        mightDef.defName == "TM_ArrowStorm" || mightDef.defName == "TM_ArrowStorm_I" || mightDef.defName == "TM_ArrowStorm_II" || mightDef.defName == "TM_ArrowStorm_III" ||
+                        mightDef == TorannMagicDefOf.TM_PsionicStorm ||
+                        mightDef.defName == "TM_PsionicBlast" || mightDef.defName == "TM_PsionicBlast_I" || mightDef.defName == "TM_PsionicBlast_II" || mightDef.defName == "TM_PsionicBlast_III" || 
+                        mightDef == TorannMagicDefOf.TM_TempestStrike ||
+                        mightDef == TorannMagicDefOf.TM_SuppressingFire || mightDef == TorannMagicDefOf.TM_Mk203GL ||
+                        mightDef == TorannMagicDefOf.TM_Buckshot ||
+                        mightDef.defName == "TM_Mimic"))
                     {
                         reason = "TM_ShieldBlockingPowers".Translate(
                             base.Pawn.Label,
@@ -672,19 +638,19 @@ namespace TorannMagic
                         return false;
                     }
                 }
-                if(TM_Calc.HasHateHediff(this.MightUser.Pawn) && this.MightUser.Pawn.story.traits.HasTrait(TorannMagicDefOf.DeathKnight))
+                if(TM_Calc.HasHateHediff(MightUser.Pawn) && MightUser.Pawn.story.traits.HasTrait(TorannMagicDefOf.DeathKnight))
                 {
                     Hediff hediff = null;
-                    for (int h = 0; h < this.MightUser.Pawn.health.hediffSet.hediffs.Count; h++)
+                    for (int h = 0; h < MightUser.Pawn.health.hediffSet.hediffs.Count; h++)
                     {
-                        if (this.MightUser.Pawn.health.hediffSet.hediffs[h].def.defName.Contains("TM_HateHD"))
+                        if (MightUser.Pawn.health.hediffSet.hediffs[h].def.defName.Contains("TM_HateHD"))
                         {
-                            hediff = this.MightUser.Pawn.health.hediffSet.hediffs[h];
+                            hediff = MightUser.Pawn.health.hediffSet.hediffs[h];
                         }
                     }
                     if (hediff != null)
                     {
-                        if ((this.mightDef == TorannMagicDefOf.TM_Spite || this.mightDef == TorannMagicDefOf.TM_Spite_I || this.mightDef == TorannMagicDefOf.TM_Spite_II|| this.mightDef == TorannMagicDefOf.TM_Spite_III) && hediff.Severity < 20f)
+                        if ((mightDef == TorannMagicDefOf.TM_Spite || mightDef == TorannMagicDefOf.TM_Spite_I || mightDef == TorannMagicDefOf.TM_Spite_II|| mightDef == TorannMagicDefOf.TM_Spite_III) && hediff.Severity < 20f)
                         {
                             reason = "TM_NotEnoughHate".Translate(
                             base.Pawn.LabelShort,
@@ -698,10 +664,10 @@ namespace TorannMagic
                         return false;
                     }
                 }
-                if (this.MightUser.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_PsionicHD"), false))
+                if (MightUser.Pawn.health.hediffSet.HasHediff(HediffDef.Named("TM_PsionicHD"), false))
                 {
-                    float psiEnergy = this.MightUser.Pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_PsionicHD"), false).Severity;
-                    if ((this.mightDef.defName == "TM_PsionicBlast" || this.mightDef.defName == "TM_PsionicBlast_I" || this.mightDef.defName == "TM_PsionicBlast_II" || this.mightDef.defName == "TM_PsionicBlast_III") && psiEnergy < 20f)
+                    float psiEnergy = MightUser.Pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("TM_PsionicHD"), false).Severity;
+                    if ((mightDef.defName == "TM_PsionicBlast" || mightDef.defName == "TM_PsionicBlast_I" || mightDef.defName == "TM_PsionicBlast_II" || mightDef.defName == "TM_PsionicBlast_III") && psiEnergy < 20f)
                     {
                         reason = "TM_NotEnoughPsionicEnergy".Translate(
                         base.Pawn.Label,
@@ -709,7 +675,7 @@ namespace TorannMagic
                         );
                         return false;
                     }
-                    if ((this.mightDef == TorannMagicDefOf.TM_PsionicDash && psiEnergy < 8f))
+                    if ((mightDef == TorannMagicDefOf.TM_PsionicDash && psiEnergy < 8f))
                     {
                         reason = "TM_NotEnoughPsionicEnergy".Translate(
                         base.Pawn.Label,
@@ -717,8 +683,8 @@ namespace TorannMagic
                         );
                         return false;
                     }
-                    int stormCost = 65 - (5 * (this.MightUser.MightData.MightPowerSkill_PsionicStorm.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicStorm_eff").level));
-                    if ((this.mightDef == TorannMagicDefOf.TM_PsionicStorm && psiEnergy < stormCost))
+                    int stormCost = 65 - (5 * (MightUser.MightData.MightPowerSkill_PsionicStorm.FirstOrDefault((MightPowerSkill x) => x.label == "TM_PsionicStorm_eff").level));
+                    if ((mightDef == TorannMagicDefOf.TM_PsionicStorm && psiEnergy < stormCost))
                     {
                         reason = "TM_NotEnoughPsionicEnergy".Translate(
                         base.Pawn.Label,
@@ -727,8 +693,8 @@ namespace TorannMagic
                         return false;
                     }
                 }
-                TMAbilityDef tmad = this.mightDef;
-                if (tmad != null && tmad.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(this.Pawn))
+                TMAbilityDef tmad = mightDef;
+                if (tmad != null && tmad.requiredWeaponsOrCategories != null && tmad.IsRestrictedByEquipment(Pawn))
                 {
                     reason = "TM_IncompatibleWeaponType".Translate(
                         base.Pawn.LabelShort,

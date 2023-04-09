@@ -1,14 +1,14 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_Recall : Verb_UseAbility
+    class Verb_Recall : VFECore.Abilities.Verb_CastAbility
     {
         private CompAbilityUserMagic comp;
 

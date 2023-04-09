@@ -1,6 +1,6 @@
 ﻿using Verse;
 using Verse.AI;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using RimWorld;
 
 namespace TorannMagic
 {
-    public class Projectile_ShadowStrike : Projectile_AbilityBase
+    public class Projectile_ShadowStrike : VFECore.Abilities.AbilityProjectile
     {
         int age = -1;
         int duration = 300;

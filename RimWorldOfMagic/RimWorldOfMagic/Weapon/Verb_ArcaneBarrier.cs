@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 
 namespace TorannMagic.Weapon
 {
-    public class Verb_ArcaneBarrier : Verb_UseAbility
+    public class Verb_ArcaneBarrier : VFECore.Abilities.Verb_CastAbility
     {
         float xProbL = 0;
         float xProbR = 0;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse.AI;
 using Verse;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_SummonTotemLightning : Verb_UseAbility
+    public class Verb_SummonTotemLightning : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used for non-unique abilities that can be used with shieldbelt

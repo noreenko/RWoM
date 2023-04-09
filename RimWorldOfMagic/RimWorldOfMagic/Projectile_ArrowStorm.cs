@@ -2,12 +2,12 @@
 using System;
 using RimWorld;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic
 {
-	public class Projectile_ArrowStorm : Projectile_AbilityBase
+	public class Projectile_ArrowStorm : VFECore.Abilities.AbilityProjectile
 	{
 
         private bool initialized = false;

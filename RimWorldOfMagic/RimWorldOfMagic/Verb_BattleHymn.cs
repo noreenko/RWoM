@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.Sound;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_BattleHymn : Verb_UseAbility
+    public class Verb_BattleHymn : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {

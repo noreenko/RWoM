@@ -1,11 +1,11 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_ThunderStrike : Projectile_AbilityBase
+    public class Projectile_ThunderStrike : VFECore.Abilities.AbilityProjectile
     {
         Vector3 direction;
         Vector3 directionOffsetRight;

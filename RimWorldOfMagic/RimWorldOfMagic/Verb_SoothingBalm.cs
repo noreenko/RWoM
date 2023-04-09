@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using HarmonyLib;
 using UnityEngine;
@@ -11,7 +11,7 @@ using TorannMagic.Utils;
 
 namespace TorannMagic
 {
-    public class Verb_SoothingBalm : Verb_UseAbility
+    public class Verb_SoothingBalm : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         //Used specifically for non-unique verbs that ignore LOS (can be used with shield belt)
@@ -85,7 +85,7 @@ namespace TorannMagic
                 }
                 else
                 {
-                    Messages.Message("TM_InvalidTarget".Translate(caster.LabelShort, Ability.Def.label), MessageTypeDefOf.NeutralEvent);
+                    Messages.Message("TM_InvalidTarget".Translate(caster.LabelShort, ability.def.label), MessageTypeDefOf.NeutralEvent);
                 }
             }
             catch (NullReferenceException ex)

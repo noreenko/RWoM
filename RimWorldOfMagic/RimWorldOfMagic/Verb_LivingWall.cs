@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_LivingWall : Verb_UseAbility
+    public class Verb_LivingWall : VFECore.Abilities.Verb_CastAbility
     {
         private int verVal;
 
@@ -39,7 +39,7 @@ namespace TorannMagic
             Pawn casterPawn = CasterPawn;
             //Pawn pawn = currentTarget.Thing as Pawn;
             CompAbilityUserMagic comp = casterPawn.GetCompAbilityUserMagic();
-            verVal = TM_Calc.GetSkillVersatilityLevel(casterPawn, Ability.Def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(casterPawn, ability.def as TMAbilityDef);
             //verVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_LivingWall, "TM_LivingWall", "_ver", true);
             //pwrVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_LivingWall, "TM_LivingWall", "_pwr", true);
             if (comp == null) return true;
@@ -74,14 +74,14 @@ namespace TorannMagic
                 }
                 if(!wallDetected)
                 {
-                    Messages.Message("TM_InvalidTarget".Translate(casterPawn.LabelShort, Ability.Def.label), MessageTypeDefOf.NegativeEvent);
-                    MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Living Wall: " + StringsToTranslate.AU_CastFailure);
+                    Messages.Message("TM_InvalidTarget".Translate(casterPawn.LabelShort, ability.def.label), MessageTypeDefOf.NegativeEvent);
+                    MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Living Wall: Cast Failed");
                 }
             }
             else
             {
-                Messages.Message("TM_InvalidTarget".Translate(casterPawn.LabelShort, Ability.Def.label), MessageTypeDefOf.NegativeEvent);
-                MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Living Wall: " + StringsToTranslate.AU_CastFailure);
+                Messages.Message("TM_InvalidTarget".Translate(casterPawn.LabelShort, ability.def.label), MessageTypeDefOf.NegativeEvent);
+                MoteMaker.ThrowText(casterPawn.DrawPos, casterPawn.Map, "Living Wall: Cast Failed");
             }
 
             return true;

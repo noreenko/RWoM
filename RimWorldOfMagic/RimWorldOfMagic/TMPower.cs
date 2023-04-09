@@ -1,8 +1,8 @@
-using AbilityUser;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using VFECore.Abilities;
 
 namespace TorannMagic 
 {
@@ -63,7 +63,7 @@ namespace TorannMagic
             }
         }
 
-        public Texture2D Icon => abilityDef.uiIcon;
+        public Texture2D Icon => abilityDef.icon;
 
         public AbilityDef GetAbilityDef(int index)
         {

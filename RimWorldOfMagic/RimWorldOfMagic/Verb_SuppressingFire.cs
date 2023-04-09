@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using RimWorld;
@@ -7,7 +7,7 @@ using RimWorld;
 
 namespace TorannMagic
 {
-    public class Verb_SuppressingFire : Verb_UseAbility  
+    public class Verb_SuppressingFire : VFECore.Abilities.Verb_CastAbility  
     {
         private bool initialized = false;
         private int effVal;

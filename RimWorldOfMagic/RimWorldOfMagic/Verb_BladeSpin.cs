@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using RimWorld;
 using System.Linq;
@@ -9,10 +9,8 @@ using System.Collections.Generic;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Verb_BladeSpin : Verb_UseAbility
+    public class Verb_BladeSpin : VFECore.Abilities.Verb_CastAbility
     {
-
-        bool flag10;
         private int verVal = 0;
         private int pwrVal = 0;
 
@@ -63,27 +61,14 @@ namespace TorannMagic
             if (this.CasterPawn.equipment.Primary != null && !this.CasterPawn.equipment.Primary.def.IsRangedWeapon)
             {
                 CompAbilityUserMight comp = this.CasterPawn.GetCompAbilityUserMight();
-                //MightPowerSkill ver = comp.MightData.MightPowerSkill_SeismicSlash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_SeismicSlash_ver");
-                //MightPowerSkill pwr = comp.MightData.MightPowerSkill_SeismicSlash.FirstOrDefault((MightPowerSkill x) => x.label == "TM_SeismicSlash_pwr");
-                //verVal = TM_Calc.GetMightSkillLevel(this.CasterPawn, comp.MightData.MightPowerSkill_BladeSpin, "TM_BladeSpin", "_ver", true);
-                //pwrVal = TM_Calc.GetMightSkillLevel(this.CasterPawn, comp.MightData.MightPowerSkill_BladeSpin, "TM_BladeSpin", "_pwr", true);
-                verVal = TM_Calc.GetSkillVersatilityLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
-                pwrVal = TM_Calc.GetSkillPowerLevel(CasterPawn, this.Ability.Def as TMAbilityDef);
-                //verVal = ver.level;
-                //pwrVal = pwr.level;
-                //if (base.CasterPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
-                //{
-                //    MightPowerSkill mver = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver");
-                //    MightPowerSkill mpwr = comp.MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
-                //    verVal = mver.level;
-                //    pwrVal = mpwr.level;
-                //}
+                verVal = TM_Calc.GetSkillVersatilityLevel(CasterPawn, ability.def as TMAbilityDef);
+                pwrVal = TM_Calc.GetSkillPowerLevel(CasterPawn, ability.def as TMAbilityDef);
                 CellRect cellRect = CellRect.CenteredOn(base.CasterPawn.Position, 1);
                 Map map = base.CasterPawn.Map;
                 cellRect.ClipInsideMap(map);
 
                 IntVec3 centerCell = cellRect.CenterCell;                
-                TMAbilityDef ad = (TMAbilityDef)this.Ability.Def;
+                TMAbilityDef ad = (TMAbilityDef)ability.def;
                 int dmgNum = Mathf.RoundToInt(comp.weaponDamage * ad.weaponDamageFactor);
                 
                 if (!this.CasterPawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
@@ -103,9 +88,7 @@ namespace TorannMagic
             }
 
             this.burstShotsLeft = 0;
-            this.PostCastShot(flag10, out flag10);
-            return flag10;
-
+            return false;
         }
 
         public void SearchForTargets(IntVec3 center, float radius, Map map)

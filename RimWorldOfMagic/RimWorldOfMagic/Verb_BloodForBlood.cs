@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.AI;
 
 
 namespace TorannMagic
 {
-    public class Verb_BloodForBlood : Verb_UseAbility
+    public class Verb_BloodForBlood : VFECore.Abilities.Verb_CastAbility
     {
 
         private int verVal;
@@ -19,7 +19,6 @@ namespace TorannMagic
 
         protected override bool TryCastShot()
         {
-            bool flag = false;
             MagicPowerSkill bpwr = base.CasterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodGift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodGift_pwr");
             MagicPowerSkill pwr = base.CasterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodForBlood.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodForBlood_pwr");
             MagicPowerSkill ver = base.CasterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodForBlood.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodForBlood_ver");
@@ -32,18 +31,18 @@ namespace TorannMagic
                 pwrVal = mpwr.level;
                 verVal = mver.level;
             }
-            this.arcaneDmg = base.CasterPawn.GetCompAbilityUserMagic().arcaneDmg;
-            this.arcaneDmg *= (1 + (.1f * bpwr.level));
-            if(this.currentTarget.Thing != null && this.currentTarget.Thing is Pawn victim)
+            arcaneDmg = base.CasterPawn.GetCompAbilityUserMagic().arcaneDmg;
+            arcaneDmg *= (1 + (.1f * bpwr.level));
+            if(currentTarget.Thing != null && currentTarget.Thing is Pawn victim)
             {
-                if (victim.RaceProps.BloodDef != null && victim != this.CasterPawn)
+                if (victim.RaceProps.BloodDef != null && victim != CasterPawn)
                 {
                     for (int i = 0; i < 4; i++)
                     {
                         TM_MoteMaker.ThrowBloodSquirt(victim.DrawPos, victim.Map, Rand.Range(.6f, .9f));
                     }
 
-                    HealthUtility.AdjustSeverity(victim, TorannMagicDefOf.TM_BloodForBloodHD, (.5f + (.1f * pwrVal)) * this.arcaneDmg);
+                    HealthUtility.AdjustSeverity(victim, TorannMagicDefOf.TM_BloodForBloodHD, (.5f + (.1f * pwrVal)) * arcaneDmg);
                     if(victim.Faction == null && victim.RaceProps != null && victim.RaceProps.Animal && victim.mindState != null)
                     {
                         victim.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Manhunter, null, true, false, null);
@@ -51,7 +50,7 @@ namespace TorannMagic
                     HediffComp_BloodForBlood comp = victim.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_BloodForBloodHD, false).TryGetComp<HediffComp_BloodForBlood>();
                     if (comp != null)
                     {
-                        comp.linkedPawn = this.CasterPawn;
+                        comp.linkedPawn = CasterPawn;
                         if (victim.IsColonist && !base.CasterPawn.IsColonist)
                         {
                             TM_Action.SpellAffectedPlayerWarning(victim);
@@ -59,17 +58,16 @@ namespace TorannMagic
                     }
                     else
                     {
-                        Messages.Message("TM_InvalidTarget".Translate(this.CasterPawn.LabelShort, TorannMagicDefOf.TM_BloodForBlood.label), MessageTypeDefOf.RejectInput);
+                        Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, TorannMagicDefOf.TM_BloodForBlood.label), MessageTypeDefOf.RejectInput);
                     }
                 }
                 else
                 {
-                    Messages.Message("TM_InvalidTarget".Translate(this.CasterPawn.LabelShort, TorannMagicDefOf.TM_BloodForBlood.label), MessageTypeDefOf.RejectInput);
+                    Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, TorannMagicDefOf.TM_BloodForBlood.label), MessageTypeDefOf.RejectInput);
                 }
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
         
     }

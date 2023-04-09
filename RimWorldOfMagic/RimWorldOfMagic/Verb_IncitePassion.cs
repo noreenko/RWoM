@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 using Verse.AI;
@@ -10,21 +10,20 @@ using Verse.AI;
 
 namespace TorannMagic
 {
-    public class Verb_IncitePassion : Verb_UseAbility
+    public class Verb_IncitePassion : VFECore.Abilities.Verb_CastAbility
     {
         bool validTarg;
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
         {
-            if (targ.Thing != null && targ.Thing == this.caster)
+            if (targ.Thing != null && targ.Thing == caster)
             {
-                return this.verbProps.targetParams.canTargetSelf;
+                return verbProps.targetParams.canTargetSelf;
             }
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
-                    ShootLine shootLine;
-                    validTarg = this.TryFindShootLineFromTo(root, targ, out shootLine);
+                    validTarg = TryFindShootLineFromTo(root, targ, out _);
                 }
                 else
                 {
@@ -44,8 +43,8 @@ namespace TorannMagic
         protected override bool TryCastShot()
         {
             bool flag = false;
-            Pawn caster = this.CasterPawn;
-            Pawn hitPawn = this.currentTarget.Thing as Pawn;
+            Pawn caster = CasterPawn;
+            Pawn hitPawn = currentTarget.Thing as Pawn;
 
             if (hitPawn != null && hitPawn.RaceProps != null && hitPawn.RaceProps.Humanlike && !TM_Calc.IsUndead(hitPawn))
             {
@@ -90,17 +89,15 @@ namespace TorannMagic
             }
             else
             {
-                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, this.Ability.Def.label), MessageTypeDefOf.RejectInput);
+                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, ability.def.label), MessageTypeDefOf.RejectInput);
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
 
         public bool CheckAnyPassions(Pawn source, Pawn target)
         {
             validSkillPassions = new List<SkillRecord>();
-            validSkillPassions.Clear();
             foreach (SkillRecord skill in source.skills.skills)
             {
                 if (skill != null)

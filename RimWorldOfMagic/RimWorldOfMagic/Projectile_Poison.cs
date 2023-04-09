@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Projectile_Poison : Projectile_AbilityBase
+    public class Projectile_Poison : VFECore.Abilities.AbilityProjectile
     {
         BodyPartRecord[] vulnerableParts = new BodyPartRecord[10];
         private bool initialized = false;

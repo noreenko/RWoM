@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System;
 
 namespace TorannMagic
 {
-    class Projectile_EarthernHammer : Projectile_AbilityBase
+    class Projectile_EarthernHammer : VFECore.Abilities.AbilityProjectile
     {
 
         private IntVec3 strikeLoc = IntVec3.Invalid;

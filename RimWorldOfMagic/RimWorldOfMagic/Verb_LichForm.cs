@@ -1,19 +1,18 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TorannMagic
 {
-    public class Verb_LichForm : Verb_UseAbility
+    public class Verb_LichForm : VFECore.Abilities.Verb_CastAbility
     {
 
         protected override bool TryCastShot()
         {
-            Map map = base.CasterPawn.Map;
             Pawn pawn = base.CasterPawn;
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
 
@@ -24,7 +23,7 @@ namespace TorannMagic
                 {
                     FixTrait(pawn, pawn.story.traits.allTraits);
                     AdjustPlayerSettings(pawn);
-                    pawn.story.traits.GainTrait(new Trait(TraitDef.Named("Lich"), 0, false));
+                    pawn.story.traits.GainTrait(new Trait(TraitDef.Named("Lich")));
                     HealthUtility.AdjustSeverity(pawn, HediffDef.Named("TM_LichHD"), .5f);
                     for (int h = 0; h < 24; h++)
                     {
@@ -32,7 +31,7 @@ namespace TorannMagic
                     }
                     pawn.needs.AddOrRemoveNeedsAsAppropriate();
                     comp.MagicData.MagicPowersN.FirstOrDefault((MagicPower x) => x.abilityDef == TorannMagicDefOf.TM_DeathBolt).learned = true;
-                    comp.AddPawnAbility(TorannMagicDefOf.TM_DeathBolt, false);
+                    comp.GiveAbility(TorannMagicDefOf.TM_DeathBolt);
                     comp.spell_Flight = true;
                     comp.InitializeSpell();
                     TM_MoteMaker.ThrowScreamMote(pawn.Position.ToVector3(), pawn.Map, 2f, 216, 255, 0);
@@ -80,20 +79,12 @@ namespace TorannMagic
             skill.passion = Passion.None;
             skill = lich.skills.GetSkill(SkillDefOf.Social);
             skill.passion = Passion.None;
-            //lich.story.DisabledWorkTypes.Clear();
             lich.workSettings.SetPriority(WorkTypeDefOf.Doctor, 0);
             lich.workSettings.SetPriority(WorkTypeDefOf.Warden, 0);
             lich.workSettings.SetPriority(WorkTypeDefOf.Handling, 0);
-            //lich.workSettings.SetPriority(WorkTypeDefOf.Construction, 0);
-            //lich.workSettings.SetPriority(WorkTypeDefOf.Crafting, 0);
             lich.workSettings.SetPriority(WorkTypeDefOf.Firefighter, 0);
-            //lich.workSettings.SetPriority(WorkTypeDefOf.Growing, 0);
-            //lich.workSettings.SetPriority(WorkTypeDefOf.Mining, 0);
             lich.workSettings.SetPriority(TorannMagicDefOf.Cleaning, 0);
             lich.workSettings.SetPriority(TorannMagicDefOf.Hauling, 0);
-            //lich.workSettings.SetPriority(TorannMagicDefOf.Tailoring, 0);
-            //lich.workSettings.SetPriority(TorannMagicDefOf.Smithing, 0);
-            //lich.workSettings.SetPriority(TorannMagicDefOf.PlantCutting, 0);
             lich.workSettings.SetPriority(TorannMagicDefOf.Cooking, 0);
             lich.workSettings.SetPriority(TorannMagicDefOf.Art, 0);
 

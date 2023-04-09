@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_SigilDrain : Verb_UseAbility
+    public class Verb_SigilDrain : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
-            bool flag = false;
-            CompAbilityUserMagic comp = this.CasterPawn.GetCompAbilityUserMagic();
+            CompAbilityUserMagic comp = CasterPawn.GetCompAbilityUserMagic();
 
             if (comp.IsMagicUser)
             {
@@ -32,8 +31,7 @@ namespace TorannMagic
                 FleckMaker.ThrowLightningGlow(caster.DrawPos, caster.Map, 1.2f);
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
     }
 }

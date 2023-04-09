@@ -1,572 +1,327 @@
-﻿using RimWorld;
-using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
+using RimWorld;
 using UnityEngine;
 using Verse;
-using AbilityUser;
 
-namespace TorannMagic
+namespace TorannMagic;
+
+public class FlyingObject_Spinning : Projectile
 {
-    //[StaticConstructorOnStartup]
-    public class FlyingObject_Spinning : Projectile
+    protected new Vector3 origin;
+    protected new Vector3 destination;
+    private Vector3 direction;
+
+    public float speed = 25f;
+    public int spinRate;        //spin rate > 0 makes the object rotate every spinRate Ticks
+    private int rotation;
+    protected new int ticksToImpact;
+    //protected new Thing launcher;
+    protected Thing assignedTarget;
+    protected Thing flyingThing;
+    private bool drafted;
+
+    public float force = 1f;
+
+    private bool earlyImpact;
+    private float impactForce;
+
+    public DamageInfo? impactDamage;
+
+    public bool damageLaunched = true;
+
+    public bool explosion;
+
+    Pawn pawn;
+
+    protected new int StartingTicksToImpact
     {
-        protected new Vector3 origin;
-        protected new Vector3 destination;
-        private Vector3 direction;
-
-        public float speed = 25f;
-        public int spinRate = 0;        //spin rate > 0 makes the object rotate every spinRate Ticks
-        private int rotation = 0;
-        protected new int ticksToImpact;
-        //protected new Thing launcher;
-        protected Thing assignedTarget;
-        protected Thing flyingThing;
-        private bool drafted = false;
-
-        public float force = 1f;
-
-        private bool earlyImpact = false;
-        private float impactForce = 0;
-
-        public DamageInfo? impactDamage;
-
-        public bool damageLaunched = true;
-
-        public bool explosion = false;
-
-        public int weaponDmg = 0;
-
-        Pawn pawn;
-        CompAbilityUserMagic comp;
-
-        TMPawnSummoned newPawn = new TMPawnSummoned();
-
-        protected new int StartingTicksToImpact
+        get
         {
-            get
+            int num = Mathf.RoundToInt((origin - destination).magnitude / (speed / 100f));
+            return num < 1 ? 1 : num;
+        }
+    }
+
+    protected new IntVec3 DestinationCell => new(destination);
+
+    public new Vector3 ExactPosition
+    {
+        get
+        {
+            Vector3 b = (destination - origin) * (1f - ticksToImpact / (float)StartingTicksToImpact);
+            return origin + b + Vector3.up * def.Altitude;
+        }
+    }
+
+    public new Quaternion ExactRotation => Quaternion.LookRotation(destination - origin);
+
+    public override Vector3 DrawPos => ExactPosition;
+
+    public override void ExposeData()
+    {
+        base.ExposeData();
+        Scribe_Values.Look(ref origin, "origin");
+        Scribe_Values.Look(ref destination, "destination");
+        Scribe_Values.Look(ref ticksToImpact, "ticksToImpact");
+        Scribe_Values.Look(ref damageLaunched, "damageLaunched", true);
+        Scribe_Values.Look(ref explosion, "explosion");
+        Scribe_References.Look(ref assignedTarget, "assignedTarget");
+        //Scribe_References.Look<Thing>(ref this.launcher, "launcher", false);
+        Scribe_Deep.Look(ref flyingThing, "flyingThing");
+        Scribe_Values.Look(ref drafted, "drafted");
+    }
+
+    private void Initialize()
+    {
+        if (pawn != null)
+        {
+            FleckMaker.ThrowDustPuff(origin, Map, Rand.Range(1.2f, 1.8f));
+        }
+
+        direction = TM_Calc.GetVector(origin.ToIntVec3(), destination.ToIntVec3());
+        //flyingThing.ThingID += Rand.Range(0, 2147).ToString();
+    }
+
+    public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
+    {
+        Launch(launcher, Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
+    }
+
+    public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing)
+    {
+        Launch(launcher, Position.ToVector3Shifted(), targ, flyingThing);
+    }
+
+    public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, int _spinRate)
+    {
+        spinRate = _spinRate;
+        Launch(launcher, Position.ToVector3Shifted(), targ, flyingThing);
+    }
+
+    public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing flyingThing, DamageInfo? newDamageInfo = null)
+    {
+        bool spawned = flyingThing != null && flyingThing.Spawned;
+        pawn = launcher as Pawn;
+        if (pawn != null && pawn.Drafted)
+        {
+            drafted = true;
+        }
+        if (spawned)
+        {
+            flyingThing.DeSpawn();
+        }
+        speed *= force;
+        this.launcher = launcher;
+        this.origin = origin;
+        impactDamage = newDamageInfo;
+        this.flyingThing = flyingThing;
+
+        if (targ.Thing != null)
+        {
+            assignedTarget = targ.Thing;
+        }
+        destination = targ.Cell.ToVector3Shifted();
+        ticksToImpact = StartingTicksToImpact;
+        Initialize();
+    }
+
+    public override void Tick()
+    {
+        //base.Tick();
+        ticksToImpact--;
+        if (!ExactPosition.InBoundsWithNullCheck(Map))
+        {
+            ticksToImpact++;
+            Position = ExactPosition.ToIntVec3();
+            Destroy();
+        }
+        else if(!ExactPosition.ToIntVec3().Walkable(Map))
+        {
+            earlyImpact = true;
+            impactForce = (DestinationCell - ExactPosition.ToIntVec3()).LengthHorizontal + (speed * .2f);
+            ImpactSomething();
+        }
+        else
+        {
+            Position = ExactPosition.ToIntVec3();
+            if(Find.TickManager.TicksGame % 3 == 0)
             {
-                int num = Mathf.RoundToInt((this.origin - this.destination).magnitude / (this.speed / 100f));
-                bool flag = num < 1;
-                if (flag)
+                FleckMaker.ThrowDustPuff(Position, Map, Rand.Range(0.6f, .8f));
+            }
+
+            if (ticksToImpact <= 0)
+            {
+                if (DestinationCell.InBoundsWithNullCheck(Map))
                 {
-                    num = 1;
+                    Position = DestinationCell;
                 }
-                return num;
+                ImpactSomething();
             }
         }
+    }
 
-        protected new IntVec3 DestinationCell
+    public override void Draw()
+    {
+        if (flyingThing != null)
         {
-            get
+            if (spinRate > 0)
             {
-                return new IntVec3(this.destination);
-            }
-        }
+                if(Find.TickManager.TicksGame % spinRate ==0)
+                {
+                    rotation++;
+                    if(rotation >= 4)
+                    {
+                        rotation = 0;
+                    }
+                }
 
-        public new Vector3 ExactPosition
-        {
-            get
+                flyingThing.Rotation = rotation switch
+                {
+                    0 => Rot4.West,
+                    1 => Rot4.North,
+                    2 => Rot4.East,
+                    _ => Rot4.South
+                };
+            }
+
+            if (flyingThing is Pawn)
             {
-                Vector3 b = (this.destination - this.origin) * (1f - (float)this.ticksToImpact / (float)this.StartingTicksToImpact);
-                return this.origin + b + Vector3.up * this.def.Altitude;
-            }
-        }
+                if (!DrawPos.ToIntVec3().IsValid)
+                {
+                    return;
+                }
+                Pawn pawn = flyingThing as Pawn;
+                pawn.Drawer.DrawAt(DrawPos);
 
-        public new Quaternion ExactRotation
-        {
-            get
+            }
+            else if(flyingThing is Corpse)
             {
-                return Quaternion.LookRotation(this.destination - this.origin);
-            }
-        }
-
-        public override Vector3 DrawPos
-        {
-            get
-            {
-                return this.ExactPosition;
-            }
-        }
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
-            Scribe_Values.Look<Vector3>(ref this.origin, "origin", default(Vector3), false);
-            Scribe_Values.Look<Vector3>(ref this.destination, "destination", default(Vector3), false);
-            Scribe_Values.Look<int>(ref this.ticksToImpact, "ticksToImpact", 0, false);
-            Scribe_Values.Look<bool>(ref this.damageLaunched, "damageLaunched", true, false);
-            Scribe_Values.Look<bool>(ref this.explosion, "explosion", false, false);
-            Scribe_References.Look<Thing>(ref this.assignedTarget, "assignedTarget", false);
-            //Scribe_References.Look<Thing>(ref this.launcher, "launcher", false);
-            Scribe_Deep.Look<Thing>(ref this.flyingThing, "flyingThing", new object[0]);
-            Scribe_Values.Look<bool>(ref this.drafted, "drafted", false, false);
-        }
-
-        private void Initialize()
-        {
-            if (pawn != null)
-            {
-                FleckMaker.ThrowDustPuff(this.origin, this.Map, Rand.Range(1.2f, 1.8f));
-            }
-
-            this.direction = TM_Calc.GetVector(this.origin.ToIntVec3(), this.destination.ToIntVec3());
-            //flyingThing.ThingID += Rand.Range(0, 2147).ToString();
-        }
-
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, DamageInfo? impactDamage)
-        {
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, impactDamage);
-        }
-
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing)
-        {
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, null);
-        }
-
-        public void Launch(Thing launcher, LocalTargetInfo targ, Thing flyingThing, int _spinRate)
-        {
-            this.spinRate = _spinRate;
-            this.Launch(launcher, base.Position.ToVector3Shifted(), targ, flyingThing, null);
-        }
-
-        public void Launch(Thing launcher, Vector3 origin, LocalTargetInfo targ, Thing flyingThing, DamageInfo? newDamageInfo = null)
-        { 
-            bool spawned = flyingThing != null && flyingThing.Spawned;            
-            pawn = launcher as Pawn;
-            if (pawn != null && pawn.Drafted)
-            {
-                this.drafted = true;
-            }
-            if (spawned)
-            {               
-                flyingThing.DeSpawn();
-            }
-            this.speed = this.speed * this.force;
-            this.launcher = launcher;
-            this.origin = origin;
-            this.impactDamage = newDamageInfo;
-            this.flyingThing = flyingThing;
-
-            bool flag = targ.Thing != null;
-            if (flag)
-            {
-                this.assignedTarget = targ.Thing;
-            }
-            this.destination = targ.Cell.ToVector3Shifted();
-            this.ticksToImpact = this.StartingTicksToImpact;
-            this.Initialize();
-        }        
-
-        public override void Tick()
-        {
-            //base.Tick();
-            Vector3 exactPosition = this.ExactPosition;
-            this.ticksToImpact--;
-            bool flag = !this.ExactPosition.InBoundsWithNullCheck(base.Map);
-            if (flag)
-            {
-                this.ticksToImpact++;
-                base.Position = this.ExactPosition.ToIntVec3();
-                this.Destroy(DestroyMode.Vanish);
-            }
-            else if(!this.ExactPosition.ToIntVec3().Walkable(base.Map))
-            {
-                this.earlyImpact = true;
-                this.impactForce = (this.DestinationCell - this.ExactPosition.ToIntVec3()).LengthHorizontal + (this.speed * .2f);
-                this.ImpactSomething();
+                if (!DrawPos.ToIntVec3().IsValid)
+                {
+                    return;
+                }
+                Corpse corpse = flyingThing as Corpse;
+                corpse.InnerPawn.Rotation = flyingThing.Rotation;
+                corpse.InnerPawn.Drawer.renderer.RenderPawnAt(DrawPos);
             }
             else
             {
-                base.Position = this.ExactPosition.ToIntVec3();
-                if(Find.TickManager.TicksGame % 3 == 0)
-                {
-                    FleckMaker.ThrowDustPuff(base.Position, base.Map, Rand.Range(0.6f, .8f));
-                }               
-                
-                bool flag2 = this.ticksToImpact <= 0;
-                if (flag2)
-                {
-                    bool flag3 = this.DestinationCell.InBoundsWithNullCheck(base.Map);
-                    if (flag3)
-                    {
-                        base.Position = this.DestinationCell;
-                    }
-                    this.ImpactSomething();
-                }                
+                Graphics.DrawMesh(MeshPool.plane10, DrawPos, ExactRotation, flyingThing.def.DrawMatSingle, 0);
             }
         }
-
-        public override void Draw()
+        else
         {
-            bool flag = this.flyingThing != null;
-            if (flag)
+            if (spinRate > 0)
             {
-                if (this.spinRate > 0)
+                if (Find.TickManager.TicksGame % spinRate == 0)
                 {
-                    if(Find.TickManager.TicksGame % this.spinRate ==0)
+                    rotation++;
+                    if (rotation >= 4)
                     {
-                        this.rotation++;
-                        if(this.rotation >= 4)
-                        {
-                            this.rotation = 0;
-                        }
-                    }
-                    if (rotation == 0)
-                    {
-                        this.flyingThing.Rotation = Rot4.West;
-                    }
-                    else if (rotation == 1)
-                    {
-                        this.flyingThing.Rotation = Rot4.North;
-                    }
-                    else if (rotation == 2)
-                    {
-                        this.flyingThing.Rotation = Rot4.East;
-                    }
-                    else
-                    {
-                        this.flyingThing.Rotation = Rot4.South;
+                        rotation = 0;
                     }
                 }
 
-                bool flag2 = this.flyingThing is Pawn;                
-                if (flag2)
+                Rotation = rotation switch
                 {
-                    Vector3 arg_2B_0 = this.DrawPos;
-                    bool flag4 = !this.DrawPos.ToIntVec3().IsValid;
-                    if (flag4)
-                    {
-                        return;
-                    }
-                    Pawn pawn = this.flyingThing as Pawn;
-                    pawn.Drawer.DrawAt(this.DrawPos);  
-                    
-                }
-                else if(this.flyingThing is Corpse)
-                {
-                    Vector3 arg_2B_0 = this.DrawPos;
-                    bool flag4 = !this.DrawPos.ToIntVec3().IsValid;
-                    if (flag4)
-                    {
-                        return;
-                    }
-                    Corpse corpse = this.flyingThing as Corpse;
-                    corpse.InnerPawn.Rotation = this.flyingThing.Rotation;
-                    corpse.InnerPawn.Drawer.renderer.RenderPawnAt(this.DrawPos);
-                }
-                else
-                {
-                    Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, this.ExactRotation, this.flyingThing.def.DrawMatSingle, 0);
-                }
+                    0 => Rot4.West,
+                    1 => Rot4.North,
+                    2 => Rot4.East,
+                    _ => Rot4.South
+                };
+            }
+            Graphics.DrawMesh(MeshPool.plane10, DrawPos, (ExactRotation), def.DrawMatSingle, 0);
+        }
+        Comps_PostDraw();
+    }
+
+    private void ImpactSomething()
+    {
+        if (assignedTarget != null)
+        {
+            Pawn pawn = assignedTarget as Pawn;
+            bool flag2 = pawn != null && pawn.GetPosture() != PawnPosture.Standing && (origin - destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f;
+            if (flag2)
+            {
+                Impact(null);
             }
             else
             {
-                if (this.spinRate > 0)
-                {
-                    if (Find.TickManager.TicksGame % this.spinRate == 0)
-                    {
-                        this.rotation++;
-                        if (this.rotation >= 4)
-                        {
-                            this.rotation = 0;
-                        }
-                    }
-                    if (rotation == 0)
-                    {
-                        this.Rotation = Rot4.West;
-                    }
-                    else if (rotation == 1)
-                    {
-                        this.Rotation = Rot4.North;
-                    }
-                    else if (rotation == 2)
-                    {
-                        this.Rotation = Rot4.East;
-                    }
-                    else
-                    {
-                        this.Rotation = Rot4.South;
-                    }
-                }
-                Graphics.DrawMesh(MeshPool.plane10, this.DrawPos, (this.ExactRotation), this.def.DrawMatSingle, 0);
-            }
-            base.Comps_PostDraw();
-        }
-
-        private void DrawEffects(Vector3 pawnVec, Pawn flyingPawn, int magnitude)
-        {
-            bool flag = !pawn.Dead && !pawn.Downed;
-            if (flag)
-            {
-
+                Impact(assignedTarget);
             }
         }
-
-        private void ImpactSomething()
+        else
         {
-            bool flag = this.assignedTarget != null;
-            if (flag)
+            Impact(null);
+        }
+    }
+
+    protected void Impact(Thing hitThing)
+    {
+        if (hitThing == null)
+        {
+            if (Position.GetThingList(Map).FirstOrDefault(x => x == assignedTarget) is Pawn hitPawn)
             {
-                Pawn pawn = this.assignedTarget as Pawn;
-                bool flag2 = pawn != null && pawn.GetPosture() != PawnPosture.Standing && (this.origin - this.destination).MagnitudeHorizontalSquared() >= 20.25f && Rand.Value > 0.2f;
-                if (flag2)
-                {
-                    this.Impact(null);
-                }
-                else
-                {
-                    this.Impact(this.assignedTarget);
-                }
-            }
-            else
-            {
-                this.Impact(null);
+                hitThing = hitPawn;
             }
         }
-
-        protected new void Impact(Thing hitThing)
+        if (impactDamage.HasValue)
         {
-            bool flag = hitThing == null;
-            if (flag)
+            hitThing?.TakeDamage(impactDamage.Value);
+        }
+        try
+        {
+            SoundDefOf.Ambient_AltitudeWind.sustainFadeoutTime.Equals(30.0f);
+
+            if (flyingThing != null)
             {
-                Pawn pawn;
-                bool flag2 = (pawn = (base.Position.GetThingList(base.Map).FirstOrDefault((Thing x) => x == this.assignedTarget) as Pawn)) != null;
-                if (flag2)
+                GenSpawn.Spawn(flyingThing, Position, Map);
+                if (flyingThing is Pawn p)
                 {
-                    hitThing = pawn;
-                }
-            }
-            bool hasValue = this.impactDamage.HasValue;
-            if (hasValue)
-            {
-                hitThing.TakeDamage(this.impactDamage.Value);
-            }
-            try
-            {
-                SoundDefOf.Ambient_AltitudeWind.sustainFadeoutTime.Equals(30.0f);
-
-                if (this.flyingThing != null)
-                {
-                    GenSpawn.Spawn(this.flyingThing, base.Position, base.Map);
-                    if (this.flyingThing is Pawn p)
+                    if (p.IsColonist && drafted)
                     {
-                        if (p.IsColonist && this.drafted)
-                        {
-                            p.drafter.Drafted = true;
-                        }
-                        if (this.earlyImpact)
-                        {
-                            damageEntities(p, this.impactForce, DamageDefOf.Blunt);
-                            damageEntities(p, this.impactForce, DamageDefOf.Stun);
-                        }
+                        p.drafter.Drafted = true;
                     }
-                    else if (flyingThing.def.thingCategories != null && (flyingThing.def.thingCategories.Contains(ThingCategoryDefOf.Chunks) || flyingThing.def.thingCategories.Contains(ThingCategoryDef.Named("StoneChunks"))))
+                    if (earlyImpact)
                     {
-                        float radius = 4f;
-                        Vector3 center = this.ExactPosition;
-                        if (this.earlyImpact)
-                        {
-                            bool wallFlag90neg = false;
-                            IntVec3 wallCheck = (center + (Quaternion.AngleAxis(-90, Vector3.up) * this.direction)).ToIntVec3();
-                            FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), base.Map);
-                            wallFlag90neg = wallCheck.Walkable(base.Map);
-
-                            wallCheck = (center + (Quaternion.AngleAxis(90, Vector3.up) * this.direction)).ToIntVec3();
-                            FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), base.Map);
-                            bool wallFlag90 = wallCheck.Walkable(base.Map);
-
-                            if ((!wallFlag90 && !wallFlag90neg) || (wallFlag90 && wallFlag90neg))
-                            {
-                                //fragment energy bounces in reverse direction of travel
-                                center = center + ((Quaternion.AngleAxis(180, Vector3.up) * this.direction) * 3);
-                            }
-                            else if (wallFlag90)
-                            {
-                                center = center + ((Quaternion.AngleAxis(90, Vector3.up) * this.direction) * 3);
-                            }
-                            else if (wallFlag90neg)
-                            {
-                                center = center + ((Quaternion.AngleAxis(-90, Vector3.up) * this.direction) * 3);
-                            }
-
-                        }
-
-                        List<IntVec3> damageRing = GenRadial.RadialCellsAround(base.Position, radius, true).ToList();
-                        List<IntVec3> outsideRing = GenRadial.RadialCellsAround(base.Position, radius, false).Except(GenRadial.RadialCellsAround(base.Position, radius - 1, true)).ToList();
-                        for (int i = 0; i < damageRing.Count; i++)
-                        {
-                            List<Thing> allThings = damageRing[i].GetThingList(base.Map);
-                            for (int j = 0; j < allThings.Count; j++)
-                            {
-                                if (allThings[j] is Pawn)
-                                {
-                                    damageEntities(allThings[j], Rand.Range(14, 22), DamageDefOf.Blunt);
-                                }
-                                else if (allThings[j] is Building)
-                                {
-                                    damageEntities(allThings[j], Rand.Range(56, 88), DamageDefOf.Blunt);
-                                }
-                                else
-                                {
-                                    if (Rand.Chance(.1f))
-                                    {
-                                        GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_RubbleRock), damageRing[i], base.Map, ThingPlaceMode.Near);
-                                    }
-                                }
-                            }
-                        }
-                        for (int i = 0; i < outsideRing.Count; i++)
-                        {
-                            IntVec3 intVec = outsideRing[i];
-                            if (intVec.IsValid && intVec.InBoundsWithNullCheck(base.Map))
-                            {
-                                Vector3 moteDirection = TM_Calc.GetVector(this.ExactPosition.ToIntVec3(), intVec);
-                                TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_Rubble, this.ExactPosition, base.Map, Rand.Range(.3f, .6f), .2f, .02f, .05f, Rand.Range(-100, 100), Rand.Range(8f, 13f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
-                                TM_MoteMaker.ThrowGenericFleck(FleckDefOf.Smoke, this.ExactPosition, base.Map, Rand.Range(.9f, 1.2f), .3f, .02f, Rand.Range(.25f, .4f), Rand.Range(-100, 100), Rand.Range(5f, 8f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
-                                GenExplosion.DoExplosion(intVec, base.Map, .4f, DamageDefOf.Blunt, pawn, 0, 0, SoundDefOf.Pawn_Melee_Punch_HitBuilding, null, null, null, ThingDefOf.Filth_RubbleRock, .25f, 1, null, false, null, 0f, 1, 0, false);
-                                //FleckMaker.ThrowSmoke(intVec.ToVector3Shifted(), base.Map, Rand.Range(.6f, 1f));
-                            }
-                        }
-                        //damageEntities(this.flyingThing, 305, DamageDefOf.Blunt);
-                        this.flyingThing.Destroy(DestroyMode.Vanish);
-                    }
-                    else if ((flyingThing.def.thingCategories != null && (flyingThing.def.thingCategories.Contains(ThingCategoryDefOf.Corpses))) || this.flyingThing is Corpse)
-                    {
-                        Corpse flyingCorpse = this.flyingThing as Corpse;
-                        float radius = 3f;
-                        Vector3 center = this.ExactPosition;
-                        if (this.earlyImpact)
-                        {
-                            bool wallFlag90neg = false;
-                            IntVec3 wallCheck = (center + (Quaternion.AngleAxis(-90, Vector3.up) * this.direction)).ToIntVec3();
-                            FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), base.Map);
-                            wallFlag90neg = wallCheck.Walkable(base.Map);
-
-                            wallCheck = (center + (Quaternion.AngleAxis(90, Vector3.up) * this.direction)).ToIntVec3();
-                            FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), base.Map);
-                            bool wallFlag90 = wallCheck.Walkable(base.Map);
-
-                            if ((!wallFlag90 && !wallFlag90neg) || (wallFlag90 && wallFlag90neg))
-                            {
-                                //fragment energy bounces in reverse direction of travel
-                                center = center + ((Quaternion.AngleAxis(180, Vector3.up) * this.direction) * 3);
-                            }
-                            else if (wallFlag90)
-                            {
-                                center = center + ((Quaternion.AngleAxis(90, Vector3.up) * this.direction) * 3);
-                            }
-                            else if (wallFlag90neg)
-                            {
-                                center = center + ((Quaternion.AngleAxis(-90, Vector3.up) * this.direction) * 3);
-                            }
-
-                        }
-
-                        List<IntVec3> damageRing = GenRadial.RadialCellsAround(base.Position, radius, true).ToList();
-                        List<IntVec3> outsideRing = GenRadial.RadialCellsAround(base.Position, radius, false).Except(GenRadial.RadialCellsAround(base.Position, radius - 1, true)).ToList();
-                        Filth filth = (Filth)ThingMaker.MakeThing(flyingCorpse.InnerPawn.def.race.BloodDef);
-                        for (int i = 0; i < damageRing.Count; i++)
-                        {
-                            List<Thing> allThings = damageRing[i].GetThingList(base.Map);
-                            for (int j = 0; j < allThings.Count; j++)
-                            {
-                                if (allThings[j] is Pawn)
-                                {
-                                    damageEntities(allThings[j], Rand.Range(18, 28), DamageDefOf.Blunt);
-                                }
-                                else if (allThings[j] is Building)
-                                {
-                                    damageEntities(allThings[j], Rand.Range(56, 88), DamageDefOf.Blunt);
-                                }
-                                else
-                                {
-                                    if (Rand.Chance(.05f))
-                                    {
-                                        if (filth != null)
-                                        {
-                                            filth = (Filth)ThingMaker.MakeThing(flyingCorpse.InnerPawn.def.race.BloodDef);
-                                            GenPlace.TryPlaceThing(filth, damageRing[i], base.Map, ThingPlaceMode.Near);
-                                        }
-                                        else
-                                        {
-                                            GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_Blood), damageRing[i], base.Map, ThingPlaceMode.Near);
-                                        }
-                                    }
-                                    if (Rand.Chance(.05f))
-                                    {
-                                        GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_CorpseBile), damageRing[i], base.Map, ThingPlaceMode.Near);
-                                    }
-                                }
-                            }
-                        }
-                        for (int i = 0; i < outsideRing.Count; i++)
-                        {
-                            IntVec3 intVec = outsideRing[i];
-                            if (intVec.IsValid && intVec.InBoundsWithNullCheck(base.Map))
-                            {
-                                Vector3 moteDirection = TM_Calc.GetVector(this.ExactPosition.ToIntVec3(), intVec);
-                                TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_BloodSquirt, this.ExactPosition, base.Map, Rand.Range(.3f, .6f), .2f, .02f, .05f, Rand.Range(-100, 100), Rand.Range(4f, 13f), (Quaternion.AngleAxis(Rand.Range(60, 120), Vector3.up) * moteDirection).ToAngleFlat(), 0);
-                                TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_BloodMist, this.ExactPosition, base.Map, Rand.Range(.9f, 1.2f), .3f, .02f, Rand.Range(.25f, .4f), Rand.Range(-100, 100), Rand.Range(5f, 8f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
-                                GenExplosion.DoExplosion(intVec, base.Map, .4f, DamageDefOf.Blunt, pawn, 0, 0, SoundDefOf.Pawn_Melee_Punch_HitBuilding, null, null, null, filth.def, .08f, 1, null, false, null, 0f, 1, 0, false);
-                                //FleckMaker.ThrowSmoke(intVec.ToVector3Shifted(), base.Map, Rand.Range(.6f, 1f));
-                            }
-                        }
-                        //damageEntities(this.flyingThing, 305, DamageDefOf.Blunt);
-                        //this.flyingThing.Destroy(DestroyMode.Vanish);
+                        damageEntities(p, impactForce, DamageDefOf.Blunt);
+                        damageEntities(p, impactForce, DamageDefOf.Stun);
                     }
                 }
-                else
+                else if (flyingThing.def.thingCategories != null && (flyingThing.def.thingCategories.Contains(ThingCategoryDefOf.Chunks) || flyingThing.def.thingCategories.Contains(ThingCategoryDef.Named("StoneChunks"))))
                 {
-                    float radius = 2f;
-                    Vector3 center = this.ExactPosition;
-                    if (this.earlyImpact)
+                    float radius = 4f;
+                    Vector3 center = ExactPosition;
+                    if (earlyImpact)
                     {
-                        bool wallFlag90neg = false;
-                        IntVec3 wallCheck = (center + (Quaternion.AngleAxis(-90, Vector3.up) * this.direction)).ToIntVec3();
-                        FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), base.Map);
-                        wallFlag90neg = wallCheck.Walkable(base.Map);
+                        IntVec3 wallCheck = (center + (Quaternion.AngleAxis(-90, Vector3.up) * direction)).ToIntVec3();
+                        FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), Map);
 
-                        wallCheck = (center + (Quaternion.AngleAxis(90, Vector3.up) * this.direction)).ToIntVec3();
-                        FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), base.Map);
-                        bool wallFlag90 = wallCheck.Walkable(base.Map);
-
-                        if ((!wallFlag90 && !wallFlag90neg) || (wallFlag90 && wallFlag90neg))
-                        {
-                            //fragment energy bounces in reverse direction of travel
-                            center = center + ((Quaternion.AngleAxis(180, Vector3.up) * this.direction) * 3);
-                        }
-                        else if (wallFlag90)
-                        {
-                            center = center + ((Quaternion.AngleAxis(90, Vector3.up) * this.direction) * 3);
-                        }
-                        else if (wallFlag90neg)
-                        {
-                            center = center + ((Quaternion.AngleAxis(-90, Vector3.up) * this.direction) * 3);
-                        }
-
+                        wallCheck = (center + (Quaternion.AngleAxis(90, Vector3.up) * direction)).ToIntVec3();
+                        FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), Map);
                     }
 
-                    List<IntVec3> damageRing = GenRadial.RadialCellsAround(base.Position, radius, true).ToList();
-                    List<IntVec3> outsideRing = GenRadial.RadialCellsAround(base.Position, radius, false).Except(GenRadial.RadialCellsAround(base.Position, radius - 1, true)).ToList();
+                    List<IntVec3> damageRing = GenRadial.RadialCellsAround(Position, radius, true).ToList();
+                    List<IntVec3> outsideRing = GenRadial.RadialCellsAround(Position, radius, false).Except(GenRadial.RadialCellsAround(Position, radius - 1, true)).ToList();
                     for (int i = 0; i < damageRing.Count; i++)
                     {
-                        List<Thing> allThings = damageRing[i].GetThingList(base.Map);
+                        List<Thing> allThings = damageRing[i].GetThingList(Map);
                         for (int j = 0; j < allThings.Count; j++)
                         {
                             if (allThings[j] is Pawn)
                             {
-                                damageEntities(allThings[j], Rand.Range(10, 16), DamageDefOf.Blunt);
+                                damageEntities(allThings[j], Rand.Range(14, 22), DamageDefOf.Blunt);
                             }
                             else if (allThings[j] is Building)
                             {
-                                damageEntities(allThings[j], Rand.Range(32, 88), DamageDefOf.Blunt);
+                                damageEntities(allThings[j], Rand.Range(56, 88), DamageDefOf.Blunt);
                             }
                             else
                             {
                                 if (Rand.Chance(.1f))
                                 {
-                                    GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_RubbleRock), damageRing[i], base.Map, ThingPlaceMode.Near);
+                                    GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_RubbleRock), damageRing[i], Map, ThingPlaceMode.Near);
                                 }
                             }
                         }
@@ -574,41 +329,156 @@ namespace TorannMagic
                     for (int i = 0; i < outsideRing.Count; i++)
                     {
                         IntVec3 intVec = outsideRing[i];
-                        if (intVec.IsValid && intVec.InBoundsWithNullCheck(base.Map))
+                        if (intVec.IsValid && intVec.InBoundsWithNullCheck(Map))
                         {
-                            Vector3 moteDirection = TM_Calc.GetVector(this.ExactPosition.ToIntVec3(), intVec);
-                            TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_Rubble, this.ExactPosition, base.Map, Rand.Range(.3f, .6f), .2f, .02f, .05f, Rand.Range(-100, 100), Rand.Range(8f, 13f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
-                            TM_MoteMaker.ThrowGenericFleck(FleckDefOf.Smoke, this.ExactPosition, base.Map, Rand.Range(.9f, 1.2f), .3f, .02f, Rand.Range(.25f, .4f), Rand.Range(-100, 100), Rand.Range(5f, 8f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
-                            GenExplosion.DoExplosion(intVec, base.Map, .4f, DamageDefOf.Blunt, pawn, 0, 0, SoundDefOf.Pawn_Melee_Punch_HitBuilding, null, null, null, null, .4f, 1, null, false, null, 0f, 1, 0, false);
-                            //FleckMaker.ThrowSmoke(intVec.ToVector3Shifted(), base.Map, Rand.Range(.6f, 1f));
+                            Vector3 moteDirection = TM_Calc.GetVector(ExactPosition.ToIntVec3(), intVec);
+                            TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_Rubble, ExactPosition, Map, Rand.Range(.3f, .6f), .2f, .02f, .05f, Rand.Range(-100, 100), Rand.Range(8f, 13f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
+                            TM_MoteMaker.ThrowGenericFleck(FleckDefOf.Smoke, ExactPosition, Map, Rand.Range(.9f, 1.2f), .3f, .02f, Rand.Range(.25f, .4f), Rand.Range(-100, 100), Rand.Range(5f, 8f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
+                            GenExplosion.DoExplosion(intVec, Map, .4f, DamageDefOf.Blunt, pawn, 0, 0, SoundDefOf.Pawn_Melee_Punch_HitBuilding, null, null, null, ThingDefOf.Filth_RubbleRock, .25f);
+                        }
+                    }
+                    flyingThing.Destroy();
+                }
+                else if ((flyingThing.def.thingCategories != null && (flyingThing.def.thingCategories.Contains(ThingCategoryDefOf.Corpses))) || flyingThing is Corpse)
+                {
+                    Corpse flyingCorpse = flyingThing as Corpse;
+                    float radius = 3f;
+                    Vector3 center = ExactPosition;
+                    if (earlyImpact)
+                    {
+                        bool wallFlag90neg = false;
+                        IntVec3 wallCheck = (center + (Quaternion.AngleAxis(-90, Vector3.up) * direction)).ToIntVec3();
+                        FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), Map);
+
+                        wallCheck = (center + (Quaternion.AngleAxis(90, Vector3.up) * direction)).ToIntVec3();
+                        FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), Map);
+                    }
+
+                    List<IntVec3> damageRing = GenRadial.RadialCellsAround(Position, radius, true).ToList();
+                    List<IntVec3> outsideRing = GenRadial.RadialCellsAround(Position, radius, false).Except(GenRadial.RadialCellsAround(Position, radius - 1, true)).ToList();
+                    Filth filth = (Filth)ThingMaker.MakeThing(flyingCorpse.InnerPawn.def.race.BloodDef);
+                    for (int i = 0; i < damageRing.Count; i++)
+                    {
+                        List<Thing> allThings = damageRing[i].GetThingList(Map);
+                        for (int j = 0; j < allThings.Count; j++)
+                        {
+                            if (allThings[j] is Pawn)
+                            {
+                                damageEntities(allThings[j], Rand.Range(18, 28), DamageDefOf.Blunt);
+                            }
+                            else if (allThings[j] is Building)
+                            {
+                                damageEntities(allThings[j], Rand.Range(56, 88), DamageDefOf.Blunt);
+                            }
+                            else
+                            {
+                                if (Rand.Chance(.05f))
+                                {
+                                    if (filth != null)
+                                    {
+                                        filth = (Filth)ThingMaker.MakeThing(flyingCorpse.InnerPawn.def.race.BloodDef);
+                                        GenPlace.TryPlaceThing(filth, damageRing[i], Map, ThingPlaceMode.Near);
+                                    }
+                                    else
+                                    {
+                                        GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_Blood), damageRing[i], Map, ThingPlaceMode.Near);
+                                    }
+                                }
+                                if (Rand.Chance(.05f))
+                                {
+                                    GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_CorpseBile), damageRing[i], Map, ThingPlaceMode.Near);
+                                }
+                            }
+                        }
+                    }
+                    for (int i = 0; i < outsideRing.Count; i++)
+                    {
+                        IntVec3 intVec = outsideRing[i];
+                        if (intVec.IsValid && intVec.InBoundsWithNullCheck(Map))
+                        {
+                            Vector3 moteDirection = TM_Calc.GetVector(ExactPosition.ToIntVec3(), intVec);
+                            TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_BloodSquirt, ExactPosition, Map, Rand.Range(.3f, .6f), .2f, .02f, .05f, Rand.Range(-100, 100), Rand.Range(4f, 13f), (Quaternion.AngleAxis(Rand.Range(60, 120), Vector3.up) * moteDirection).ToAngleFlat(), 0);
+                            TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_BloodMist, ExactPosition, Map, Rand.Range(.9f, 1.2f), .3f, .02f, Rand.Range(.25f, .4f), Rand.Range(-100, 100), Rand.Range(5f, 8f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
+                            GenExplosion.DoExplosion(intVec, Map, .4f, DamageDefOf.Blunt, pawn, 0, 0, SoundDefOf.Pawn_Melee_Punch_HitBuilding, null, null, null, filth.def, .08f);
                         }
                     }
                 }
-                this.Destroy(DestroyMode.Vanish);
             }
-            catch
+            else
             {
-                if (this.flyingThing != null)
+                float radius = 2f;
+                Vector3 center = ExactPosition;
+                if (earlyImpact)
                 {
-                    if (!this.flyingThing.Spawned)
+                    bool wallFlag90neg = false;
+                    IntVec3 wallCheck = (center + (Quaternion.AngleAxis(-90, Vector3.up) * direction)).ToIntVec3();
+                    FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), Map);
+
+                    wallCheck = (center + (Quaternion.AngleAxis(90, Vector3.up) * direction)).ToIntVec3();
+                    FleckMaker.ThrowMicroSparks(wallCheck.ToVector3Shifted(), Map);
+                }
+
+                List<IntVec3> damageRing = GenRadial.RadialCellsAround(Position, radius, true).ToList();
+                List<IntVec3> outsideRing = GenRadial.RadialCellsAround(Position, radius, false).Except(GenRadial.RadialCellsAround(Position, radius - 1, true)).ToList();
+                for (int i = 0; i < damageRing.Count; i++)
+                {
+                    List<Thing> allThings = damageRing[i].GetThingList(Map);
+                    for (int j = 0; j < allThings.Count; j++)
                     {
-                        GenSpawn.Spawn(this.flyingThing, base.Position, base.Map);
-                        Log.Message("catch");
+                        if (allThings[j] is Pawn)
+                        {
+                            damageEntities(allThings[j], Rand.Range(10, 16), DamageDefOf.Blunt);
+                        }
+                        else if (allThings[j] is Building)
+                        {
+                            damageEntities(allThings[j], Rand.Range(32, 88), DamageDefOf.Blunt);
+                        }
+                        else
+                        {
+                            if (Rand.Chance(.1f))
+                            {
+                                GenPlace.TryPlaceThing(ThingMaker.MakeThing(ThingDefOf.Filth_RubbleRock), damageRing[i], Map, ThingPlaceMode.Near);
+                            }
+                        }
                     }
                 }
-                this.Destroy(DestroyMode.Vanish);
+                for (int i = 0; i < outsideRing.Count; i++)
+                {
+                    IntVec3 intVec = outsideRing[i];
+                    if (intVec.IsValid && intVec.InBoundsWithNullCheck(Map))
+                    {
+                        Vector3 moteDirection = TM_Calc.GetVector(ExactPosition.ToIntVec3(), intVec);
+                        TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_Rubble, ExactPosition, Map, Rand.Range(.3f, .6f), .2f, .02f, .05f, Rand.Range(-100, 100), Rand.Range(8f, 13f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
+                        TM_MoteMaker.ThrowGenericFleck(FleckDefOf.Smoke, ExactPosition, Map, Rand.Range(.9f, 1.2f), .3f, .02f, Rand.Range(.25f, .4f), Rand.Range(-100, 100), Rand.Range(5f, 8f), (Quaternion.AngleAxis(90, Vector3.up) * moteDirection).ToAngleFlat(), 0);
+                        GenExplosion.DoExplosion(intVec, Map, .4f, DamageDefOf.Blunt, pawn, 0, 0, SoundDefOf.Pawn_Melee_Punch_HitBuilding, null, null, null, null, .4f);
+                        //FleckMaker.ThrowSmoke(intVec.ToVector3Shifted(), base.Map, Rand.Range(.6f, 1f));
+                    }
+                }
             }
-}
-
-        public void damageEntities(Thing e, float d, DamageDef type)
+            Destroy();
+        }
+        catch
         {
-            int amt = Mathf.RoundToInt(Rand.Range(.75f, 1.25f) * d);
-            DamageInfo dinfo = new DamageInfo(type, amt, 0, (float)-1, this.launcher, null, null, DamageInfo.SourceCategory.ThingOrUnknown);
-            bool flag = e != null;
-            if (flag)
+            if (flyingThing != null)
             {
-                e.TakeDamage(dinfo);
+                if (!flyingThing.Spawned)
+                {
+                    GenSpawn.Spawn(flyingThing, Position, Map);
+                    Log.Message("catch");
+                }
             }
+            Destroy();
+        }
+    }
+
+    public void damageEntities(Thing e, float d, DamageDef type)
+    {
+        int amt = Mathf.RoundToInt(Rand.Range(.75f, 1.25f) * d);
+        DamageInfo dinfo = new DamageInfo(type, amt, 0, -1, launcher);
+        bool flag = e != null;
+        if (flag)
+        {
+            e.TakeDamage(dinfo);
         }
     }
 }

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_FirstAid : Verb_UseAbility
+    public class Verb_FirstAid : VFECore.Abilities.Verb_CastAbility
     {
 
         private int pwrVal = 0;
@@ -19,8 +19,8 @@ namespace TorannMagic
         {
             Pawn caster = base.CasterPawn;
 
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
 
             if (caster == null) return false;
 

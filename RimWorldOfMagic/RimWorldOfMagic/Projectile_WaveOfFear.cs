@@ -1,6 +1,6 @@
 ﻿using Verse;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using System;
@@ -12,7 +12,7 @@ using Verse.AI;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_WaveOfFear : Projectile_AbilityBase
+    public class Projectile_WaveOfFear : VFECore.Abilities.AbilityProjectile
     {
         int pwrVal = 0;
         int verVal = 0;

@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    class Projectile_Firebolt : Projectile_AbilityBase
+    class Projectile_Firebolt : VFECore.Abilities.AbilityProjectile
     {
 
         private int pwrVal = 0;

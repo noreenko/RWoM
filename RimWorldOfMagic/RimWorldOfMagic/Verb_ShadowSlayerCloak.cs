@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_ShadowSlayerCloak : Verb_UseAbility
+    public class Verb_ShadowSlayerCloak : VFECore.Abilities.Verb_CastAbility
     {
         private int verVal = 0;
         private int pwrVal = 0;

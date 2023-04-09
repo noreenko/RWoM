@@ -1,9 +1,9 @@
-﻿using AbilityUser;
+﻿
 using Verse;
 
 namespace TorannMagic
 {
-    public class Verb_DismissFertileLands : Verb_UseAbility
+    public class Verb_DismissFertileLands : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
@@ -20,8 +20,8 @@ namespace TorannMagic
                         ModOptions.Constants.RemoveGrowthCell(comp.fertileLands[i]);
                     }
                     comp.fertileLands.Clear();
-                    comp.RemovePawnAbility(TorannMagicDefOf.TM_DismissFertileLands);
-                    comp.AddPawnAbility(TorannMagicDefOf.TM_FertileLands);
+                    comp.RemoveAbility(TorannMagicDefOf.TM_DismissFertileLands);
+                    comp.GiveAbility(TorannMagicDefOf.TM_FertileLands);
                 }
                 else
                 {

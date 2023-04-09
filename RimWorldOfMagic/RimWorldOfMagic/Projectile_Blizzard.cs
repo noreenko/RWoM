@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-	public class Projectile_Blizzard : Projectile_AbilityBase
+	public class Projectile_Blizzard : VFECore.Abilities.AbilityProjectile
 	{
         private int age = 0;
         private int duration = 720;

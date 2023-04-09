@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace TorannMagic
 {
-	public class Projectile_PoisonFlask : Projectile_AbilityBase
+	public class Projectile_PoisonFlask : VFECore.Abilities.AbilityProjectile
 	{
         private int age = -1;
         private int duration = 360;

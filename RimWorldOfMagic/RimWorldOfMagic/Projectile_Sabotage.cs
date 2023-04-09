@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.AI;
 using Verse.Sound;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace TorannMagic
         }
     }
 
-    class Projectile_Sabotage : Projectile_AbilityBase
+    class Projectile_Sabotage : VFECore.Abilities.AbilityProjectile
     {
         int age = -1;
         int duration = 1800;

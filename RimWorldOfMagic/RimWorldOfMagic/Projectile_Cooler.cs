@@ -1,11 +1,11 @@
 ﻿using RimWorld;
-using AbilityUser;
+
 using Verse;
 using System.Linq;
 
 namespace TorannMagic
 {
-    public class Projectile_Cooler : Projectile_AbilityBase
+    public class Projectile_Cooler : VFECore.Abilities.AbilityProjectile
     {
 
         private bool primed = false;

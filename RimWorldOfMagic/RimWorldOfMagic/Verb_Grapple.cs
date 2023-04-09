@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_Grapple : Verb_UseAbility_TrueBurst
+    public class Verb_Grapple : VFECore.Abilities.Verb_CastAbility_TrueBurst
     {
         Vector3 pVect;
 

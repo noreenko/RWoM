@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.AI;
 
 
 namespace TorannMagic
 {
-    public class Verb_Enrage : Verb_UseAbility
+    public class Verb_Enrage : VFECore.Abilities.Verb_CastAbility
     {
 
         private int verVal = 0;
@@ -47,8 +47,8 @@ namespace TorannMagic
             {
                 //pwrVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_Enrage, "TM_Enrage", "_pwr", true);
                 //verVal = TM_Calc.GetMagicSkillLevel(caster, comp.MagicData.MagicPowerSkill_Enrage, "TM_Enrage", "_ver", true);
-                pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-                verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+                pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+                verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
                 arcaneDmg = comp.arcaneDmg;
             }
 
@@ -85,11 +85,10 @@ namespace TorannMagic
             }
             else
             {
-                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, this.Ability.Def.label), MessageTypeDefOf.RejectInput);
+                Messages.Message("TM_InvalidTarget".Translate(CasterPawn.LabelShort, ability.def.label), MessageTypeDefOf.RejectInput);
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }        
     }
 }

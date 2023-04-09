@@ -6,12 +6,12 @@ using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using AbilityUser;
+
 
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Verb_FoldReality : Verb_UseAbility
+    public class Verb_FoldReality : VFECore.Abilities.Verb_CastAbility
     {
         private static readonly Texture2D TargeterMouseAttachment = ContentFinder<Texture2D>.Get("Other/gatewayring", true);
 

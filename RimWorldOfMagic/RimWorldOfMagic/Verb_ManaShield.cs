@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    class Verb_ManaShield : Verb_UseAbility  
+    class Verb_ManaShield : VFECore.Abilities.Verb_CastAbility  
     {
 
         bool validTarg;

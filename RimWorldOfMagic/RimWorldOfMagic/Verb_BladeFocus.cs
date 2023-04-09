@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TorannMagic
 {
-    public class Verb_BladeFocus : Verb_UseAbility
+    public class Verb_BladeFocus : VFECore.Abilities.Verb_CastAbility
     {
 
         //bool validTarg;

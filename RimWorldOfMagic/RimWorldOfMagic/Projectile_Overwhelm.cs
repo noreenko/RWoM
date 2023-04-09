@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 
 namespace TorannMagic
 {
-    class Projectile_Overwhelm : Projectile_AbilityBase
+    class Projectile_Overwhelm : VFECore.Abilities.AbilityProjectile
     {
 
         IntVec3 pos;

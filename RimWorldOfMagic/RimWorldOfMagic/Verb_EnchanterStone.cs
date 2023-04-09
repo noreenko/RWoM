@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 
 
 namespace TorannMagic
 {
-    public class Verb_EnchanterStone : Verb_UseAbility
+    public class Verb_EnchanterStone : VFECore.Abilities.Verb_CastAbility
     {
 
         private int verVal;

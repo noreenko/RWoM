@@ -1,6 +1,6 @@
 ﻿using Verse;
 using RimWorld;
-using AbilityUser;
+
 using System.Linq;
 using System.Collections.Generic;
 using System;
@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Projectile_FertileLands : Projectile_AbilityBase
+    public class Projectile_FertileLands : VFECore.Abilities.AbilityProjectile
     {
         bool initialized = false;
         Pawn caster;
@@ -50,8 +50,8 @@ namespace TorannMagic
             TM_MoteMaker.ThrowTwinkle(base.Position.ToVector3Shifted(), map, 1f);
             
             ModOptions.Constants.SetGrowthCells(comp.fertileLands);
-            comp.RemovePawnAbility(TorannMagicDefOf.TM_FertileLands);
-            comp.AddPawnAbility(TorannMagicDefOf.TM_DismissFertileLands);
+            comp.RemoveAbility(TorannMagicDefOf.TM_FertileLands);
+            comp.GiveAbility(TorannMagicDefOf.TM_DismissFertileLands);
         }       
     }
 }

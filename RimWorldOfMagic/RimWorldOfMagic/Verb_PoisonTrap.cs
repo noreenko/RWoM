@@ -1,28 +1,28 @@
 ﻿using System;
 using Verse;
 using Verse.AI;
-using AbilityUser;
+
 
 
 
 namespace TorannMagic
 {
-    public class Verb_PoisonTrap : Verb_UseAbility
+    public class Verb_PoisonTrap : VFECore.Abilities.Verb_CastAbility
     {
 
         bool validTarg;
         public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
         {
-            if (targ.Thing != null && targ.Thing == this.caster)
+            if (targ.Thing != null && targ.Thing == caster)
             {
-                return this.verbProps.targetParams.canTargetSelf;
+                return verbProps.targetParams.canTargetSelf;
             }
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
                     ShootLine shootLine;
-                    validTarg = this.TryFindShootLineFromTo(root, targ, out shootLine);
+                    validTarg = TryFindShootLineFromTo(root, targ, out shootLine);
                 }
                 else
                 {
@@ -50,10 +50,8 @@ namespace TorannMagic
                 Job job = new Job(TorannMagicDefOf.PlacePoisonTrap, currentTarget);
                 pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
             }
-            this.Ability.PostAbilityAttempt();
 
-
-            this.burstShotsLeft = 0;
+            burstShotsLeft = 0;
             return false;
         }
     }

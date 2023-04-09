@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using System.Linq;
 using Verse;
@@ -9,7 +9,7 @@ using Verse.Sound;
 
 namespace TorannMagic
 {
-	public class Projectile_Lightning : Projectile_AbilityBase
+	public class Projectile_Lightning : VFECore.Abilities.AbilityProjectile
 	{
 
         List<IntVec3> strikeLocs = new List<IntVec3>();

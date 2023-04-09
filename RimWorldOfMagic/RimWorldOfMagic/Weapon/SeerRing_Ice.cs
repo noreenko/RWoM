@@ -1,11 +1,11 @@
 ﻿using System;
 using RimWorld;
 using Verse;
-using AbilityUser;
+
 
 namespace TorannMagic.Weapon
 {
-    class SeerRing_Ice : Projectile_AbilityBase
+    class SeerRing_Ice : VFECore.Abilities.AbilityProjectile
     {
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {

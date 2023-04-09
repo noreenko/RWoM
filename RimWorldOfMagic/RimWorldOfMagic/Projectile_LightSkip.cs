@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using RimWorld.Planet;
 
 namespace TorannMagic
 {
-    class Projectile_LightSkip : Projectile_AbilityBase
+    class Projectile_LightSkip : VFECore.Abilities.AbilityProjectile
     {
         int age = -1;
         int duration = 45;

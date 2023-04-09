@@ -1,7 +1,7 @@
 ﻿using Verse;
 using Verse.Sound;
 using RimWorld;
-using AbilityUser;
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using UnityEngine;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Projectile_LightLance : Projectile_AbilityBase
+    public class Projectile_LightLance : VFECore.Abilities.AbilityProjectile
     {
         private bool initialized = false;
         private int verVal = 0;

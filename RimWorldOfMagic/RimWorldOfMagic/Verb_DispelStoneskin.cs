@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 
 
 namespace TorannMagic
 {
-    public class Verb_DispelStoneskin : Verb_UseAbility
+    public class Verb_DispelStoneskin : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {
@@ -29,8 +29,7 @@ namespace TorannMagic
                 }
             }
 
-            this.PostCastShot(flag, out flag);
-            return flag;
+            return false;
         }
     }
 }

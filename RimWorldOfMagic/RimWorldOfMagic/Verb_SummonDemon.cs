@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using Verse.AI;
 
 namespace TorannMagic
 {
-    public class Verb_SummonDemon : Verb_UseAbility
+    public class Verb_SummonDemon : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {

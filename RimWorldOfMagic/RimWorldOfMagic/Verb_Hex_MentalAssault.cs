@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using Verse.AI;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace TorannMagic
 {
-    public class Verb_Hex_MentalAssault : Verb_UseAbility
+    public class Verb_Hex_MentalAssault : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {

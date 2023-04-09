@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 
 namespace TorannMagic
 {
-    class Verb_Reversal : Verb_UseAbility  
+    class Verb_Reversal : VFECore.Abilities.Verb_CastAbility  
     {
         protected override bool TryCastShot()
         {

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using System.Linq;
-using AbilityUser;
+
 using Verse;
 using RimWorld;
 using TorannMagic.Utils;
 
 namespace TorannMagic
 {
-    class Verb_AdvancedHeal : Verb_UseAbility
+    class Verb_AdvancedHeal : VFECore.Abilities.Verb_CastAbility
     {
 
         bool validTarg;
@@ -43,8 +43,8 @@ namespace TorannMagic
 
             Pawn caster = this.CasterPawn;
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
 
             Pawn pawn = (Pawn)currentTarget;
             if (pawn == null) return true;

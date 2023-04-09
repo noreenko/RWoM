@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 
 
 namespace TorannMagic
 {
-	public class Projectile_Firestorm : Projectile_AbilityBase
+	public class Projectile_Firestorm : VFECore.Abilities.AbilityProjectile
 	{
         private int age = 0;
         private int duration = 420;

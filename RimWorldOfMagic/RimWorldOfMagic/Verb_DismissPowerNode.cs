@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using AbilityUser;
+
 using Verse;
 using UnityEngine;
 
 
 namespace TorannMagic
 {
-    public class Verb_DismissPowerNode : Verb_UseAbility
+    public class Verb_DismissPowerNode : VFECore.Abilities.Verb_CastAbility
     {
         protected override bool TryCastShot()
         {

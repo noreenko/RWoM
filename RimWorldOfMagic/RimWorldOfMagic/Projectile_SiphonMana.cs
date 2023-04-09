@@ -1,12 +1,12 @@
 ﻿using Verse;
-using AbilityUser;
+
 using System.Linq;
 using RimWorld;
 
 
 namespace TorannMagic
 {
-    public class Projectile_SiphonMana : Projectile_AbilityBase
+    public class Projectile_SiphonMana : VFECore.Abilities.AbilityProjectile
     {
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {

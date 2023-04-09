@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace TorannMagic
 {
-    public class Projectile_AccelerateTime : Projectile_AbilityBase
+    public class Projectile_AccelerateTime : VFECore.Abilities.AbilityProjectile
     {
         int age = -1;
         int duration = 20;

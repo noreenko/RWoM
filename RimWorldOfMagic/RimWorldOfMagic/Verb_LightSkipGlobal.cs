@@ -1,5 +1,5 @@
 ﻿using Verse;
-using AbilityUser;
+
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 namespace TorannMagic
 {
     [StaticConstructorOnStartup]
-    public class Verb_LightSkipGlobal : Verb_UseAbility  
+    public class Verb_LightSkipGlobal : VFECore.Abilities.Verb_CastAbility
     {
         int pwrVal = 0;
         float arcaneDmg = 1;
@@ -38,7 +38,7 @@ namespace TorannMagic
         {
             if (targ.IsValid && targ.CenterVector3.InBoundsWithNullCheck(base.CasterPawn.Map) && !targ.Cell.Fogged(base.CasterPawn.Map) && targ.Cell.Walkable(base.CasterPawn.Map))
             {
-                if ((root - targ.Cell).LengthHorizontal < this.verbProps.range)
+                if ((root - targ.Cell).LengthHorizontal < verbProps.range)
                 {
                     validTarg = !targ.Cell.Roofed(base.CasterPawn.Map);
                 }
@@ -58,24 +58,24 @@ namespace TorannMagic
         protected override bool TryCastShot()
         {
             bool result = false;
-            Pawn pawn = this.CasterPawn;
-            Map map = this.CasterPawn.Map;
+            Pawn pawn = CasterPawn;
+            Map map = CasterPawn.Map;
             if (map != null && !pawn.Position.Roofed(map))
             {
 
-                this.pawn = this.CasterPawn;
-                launcherPosition = this.CasterPawn.Position;
+                pawn = CasterPawn;
+                launcherPosition = CasterPawn.Position;
                 CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
-                //pwrVal = TM_Calc.GetMagicSkillLevel(this.pawn, comp.MagicData.MagicPowerSkill_LightSkip, "TM_LightSkip", "_pwr", false);
+                //pwrVal = TM_Calc.GetMagicSkillLevel(pawn, comp.MagicData.MagicPowerSkill_LightSkip, "TM_LightSkip", "_pwr", false);
                 pwrVal = TM_Calc.GetSkillPowerLevel(pawn, TorannMagicDefOf.TM_LightSkip, false);
-                this.arcaneDmg = comp.arcaneDmg;
-                this.draftFlag = this.pawn.drafter != null ? this.pawn.Drafted : false;
-                this.gi = 0;
+                arcaneDmg = comp.arcaneDmg;
+                draftFlag = pawn.drafter != null ? pawn.Drafted : false;
+                gi = 0;
                 podTList.Clear();
                 pawnList.Clear();
                 pods.Clear();
 
-                List<Pawn> tmpList = TM_Calc.FindAllPawnsAround(this.CasterPawn.Map, launcherPosition, 5f, this.pawn.Faction, true);
+                List<Pawn> tmpList = TM_Calc.FindAllPawnsAround(CasterPawn.Map, launcherPosition, 5f, pawn.Faction, true);
                 for(int i = 0; i < tmpList.Count; i++)
                 {
                     if(!tmpList[i].Position.Roofed(map) )
@@ -98,10 +98,10 @@ namespace TorannMagic
             }
             else
             {
-                Messages.Message("TM_CannotCastUnderRoof".Translate(pawn.LabelShort, Ability.Def.label), MessageTypeDefOf.NegativeEvent);
-                MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Light Skip: " + StringsToTranslate.AU_CastFailure, -1f);
+                Messages.Message("TM_CannotCastUnderRoof".Translate(pawn.LabelShort, ability.def.label), MessageTypeDefOf.NegativeEvent);
+                MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, "Light Skip: Cast Failed");
             }
-            return result;
+            return false;
         }
 
         public void CreatePodGroup()
@@ -140,7 +140,7 @@ namespace TorannMagic
 
         public void LaunchLightPod(int destinationTile, IntVec3 destinationCell, TransportPodsArrivalAction arrivalAction)
         {
-            Map map = this.CasterPawn.Map;
+            Map map = CasterPawn.Map;
             CreatePodGroup();
             podTList[0].TryRemoveLord(map);
             int groupID = podTList[0].groupID;
@@ -155,7 +155,7 @@ namespace TorannMagic
                 obj.destinationTile = destinationTile;
                 obj.arrivalAction = arrivalAction;
                 obj.arrivalCell = destinationCell;
-                obj.draftFlag = this.draftFlag;
+                obj.draftFlag = draftFlag;
                 podTList[i].CleanUpLoadingVars(map);
                 podTList[i].parent.Destroy();
                 GenSpawn.Spawn(obj, podTList[i].parent.Position, map);
@@ -179,7 +179,7 @@ namespace TorannMagic
         public IntVec3 GetRelativePositionOffset(IntVec3 targetCell, IntVec3 relativePosition, IntVec3 offsetPosition)
         {
             IntVec3 cell = targetCell + (offsetPosition - relativePosition);
-            if (cell.Roofed(this.CasterPawn.Map))
+            if (cell.Roofed(CasterPawn.Map))
             {
                 cell = unroofedCells.RandomElement();
             }
@@ -193,7 +193,7 @@ namespace TorannMagic
             IEnumerable<IntVec3> allCells = GenRadial.RadialCellsAround(center, r, true);
             foreach (IntVec3 item in allCells)
             {
-                if (!item.Roofed(this.CasterPawn.Map))
+                if (!item.Roofed(CasterPawn.Map))
                 {
                     cellList.Add(item);
                 }
@@ -206,7 +206,7 @@ namespace TorannMagic
             CameraJumper.TryJump(CameraJumper.GetWorldTarget(CasterPawn.Map.Parent));
             Find.WorldSelector.ClearSelection();
             int tile = CasterPawn.Map.Tile;
-            Find.WorldTargeter.BeginTargeting(new Func<GlobalTargetInfo, bool>(this.ChooseWorldTarget), true, Verb_LightSkipGlobal.TargeterMouseAttachment, true, delegate
+            Find.WorldTargeter.BeginTargeting(new Func<GlobalTargetInfo, bool>(ChooseWorldTarget), true, Verb_LightSkipGlobal.TargeterMouseAttachment, true, delegate
             {
                 GenDraw.DrawWorldRadiusRing(tile, 300);
             }, delegate (GlobalTargetInfo target)
@@ -250,7 +250,7 @@ namespace TorannMagic
                 Messages.Message("TM_UnableToTravel".Translate(), MessageTypeDefOf.RejectInput, historical: false);
                 return false;
             }
-            int num = Find.WorldGrid.TraversalDistanceBetween(this.CasterPawn.Map.Tile, target.Tile);
+            int num = Find.WorldGrid.TraversalDistanceBetween(CasterPawn.Map.Tile, target.Tile);
             if (num > MaxLaunchDistance)
             {
                 Messages.Message("TM_UnableToTravel".Translate(), MessageTypeDefOf.RejectInput, historical: false);

@@ -1,11 +1,11 @@
 ﻿using Verse;
-using AbilityUser;
+
 using System.Linq;
 
 
 namespace TorannMagic
 {
-    public class Projectile_TransferMana : Projectile_AbilityBase
+    public class Projectile_TransferMana : VFECore.Abilities.AbilityProjectile
     {
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {

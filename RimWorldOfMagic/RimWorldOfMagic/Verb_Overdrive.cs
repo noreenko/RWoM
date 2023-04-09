@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 using Verse.Sound;
-using AbilityUser;
+
 using UnityEngine;
 using Verse.AI.Group;
 
 namespace TorannMagic
 {
-    public class Verb_Overdrive : Verb_UseAbility  
+    public class Verb_Overdrive : VFECore.Abilities.Verb_CastAbility
     {        
         int pwrVal;
         int verVal;
@@ -57,8 +57,8 @@ namespace TorannMagic
             //    pwrVal = 3;
             //    verVal = 3;
             //}
-            pwrVal = TM_Calc.GetSkillPowerLevel(caster, this.Ability.Def as TMAbilityDef);
-            verVal = TM_Calc.GetSkillVersatilityLevel(caster, this.Ability.Def as TMAbilityDef);
+            pwrVal = TM_Calc.GetSkillPowerLevel(caster, ability.def as TMAbilityDef);
+            verVal = TM_Calc.GetSkillVersatilityLevel(caster, ability.def as TMAbilityDef);
             Thing targetThing = null;
             if(this.currentTarget.Thing != null)
             {

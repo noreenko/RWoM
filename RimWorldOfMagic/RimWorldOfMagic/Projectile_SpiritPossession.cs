@@ -1,4 +1,4 @@
-﻿using AbilityUser;
+﻿
 using RimWorld;
 using Verse;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace TorannMagic
 {
-	public class Projectile_SpiritPossession : Projectile_AbilityBase
+	public class Projectile_SpiritPossession : VFECore.Abilities.AbilityProjectile
 	{
         private int verVal;
 

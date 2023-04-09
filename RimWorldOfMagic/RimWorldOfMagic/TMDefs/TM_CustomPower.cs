@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using Verse;
 using UnityEngine;
-using AbilityUser;
+
 
 namespace TorannMagic.TMDefs
 {
     public class TM_CustomPower
     {
         //Abilities
-        public List<AbilityUser.AbilityDef> abilityDefs;
+        public List<VFECore.Abilities.AbilityDef> abilityDefs;
 
         //Skills
         public List<TM_CustomSkill> skills;

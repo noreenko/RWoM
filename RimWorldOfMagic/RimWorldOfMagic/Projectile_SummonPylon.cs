@@ -1,12 +1,12 @@
 ﻿using RimWorld;
-using AbilityUser;
+
 using Verse;
 using System.Linq;
 
 
 namespace TorannMagic
 {
-    public class Projectile_SummonPylon : Projectile_AbilityBase
+    public class Projectile_SummonPylon : VFECore.Abilities.AbilityProjectile
     {
         private int age = -1;
         private int duration = 14400;

@@ -1,13 +1,13 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using System.Linq;
 using TorannMagic.Conditions;
 
 namespace TorannMagic
 {
-    public class Verb_Rainmaker : Verb_UseAbility
+    public class Verb_Rainmaker : VFECore.Abilities.Verb_CastAbility
     {
         public Type eventClass;
         private bool isViolent = false;

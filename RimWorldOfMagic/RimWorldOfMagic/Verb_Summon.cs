@@ -1,12 +1,12 @@
 ﻿using RimWorld;
 using System;
 using Verse;
-using AbilityUser;
+
 using UnityEngine;
 
 namespace TorannMagic
 {
-    class Verb_Summon : Verb_UseAbility
+    class Verb_Summon : VFECore.Abilities.Verb_CastAbility
     {
         Vector3 pVect;
         
