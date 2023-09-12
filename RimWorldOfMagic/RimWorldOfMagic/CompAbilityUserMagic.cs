@@ -783,7 +783,7 @@ namespace TorannMagic
                             DoDeathRetaliation();
                         }
                     }
-                    else
+                    else if(ModsConfig.IdeologyActive)
                     {                        
                         if(TM_TickManager.tickMod2500 == tickOffset2500 && Pawn.story != null && Pawn.story.traits.HasTrait(TorannMagicDefOf.TM_Gifted))
                         {                            

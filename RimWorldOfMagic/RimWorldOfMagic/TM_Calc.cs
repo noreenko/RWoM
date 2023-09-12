@@ -368,13 +368,13 @@ namespace TorannMagic
             failMessage = "";
             if (cc.advancedClassOptions != null)
             {
-                CompAbilityUserMagic comp = p.GetCompAbilityUserMagic();                
-                if (comp == null)
-                {
-                    failMessage = "null magic comp"; //this should never happen
-                    return false;
-                }
-                if (cc.advancedClassOptions.requiresBaseClass && !comp.IsMagicUser)
+                //CompAbilityUserMagic comp = p.GetCompAbilityUserMagic();
+                //if (comp == null)
+                //{
+                //    failMessage = "null magic comp"; //this should never happen
+                //    return false;
+                //}
+                if (cc.advancedClassOptions.requiresBaseClass && !TM_Calc.IsMagicUser(p) && !(cc.advancedClassOptions.allowAnyBaseClass && TM_Calc.IsMightUser(p)))
                 {
                     failMessage = "TM_LearnFail_NotClass".Translate();
                     return false;

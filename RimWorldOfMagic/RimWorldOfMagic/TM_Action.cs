@@ -11,7 +11,7 @@ using AbilityUser;
 using HarmonyLib;
 using TorannMagic.Enchantment;
 using TorannMagic.TMDefs;
-
+using TorannMagic.Ideology;
 
 namespace TorannMagic
 {
@@ -1068,8 +1068,8 @@ namespace TorannMagic
 
         public static void PossessPawn(Pawn caster, Pawn target, bool wasDead = false, FactionDef previousFactionDef = null)
         {
-            LongEventHandler.QueueLongEvent(delegate
-            {
+            //LongEventHandler.QueueLongEvent(delegate
+            //{
                 Hediff_Possessor possessorHD = caster.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_SpiritPossessorHD) as Hediff_Possessor;
                 possessorHD.wasDead = wasDead;
                 possessorHD.previousFaction = previousFactionDef;
@@ -1110,7 +1110,7 @@ namespace TorannMagic
                 }
                 hdc_sp.SpiritPawn = caster;
                 //target.GetCompAbilityUserMagic().MagicData.ClearSkill_Dictionaries();
-            }, "adding spirit", false, null);
+            //}, "adding spirit", false, null);
         }
 
         public static void RemovePossession(Pawn p, IntVec3 loc, bool destroySpirit = false, bool hostKilled = false)

@@ -1988,6 +1988,26 @@ namespace TorannMagic
             return result;
         }
 
+        public float ActualHediffCost(TMAbilityDef mightDef)
+        {
+            float num = 1f;
+            if (mightDef != null && MightData.GetSkill_Efficiency(mightDef) != null)
+            {
+                num = 1f - (mightDef.efficiencyReductionPercent * MightData.GetSkill_Efficiency(mightDef).level);
+            }
+            return mightDef.hediffCost * num;
+        }
+
+        public float ActualNeedCost(TMAbilityDef mightDef)
+        {
+            float num = 1f;
+            if (mightDef != null && MightData.GetSkill_Efficiency(mightDef) != null)
+            {
+                num = 1f - (mightDef.efficiencyReductionPercent * MightData.GetSkill_Efficiency(mightDef).level);
+            }
+            return mightDef.needCost * num;
+        }
+
         public float ActualChiCost(TMAbilityDef mightDef)
         {
             float num = mightDef.chiCost;
@@ -2292,8 +2312,7 @@ namespace TorannMagic
                 adjustedStaminaCost -= (adjustedStaminaCost * (global_seff * globalSkill.level));
             }
 
-            return Mathf.Max(adjustedStaminaCost, (.5f * mightDef.staminaCost));
-            
+            return Mathf.Max(adjustedStaminaCost, (.5f * mightDef.staminaCost));           
 
         }
 
