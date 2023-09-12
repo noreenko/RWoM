@@ -6069,7 +6069,6 @@ namespace TorannMagic
             Scribe_References.Look<FlyingObject_SpiritOfLight>(ref SoL, "SoL", false);
             Scribe_Values.Look<bool>(ref this.sigilSurging, "sigilSurging", false, false);
             Scribe_Values.Look<bool>(ref this.sigilDraining, "sigilDraining", false, false);
-            Scribe_References.Look<FlyingObject_LivingWall>(ref this.livingWall, "livingWall");
             Scribe_Deep.Look(ref this.magicWardrobe, "magicWardrobe");
             Scribe_Deep.Look<MagicData>(ref this.magicData, "magicData", this);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
