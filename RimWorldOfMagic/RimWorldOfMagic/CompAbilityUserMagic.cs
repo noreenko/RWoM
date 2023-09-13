@@ -225,6 +225,7 @@ namespace TorannMagic
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
+            if (!respawningAfterLoad) TM_PawnTracker.ResolveMagicComp(this);
             tickOffset2000 = Pawn.GetHashCode() % 2000;
             tickOffset2500 = Pawn.GetHashCode() % 2500;
         }
@@ -5944,12 +5945,6 @@ namespace TorannMagic
                 if (magicPower.abilityDef == null || magicPower.requiresScroll || !magicPower.learned) continue;
                 AddPawnAbility(magicPower.abilityDef);
             }
-        }
-
-        public override void PostSpawnSetup(bool respawningAfterLoad)
-        {
-            // We already set this on load
-            if (!respawningAfterLoad) TM_PawnTracker.ResolveMagicComp(this);
         }
 
         public override void PostExposeData()
