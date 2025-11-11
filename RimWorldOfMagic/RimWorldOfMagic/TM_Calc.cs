@@ -20,6 +20,10 @@ namespace TorannMagic
 {
     public static class TM_Calc
     {
+        public static HashSet<int> IntsHashSet = new HashSet<int>
+        {
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33, 44, 55, 66, 77, 88, 99
+        };
         //Extensions
         // Non-generic GetComp<CompAbilityUserMagic> for performance since isInst against generic T is slow
         public static CompAbilityUserMagic GetCompAbilityUserMagic(this ThingWithComps thingWithComps)
