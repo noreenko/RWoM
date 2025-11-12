@@ -8364,6 +8364,53 @@ namespace TorannMagic
                 return true;
             }
         }
+        
+        private static void removeClasses(Pawn pawn)
+        {
+            CompAbilityUserMagic magicComp = pawn.GetCompAbilityUserMagic();
+            if (magicComp != null && magicComp.MagicData != null)
+            {
+                magicComp.RemoveAbilityUser();
+            }
+
+            CompAbilityUserMight mightComp = pawn.GetCompAbilityUserMight();
+            if (mightComp != null && mightComp.MightData != null)
+            {
+                mightComp.RemoveAbilityUser();
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn_MutantTracker), "Turn", null)]
+        public static class ShamblerAndGhoulsMutantRemoveClasses
+        {
+            public static void Postfix(Pawn_MutantTracker __instance, bool clearLord, Pawn ___pawn)
+            {
+                // Check for Shambler or Ghoul together
+                if (!ModsConfig.AnomalyActive) return;
+                if(__instance.Def == MutantDefOf.Shambler || __instance.Def == MutantDefOf.Ghoul)
+                {
+                    removeClasses(___pawn);
+                }
+            }
+        }
+
+        [HarmonyPatch(
+            typeof(Pawn_HealthTracker), 
+            "AddHediff", 
+            new Type[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo?), typeof(DamageWorker.DamageResult) }
+        )]
+        public static class ShamblerHealthRemoveClass
+        {
+            public static void Postfix(Pawn_HealthTracker __instance, Hediff hediff, Pawn ___pawn)
+            {
+                // Check for Shambler or Ghoul together
+                if (!ModsConfig.AnomalyActive) return;
+                if(hediff.def == HediffDefOf.ShamblerCorpse)
+                {
+                    removeClasses(___pawn);
+                }
+            }
+        }
 
     }
 }
