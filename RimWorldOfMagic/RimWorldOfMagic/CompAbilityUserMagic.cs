@@ -33,9 +33,6 @@ namespace TorannMagic
         public int magicXPRate = 1000;
         public int lastXPGain = 0;
 
-        // Utils.TM_PawnTracker variables. Set after loading and through harmony patches
-        public bool IsMagicUser;
-
         private bool doOnce = true;
         private List<IntVec3> deathRing = new List<IntVec3>();
         public float weaponCritChance = 0f;
@@ -390,36 +387,6 @@ namespace TorannMagic
             }
         }
 
-        public float GetSkillDamage()
-        {
-            float result;
-            float strFactor = 1f;
-            if (IsMagicUser)
-            {
-                strFactor = arcaneDmg;
-            }
-
-            if (Pawn.equipment?.Primary != null)
-            {
-                if (Pawn.equipment.Primary.def.IsMeleeWeapon)
-                {
-                    result = TM_Calc.GetSkillDamage_Melee(Pawn, strFactor);
-                    weaponCritChance = TM_Calc.GetWeaponCritChance(Pawn.equipment.Primary);
-                }
-                else
-                {
-                    result = TM_Calc.GetSkillDamage_Range(Pawn, strFactor);
-                    weaponCritChance = 0f;
-                }
-            }
-            else
-            {
-                result = Pawn.GetStatValue(StatDefOf.MeleeDPS, false) * strFactor;
-            }
-
-            return result;
-        }
-
         private MagicData magicData = null;
         public MagicData MagicData
         {
@@ -715,14 +682,6 @@ namespace TorannMagic
 
             Pawn pawn = this.Pawn;
             if (pawn?.story == null) return;
-            if (this.Pawn.IsShambler || this.Pawn.IsGhoul)
-            {
-                if (this.magicData != null)
-                {
-                    RemoveAbilityUser();
-                }
-                return;
-            }
 
             // If we aren't on map, handle ability cooldown per long tick
             if (!pawn.Spawned)

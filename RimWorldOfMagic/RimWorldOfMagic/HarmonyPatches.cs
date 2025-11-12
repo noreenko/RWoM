@@ -6351,8 +6351,8 @@ namespace TorannMagic
         {
             private static void Postfix(Pawn pawn)
             {
-                if (pawn.IsShambler) goto TraitEnd;
-                if (pawn.IsGhoul) goto TraitEnd;
+                if (pawn.IsShambler) return;
+                if (pawn.IsGhoul) return;
 
                 List<TraitDef> allTraits = DefDatabase<TraitDef>.AllDefsListForReading;
                 List<Trait> pawnTraits = pawn.story.traits.allTraits;
@@ -6392,7 +6392,7 @@ namespace TorannMagic
 
                 mageCount += customMages.Length;
                 fighterCount += customFighters.Length;
-                if (fighterCount > 0 || Settings.Instance.Gladiator || Settings.Instance.Bladedancer || Settings.Instance.Ranger || Settings.Instance.Sniper || Settings.Instance.Faceless || Settings.Instance.DeathKnight || Settings.Instance.Psionic || Settings.Instance.Monk || Settings.Instance.Wayfayer || Settings.Instance.Commander || Settings.Instance.SuperSoldier)
+                if (fighterCount > 0 || Settings.Instance.Gladiator || Settings.Instance.Bladedancer || Settings.Instance.Ranger || Settings.Instance.Sniper || Settings.Instance.Faceless || Settings.Instance.DeathKnight || Settings.Instance.Psionic || Settings.Instance.Monk || Settings.Instance.Wayfarer || Settings.Instance.Commander || Settings.Instance.SuperSoldier)
                 {
                     anyFightersEnabled = true;
                 }
@@ -8358,6 +8358,53 @@ namespace TorannMagic
                     return false;
                 }
                 return true;
+            }
+        }
+
+        private static void removeClasses(Pawn pawn)
+        {
+            CompAbilityUserMagic magicComp = pawn.GetCompAbilityUserMagic();
+            if (magicComp != null && magicComp.MagicData != null)
+            {
+                magicComp.RemoveAbilityUser();
+            }
+
+            CompAbilityUserMight mightComp = pawn.GetCompAbilityUserMight();
+            if (mightComp != null && mightComp.MightData != null)
+            {
+                mightComp.RemoveAbilityUser();
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn_MutantTracker), "Turn", null)]
+        public static class ShamblerAndGhoulsMutantRemoveClasses
+        {
+            public static void Postfix(Pawn_MutantTracker __instance, bool clearLord, Pawn ___pawn)
+            {
+                // Check for Shambler or Ghoul together
+                if (!ModsConfig.AnomalyActive) return;
+                if(__instance.Def == MutantDefOf.Shambler || __instance.Def == MutantDefOf.Ghoul)
+                {
+                    removeClasses(___pawn);
+                }
+            }
+        }
+
+        [HarmonyPatch(
+            typeof(Pawn_HealthTracker), 
+            "AddHediff", 
+            new Type[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo?), typeof(DamageWorker.DamageResult) }
+        )]
+        public static class ShamblerHealthRemoveClass
+        {
+            public static void Postfix(Pawn_HealthTracker __instance, Hediff hediff, Pawn ___pawn)
+            {
+                // Check for Shambler or Ghoul together
+                if (!ModsConfig.AnomalyActive) return;
+                if(hediff.def == HediffDefOf.ShamblerCorpse)
+                {
+                    removeClasses(___pawn);
+                }
             }
         }
 

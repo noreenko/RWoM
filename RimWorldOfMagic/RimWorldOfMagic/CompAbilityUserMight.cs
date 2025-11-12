@@ -29,9 +29,6 @@ namespace TorannMagic
         private int mightXPRate = 900;
         private int lastMightXPGain = 0;
 
-        // Utils.TM_PawnTracker variables. Set during loading or through harmony patches
-        public bool IsMightUser;
-
         private int nextSSTend = 0;
 
         private List<IntVec3> deathRing = new List<IntVec3>();
@@ -198,9 +195,9 @@ namespace TorannMagic
             }
         }
 
-        public override void PostDeSpawn(Map map)
+        public override void PostDeSpawn(Map map, DestroyMode mode = DestroyMode.Vanish)
         {
-            base.PostDeSpawn(map);
+            base.PostDeSpawn(map, mode);
             TM_PawnTracker.ResolveMightComp(this);
             DeSpawnTick = Find.TickManager.TicksGame;
         }
@@ -365,14 +362,6 @@ namespace TorannMagic
             bool flag = base.Pawn != null;
             if (flag)
             {
-                if (this.Pawn.IsShambler || this.Pawn.IsGhoul)
-                {
-                    if (this.mightData != null)
-                    {
-                        RemoveAbilityUser();
-                    }
-                    return;
-                }
                 bool spawned = base.Pawn.Spawned;
                 if (spawned)
                 {

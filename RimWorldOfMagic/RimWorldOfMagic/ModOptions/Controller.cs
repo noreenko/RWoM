@@ -47,7 +47,6 @@ namespace TorannMagic.ModOptions
             rect1.width /= 2.4f;
             num++;
             num++;
-            SettingsRef settingsRef = new SettingsRef();
             deathExplosionDmgMin = ModOptions.Settings.Instance.deathExplosionMin.ToString();
             deathExplosionDmgMax = ModOptions.Settings.Instance.deathExplosionMax.ToString();
             Rect rowRect = UIHelper.GetRowRect(rect1, rowHeight, num);

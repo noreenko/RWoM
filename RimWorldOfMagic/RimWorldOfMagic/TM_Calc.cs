@@ -29,7 +29,7 @@ namespace TorannMagic
         // Non-generic GetComp<CompAbilityUserMagic> for performance since isInst against generic T is slow
         public static CompAbilityUserMagic GetCompAbilityUserMagic(this ThingWithComps thingWithComps)
         {
-            for (int i = 0; i < thingWithComps.AllComps.Count; i++)
+            for (int i = thingWithComps.AllComps.Count - 1; i > 0; i--)
             {
                 if (thingWithComps.AllComps[i] is CompAbilityUserMagic comp) return comp;
             }
@@ -40,7 +40,7 @@ namespace TorannMagic
         // Non-generic GetComp<CompAbilityUserMight> for performance since isInst against generic T is slow
         public static CompAbilityUserMight GetCompAbilityUserMight(this ThingWithComps thingWithComps)
         {
-            for (int i = 0; i < thingWithComps.AllComps.Count; i++)
+            for (int i = thingWithComps.AllComps.Count -1; i > 0; i--)
             {
                 if (thingWithComps.AllComps[i] is CompAbilityUserMight comp) return comp;
             }

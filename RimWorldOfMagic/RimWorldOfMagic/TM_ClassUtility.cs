@@ -18,12 +18,6 @@ namespace TorannMagic
 {
     public static class TM_ClassUtility
     {
-        public static List<TM_CustomClass> CustomClasses;
-        public static readonly List<TM_CustomClass> CustomBaseClasses = new List<TM_CustomClass>();
-        public static readonly List<TM_CustomClass> CustomMageClasses = new List<TM_CustomClass>();
-        public static readonly List<TM_CustomClass> CustomFighterClasses = new List<TM_CustomClass>();
-        public static readonly List<TM_CustomClass> CustomAdvancedClasses = new List<TM_CustomClass>();
-
         public static HashSet<ushort> NonCustomMagicAndMightTraitIndexes = new HashSet<ushort>()
         {
             TorannMagicDefOf.Enchanter.index,
@@ -60,46 +54,44 @@ namespace TorannMagic
             TorannMagicDefOf.TM_Wayfarer.index
         };
 
-        //public static TM_CustomClass[] CustomClasses;
-        //public static readonly Dictionary<ushort, TM_CustomClass> CustomAdvancedClassTraitIndexMap = new Dictionary<ushort, TM_CustomClass>();
-        //public static TM_CustomClass[] CustomBaseClasses;
-        //public static TM_CustomClass[] CustomMageClasses;
-        //public static TM_CustomClass[] CustomFighterClasses;
-        //public static TM_CustomClass[] CustomAdvancedClasses;
+        public static TM_CustomClass[] CustomClasses;
+        public static readonly Dictionary<ushort, TM_CustomClass> CustomAdvancedClassTraitIndexMap = new Dictionary<ushort, TM_CustomClass>();
+        public static TM_CustomClass[] CustomMageClasses;
+        public static TM_CustomClass[] CustomFighterClasses;
+        public static TM_CustomClass[] CustomAdvancedClasses;
+        public static HashSet<ushort> CustomClassHediffIndexes = new HashSet<ushort>();
 
         public static void LoadCustomClasses()
         {
             TM_CustomClassDef named = TM_CustomClassDef.Named("TM_CustomClasses");
             if (named == null) return;
 
-            CustomClasses = named.customClasses;
-            //CustomAdvancedClassTraitIndexMap.Clear();
-            //var CustomBaseClassesList = new List<TM_CustomClass>();
-            //var CustomMageClassesList = new List<TM_CustomClass>();
-            //var CustomFighterClassesList = new List<TM_CustomClass>();
-            //var CustomAdvancedClassesList = new List<TM_CustomClass>();
-            CustomBaseClasses.Clear();
-            CustomMageClasses.Clear();
-            CustomFighterClasses.Clear();
-            CustomAdvancedClasses.Clear();
+            CustomClasses = named.customClasses.ToArray();
+            CustomAdvancedClassTraitIndexMap.Clear();
+            CustomClassHediffIndexes.Clear();
+            var CustomBaseClassesList = new List<TM_CustomClass>();
+            var CustomMageClassesList = new List<TM_CustomClass>();
+            var CustomFighterClassesList = new List<TM_CustomClass>();
+            var CustomAdvancedClassesList = new List<TM_CustomClass>();
 
             IEnumerable<TM_CustomClass> enabledCustomClasses = CustomClasses.Where(cc =>
                 Settings.Instance.CustomClass.TryGetValue(cc.classTrait.ToString(), true));
 
             foreach (TM_CustomClass cc in enabledCustomClasses)
             {
+                if (cc.classHediff != null) CustomClassHediffIndexes.Add(cc.classHediff.index);
                 if (cc.isMage)
                 {
                     if (cc.isAdvancedClass)
                     {
                         if (cc.advancedClassOptions != null && cc.advancedClassOptions.canSpawnWithClass)
                         {
-                            CustomMageClasses.Add(cc);
+                            CustomMageClassesList.Add(cc);
                         }
                     }
                     else
                     {
-                        CustomMageClasses.Add(cc);
+                        CustomMageClassesList.Add(cc);
                     }
                 }
                 if (cc.isFighter)
@@ -108,33 +100,31 @@ namespace TorannMagic
                     {
                         if (cc.advancedClassOptions != null && cc.advancedClassOptions.canSpawnWithClass)
                         {
-                            CustomFighterClasses.Add(cc);
+                            CustomFighterClassesList.Add(cc);
                         }
                     }
                     else
                     {
-                        CustomFighterClasses.Add(cc);
+                        CustomFighterClassesList.Add(cc);
                     }
                 }
-                if (!cc.isAdvancedClass) CustomBaseClasses.Add(cc); //base classes cannot also be advanced classes, but advanced classes can act like base classes
+                if (!cc.isAdvancedClass) CustomBaseClassesList.Add(cc); //base classes cannot also be advanced classes, but advanced classes can act like base classes
                 else
                 {
-                    CustomAdvancedClasses.Add(cc);
-                    //CustomAdvancedClassTraitIndexMap[cc.classTrait.index] = cc;
+                    CustomAdvancedClassesList.Add(cc);
+                    if (cc.classTrait != null) CustomAdvancedClassTraitIndexMap[cc.classTrait.index] = cc;
                 }
-                //CustomBaseClasses = CustomBaseClassesList.ToArray();
-                //CustomFighterClasses = CustomFighterClassesList.ToArray();
-                //CustomMageClasses = CustomMageClassesList.ToArray();
-                //CustomAdvancedClasses = CustomAdvancedClassesList.ToArray();
+                CustomFighterClasses = CustomFighterClassesList.ToArray();
+                CustomMageClasses = CustomMageClassesList.ToArray();
+                CustomAdvancedClasses = CustomAdvancedClassesList.ToArray();
             }
             LoadClassIndexes();
-            
         }
 
         public static void LoadClassIndexes()
         {
             CustomClassTraitIndexes = new Dictionary<ushort, int>();
-            for (int i = 0; i < CustomClasses.Count; i++)
+            for (int i = 0; i < CustomClasses.Length; i++)
             {
                 CustomClassTraitIndexes[CustomClasses[i].classTrait.index] = i;
             }
@@ -145,7 +135,7 @@ namespace TorannMagic
             get => CustomClasses.Select(t => t.classTrait).ToList();           
         }
 
-        private static Dictionary<ushort, int> CustomClassTraitIndexes;  // Dictionary to more quickly determine trait's CustomClasses index
+        public static Dictionary<ushort, int> CustomClassTraitIndexes;  // Dictionary to more quickly determine trait's CustomClasses index
 
         public static int IsCustomClassIndex(List<Trait> allTraits)
         {
@@ -168,7 +158,7 @@ namespace TorannMagic
 
         public static int CustomClassIndexOfTraitDef(TraitDef trait)
         {
-            for (int i = 0; i < CustomClasses.Count; i++)
+            for (int i = 0; i < CustomClasses.Length; i++)
             {
                 if (CustomClasses[i].classTrait.defName == trait.defName)
                 {
@@ -180,7 +170,7 @@ namespace TorannMagic
 
         public static int CustomClassIndexOfBaseMageClass(List<Trait> allTraits)
         {
-            for (int i = 0; i < CustomClasses.Count; i++)
+            for (int i = 0; i < CustomClasses.Length; i++)
             {
                 if (CustomClasses[i].isAdvancedClass) continue;
                 if (!CustomClasses[i].isMage) continue;
@@ -197,7 +187,7 @@ namespace TorannMagic
 
         public static int CustomClassIndexOfBaseFighterClass(List<Trait> allTraits)
         {
-            for(int i = 0; i < CustomClasses.Count; i++)
+            for(int i = 0; i < CustomClasses.Length; i++)
             {
                 if (CustomClasses[i].isAdvancedClass) continue;
                 if (!CustomClasses[i].isFighter) continue;

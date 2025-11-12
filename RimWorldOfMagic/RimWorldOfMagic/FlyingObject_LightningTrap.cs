@@ -148,7 +148,7 @@ namespace TorannMagic
                     IntVec3 randomCell = cellRect.RandomCell;
                     GenExplosion.DoExplosion(randomCell, base.Map, Rand.Range(.4f, .8f), TMDamageDefOf.DamageDefOf.TM_Lightning, this.launcher, Mathf.RoundToInt(Rand.Range(4, 6)), 0, SoundDefOf.Thunder_OnMap, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.1f, true);
                 }
-                GenExplosion.DoExplosion(target.Position, base.Map, 1f, TMDamageDefOf.DamageDefOf.TM_Lightning, this.launcher, Mathf.RoundToInt(Rand.Range(5, 9) * this.arcaneDmg), 0, SoundDefOf.Thunder_OffMap, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.1f, true);
+                GenExplosion.DoExplosion(target.Position, base.Map, 1f, TMDamageDefOf.DamageDefOf.TM_Lightning, this.launcher, Mathf.RoundToInt(Rand.Range(5, 9)), 0, SoundDefOf.Thunder_OffMap, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.1f, true);
             }            
             DrawStrikeFading();
         }
