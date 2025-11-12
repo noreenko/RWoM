@@ -340,14 +340,6 @@ namespace TorannMagic
             bool flag = base.Pawn != null;
             if (flag)
             {
-                if (this.Pawn.IsShambler || this.Pawn.IsGhoul)
-                {
-                    if (this.mightData != null)
-                    {
-                        RemoveAbilityUser();
-                    }
-                    return;
-                }
                 bool spawned = base.Pawn.Spawned;
                 if (spawned)
                 {
