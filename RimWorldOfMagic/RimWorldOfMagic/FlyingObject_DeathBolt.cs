@@ -178,7 +178,8 @@ namespace TorannMagic
                 //MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_DeathBolt.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_DeathBolt_ver");
                 //verVal = ver.level;
                 //pwrVal = pwr.level;
-                //if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+                //
+                //if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
                 //{
                 //    pwrVal = 1;
                 //    verVal = 1;
@@ -210,8 +211,14 @@ namespace TorannMagic
             this.Initialize();
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
+
+        }
+
+        protected override void TickInterval(int delta)
+        {
+
             //base.Tick();
             age++;
             if (this.ticksToImpact >= 0)
@@ -276,7 +283,7 @@ namespace TorannMagic
                         spreadingDarknessCell = cellRect.RandomCell;
                         if (spreadingDarknessCell.InBoundsWithNullCheck(base.Map) && spreadingDarknessCell.IsValid)
                         {
-                            GenExplosion.DoExplosion(spreadingDarknessCell, base.Map, .4f, TMDamageDefOf.DamageDefOf.TM_DeathBolt, this.pawn, Mathf.RoundToInt((Rand.Range(.4f * this.def.projectile.GetDamageAmount(1, null), .8f * this.def.projectile.GetDamageAmount(1, null)) + (3f * pwrVal)) * this.arcaneDmg), 2, this.def.projectile.soundExplode, def, null, null, null, 0f, 1, null, false, null, 0f, 0, 0.0f, true);
+                            GenExplosion.DoExplosion(spreadingDarknessCell, base.Map, .4f, TMDamageDefOf.DamageDefOf.TM_DeathBolt, this.pawn, Mathf.RoundToInt((Rand.Range(.4f * this.def.projectile.GetDamageAmount(1, null), .8f * this.def.projectile.GetDamageAmount(1, null)) + (3f * pwrVal)) * this.arcaneDmg), 2, this.def.projectile.soundExplode, def, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 0, 0.0f, true);
                             TM_MoteMaker.ThrowDiseaseMote(base.Position.ToVector3Shifted(), base.Map, .6f);
                             if (powered)
                             {
@@ -300,7 +307,7 @@ namespace TorannMagic
             TM_MoteMaker.ThrowDiseaseMote(effectVec, map, 0.4f, 0.1f, .01f, 0.35f);
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null && !this.impacted;
             if (flag)
@@ -345,7 +352,7 @@ namespace TorannMagic
                 }
             }        
 
-            GenExplosion.DoExplosion(base.Position, base.Map, this.radius, TMDamageDefOf.DamageDefOf.TM_DeathBolt, this.pawn, Mathf.RoundToInt((Rand.Range(.6f*this.def.projectile.GetDamageAmount(1,null), 1.1f*this.def.projectile.GetDamageAmount(1,null)) + (5f * pwrVal)) * this.arcaneDmg), 4, this.def.projectile.soundExplode, def, null, null, null, 0f, 1, null, false, null, 0f, 0, 0.0f, true);
+            GenExplosion.DoExplosion(base.Position, base.Map, this.radius, TMDamageDefOf.DamageDefOf.TM_DeathBolt, this.pawn, Mathf.RoundToInt((Rand.Range(.6f*this.def.projectile.GetDamageAmount(1,null), 1.1f*this.def.projectile.GetDamageAmount(1,null)) + (5f * pwrVal)) * this.arcaneDmg), 4, this.def.projectile.soundExplode, def, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 0, 0.0f, true);
 
             this.ticksFollowingImpact = this.verVal * 15;
             this.impacted = true;

@@ -4,7 +4,6 @@ using System.Linq;
 using Verse;
 using Verse.AI;
 using AbilityUser;
-using TorannMagic.ModOptions;
 using UnityEngine;
 using Verse.AI.Group;
 
@@ -32,7 +31,7 @@ namespace TorannMagic
             Scribe_Values.Look<bool>(ref this.destroyed, "destroyed", false, false);
         }        
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -58,6 +57,7 @@ namespace TorannMagic
                 pawn = this.launcher as Pawn;
                 MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_SummonElemental.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_SummonElemental_pwr");
                 MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_SummonElemental.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_SummonElemental_ver");
+                
                 pwrVal = pwr.level;
                 verVal = ver.level;
                 if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -67,7 +67,7 @@ namespace TorannMagic
                     pwrVal = mpwr.level;
                     verVal = mver.level;
                 }
-                if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;

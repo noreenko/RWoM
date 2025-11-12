@@ -20,10 +20,10 @@ namespace TorannMagic
             Pawn pawn = this.launcher as Pawn;
             Pawn victim = hitThing as Pawn;
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
-            GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius, TMDamageDefOf.DamageDefOf.TM_Arcane, this.launcher,  Mathf.RoundToInt(Rand.Range(5,this.def.projectile.GetDamageAmount(1, null))* comp.arcaneDmg), 1, this.def.projectile.soundExplode, def, this.equipmentDef, this.intendedTarget.Thing, null, 0f, 1, null, false, null, 0f, 1, 0.0f, false);
+            GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius, TMDamageDefOf.DamageDefOf.TM_Arcane, this.launcher,  Mathf.RoundToInt(Rand.Range(5,this.def.projectile.GetDamageAmount(1, null))* comp.arcaneDmg), 1, this.def.projectile.soundExplode, def, this.equipmentDef, this.intendedTarget.Thing, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.0f, false);
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             this.rotationOffset += Rand.Range(20, 36);
             if(this.rotationOffset > 360)

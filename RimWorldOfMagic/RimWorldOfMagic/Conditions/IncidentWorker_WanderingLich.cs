@@ -12,6 +12,7 @@ namespace TorannMagic.Conditions
     {
         protected override bool TryExecuteWorker(IncidentParms parms)
         {
+            
             bool tempAllow = false;
             Map map = (Map)parms.target;
             MagicMapComponent mmc = map.GetComponent<MagicMapComponent>();
@@ -19,7 +20,7 @@ namespace TorannMagic.Conditions
             {
                 tempAllow = true;
             }
-            if (Settings.Instance.wanderingLichChallenge > 0 || tempAllow)
+            if (ModOptions.Settings.Instance.wanderingLichChallenge > 0 || tempAllow)
             {
                 int duration = Mathf.RoundToInt(this.def.durationDays.RandomInRange * 60000f);
                 List<Faction> lichFaction = Find.FactionManager.AllFactions.ToList();

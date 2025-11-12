@@ -2,7 +2,6 @@
 using RimWorld;
 using Verse;
 using AbilityUser;
-using TorannMagic.ModOptions;
 using UnityEngine;
 
 namespace TorannMagic
@@ -24,6 +23,7 @@ namespace TorannMagic
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Snowball.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Snowball_pwr");
             MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Snowball.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Snowball_ver");
+            
             pwrVal = pwr.level;
             verVal = ver.level;
             if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -34,12 +34,12 @@ namespace TorannMagic
                 verVal = mver.level;
             }
             this.arcaneDmg = comp.arcaneDmg;
-            if(Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if(ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
             }
-            GenExplosion.DoExplosion(base.Position, map, Mathf.RoundToInt(this.def.projectile.explosionRadius + (0.7f * (float)pwrVal)), TMDamageDefOf.DamageDefOf.Snowball, this.launcher, (int)((this.def.projectile.GetDamageAmount(1,null) + 3*pwrVal) * this.arcaneDmg), 0, SoundDefOf.Crunch, def, this.equipmentDef, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
+            GenExplosion.DoExplosion(base.Position, map, Mathf.RoundToInt(this.def.projectile.explosionRadius + (0.7f * (float)pwrVal)), TMDamageDefOf.DamageDefOf.Snowball, this.launcher, (int)((this.def.projectile.GetDamageAmount(1,null) + 3*pwrVal) * this.arcaneDmg), 0, SoundDefOf.Crunch, def, this.equipmentDef, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0f, false);
             CellRect cellRect = CellRect.CenteredOn(base.Position, 3 + (verVal * 1));
 			cellRect.ClipInsideMap(map);
 			for (int i = 0; i < verVal * 4; i++)
@@ -108,7 +108,7 @@ namespace TorannMagic
 			}
 		}
 
-        public override void Tick()
+        protected override void Tick()
         {
             Vector3 rndPos = this.DrawPos;
             rndPos.x += Rand.Range(-.3f, .3f);

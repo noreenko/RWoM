@@ -185,7 +185,7 @@ namespace TorannMagic
                                 targetVec.z += Mathf.RoundToInt(Rand.Range(-eMissVar, eMissVar) * targetRange);
                                 TM_CopyAndLaunchProjectile.CopyAndLaunchThingFromPosition(proj.def, proj.Launcher, wallPositions[k], this.Map, targetVec, intendedTarget, ProjectileHitFlags.All, null);
                                 proj.Destroy(DestroyMode.Vanish);
-                                this.wallEnergy -= proj.def.projectile.GetDamageAmount(1f);
+                                this.wallEnergy -= proj.def.projectile.GetDamageAmount(1f, null);
                             }
                             else
                             {
@@ -199,7 +199,7 @@ namespace TorannMagic
                                 targetCell.x += Mathf.RoundToInt(Rand.Range(-fMissVar, fMissVar) * targetRange);
                                 targetCell.z += Mathf.RoundToInt(Rand.Range(-fMissVar, fMissVar) * targetRange);
                                 TM_CopyAndLaunchProjectile.CopyAndLaunchThingFromPosition(proj.def, proj.Launcher, wallPositions[k], this.Map, targetCell, initialTarget, ProjectileHitFlags.All);
-                                this.wallEnergy -= proj.def.projectile.GetDamageAmount(1f);
+                                this.wallEnergy -= proj.def.projectile.GetDamageAmount(1f, null);
                             }
                         }
                     }
@@ -207,9 +207,9 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
             if (wallActive)
             {
                 float altitude = Altitudes.AltitudeFor(AltitudeLayer.MetaOverlays);          //graphic depth
@@ -233,7 +233,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

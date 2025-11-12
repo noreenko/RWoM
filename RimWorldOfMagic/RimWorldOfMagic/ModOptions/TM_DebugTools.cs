@@ -12,6 +12,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using HarmonyLib;
+using LudeonTK;
 
 namespace TorannMagic.ModOptions
 {
@@ -292,7 +293,7 @@ namespace TorannMagic.ModOptions
         [DebugAction("RWoM", "Spawn Spirit", actionType = DebugActionType.ToolMap, allowedGameStates = AllowedGameStates.PlayingOnMap)]
         public static void SpawnSpirit()
         {            
-            Pawn spiritPawn = TM_Action.GenerateSpiritPawn(UI.MouseCell(), Faction.OfPlayer);            
+            Pawn spiritPawn = TM_Action.GenerateSpiritPawn(UI.MouseCell(), Faction.OfPlayer);
             GenSpawn.Spawn(spiritPawn, UI.MouseCell(), Find.CurrentMap);  
         }
 

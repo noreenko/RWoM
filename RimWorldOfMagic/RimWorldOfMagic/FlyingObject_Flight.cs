@@ -144,7 +144,10 @@ namespace TorannMagic
             this.Initialize();
         }      
 
-        public override void Tick()
+        protected override void Tick()
+        {
+        }
+        protected override void TickInterval(int delta)
         {
             //base.Tick();
             Vector3 exactPosition = this.ExactPosition;
@@ -186,7 +189,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null;
             if (flag)
@@ -201,7 +204,7 @@ namespace TorannMagic
                         return;
                     }
                     Pawn pawn = this.flyingThing as Pawn;
-                    pawn.Drawer.DrawAt(this.DrawPos);  
+                    pawn.Drawer.renderer.RenderPawnAt(this.DrawPos);  
                     
                 }
                 else

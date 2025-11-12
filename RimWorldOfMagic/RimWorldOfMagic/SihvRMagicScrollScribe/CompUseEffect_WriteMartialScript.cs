@@ -79,13 +79,14 @@ namespace TorannMagic.SihvRMagicScrollScribe
             else if (parent.def != null && (user.story.traits.HasTrait(TorannMagicDefOf.PhysicalProdigy) || user.story.traits.HasTrait(TorannMagicDefOf.TM_Wayfarer) || user.story.traits.HasTrait(TorannMagicDefOf.TM_SuperSoldier)))
             {
                 int attempt = 0;
+                
                 RetryWrite:;
                 if (attempt < 20)
                 {
                     float rnd = Rand.Range(0, 9 + cFighters.Length);
                     if (rnd < 1)
                     {
-                        if (Settings.Instance.Gladiator)
+                        if (ModOptions.Settings.Instance.Gladiator)
                         {
                             tempPod = ThingDef.Named("BookOfGladiator");
                         }
@@ -98,7 +99,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     else if (rnd < 2)
                     {
                         
-                        if (Settings.Instance.Sniper)
+                        if (ModOptions.Settings.Instance.Sniper)
                         {
                             tempPod = ThingDef.Named("BookOfSniper");
                         }
@@ -110,7 +111,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if (rnd < 3)
                     {                       
-                        if (Settings.Instance.Bladedancer)
+                        if (ModOptions.Settings.Instance.Bladedancer)
                         {
                             tempPod = ThingDef.Named("BookOfBladedancer");
                         }
@@ -122,7 +123,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if (rnd < 4)
                     {                        
-                        if (Settings.Instance.Ranger)
+                        if (ModOptions.Settings.Instance.Ranger)
                         {
                             tempPod = ThingDef.Named("BookOfRanger");
                         }
@@ -134,7 +135,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if (rnd < 5)
                     {                        
-                        if (Settings.Instance.Psionic)
+                        if (ModOptions.Settings.Instance.Psionic)
                         {
                             tempPod = ThingDef.Named("BookOfPsionic");
                         }
@@ -146,7 +147,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if (rnd < 6)
                     {
-                        if (Settings.Instance.DeathKnight)
+                        if (ModOptions.Settings.Instance.DeathKnight)
                         {
                             tempPod = ThingDef.Named("BookOfDeathKnight");
                         }
@@ -158,7 +159,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if (rnd < 7)
                     {
-                        if (Settings.Instance.Monk)
+                        if (ModOptions.Settings.Instance.Monk)
                         {
                             tempPod = TorannMagicDefOf.BookOfMonk;
                         }
@@ -170,7 +171,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if (rnd < 8)
                     {
-                        if (Settings.Instance.Commander)
+                        if (ModOptions.Settings.Instance.Commander)
                         {
                             tempPod = TorannMagicDefOf.BookOfCommander;
                         }
@@ -182,7 +183,7 @@ namespace TorannMagic.SihvRMagicScrollScribe
                     }
                     else if(rnd < 9)
                     {                        
-                        if (Settings.Instance.Faceless)
+                        if (ModOptions.Settings.Instance.Faceless)
                         {
                             tempPod = ThingDef.Named("BookOfFaceless");
                         }

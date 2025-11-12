@@ -38,6 +38,7 @@ namespace TorannMagic
 
             Pawn pawn = this.CasterPawn;
             Map map = this.CasterPawn.Map;
+            
             //if (pawn != null && !pawn.Downed)
 
             List<BodyPartRecord> validParts = new List<BodyPartRecord>();

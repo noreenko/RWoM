@@ -17,6 +17,7 @@ namespace TorannMagic
             Map map = base.Map;
             base.Impact(hitThing);
             ThingDef def = this.def;
+            
 
             Pawn pawn = this.launcher as Pawn;
             Pawn victim = hitThing as Pawn;
@@ -33,7 +34,7 @@ namespace TorannMagic
                 }
             }
             
-            GenExplosion.DoExplosion(base.Position, map, 0.4f, TMDamageDefOf.DamageDefOf.Firebolt, this.launcher, Mathf.RoundToInt(this.def.projectile.GetDamageAmount(1, null) * arcaneDmg), 0, this.def.projectile.soundExplode, def, this.equipmentDef, this.intendedTarget.Thing, null, 0f, 1, null, false, null, 0f, 1, 0.6f, false);
+            GenExplosion.DoExplosion(base.Position, map, 0.4f, TMDamageDefOf.DamageDefOf.Firebolt, this.launcher, Mathf.RoundToInt(this.def.projectile.GetDamageAmount(1, null) * arcaneDmg), 0, this.def.projectile.soundExplode, def, this.equipmentDef, this.intendedTarget.Thing, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.6f, false);
             CellRect cellRect = CellRect.CenteredOn(base.Position, 3);
             cellRect.ClipInsideMap(map);
 
@@ -41,7 +42,7 @@ namespace TorannMagic
             if (victim != null)
             {                
                 int dmg = Mathf.RoundToInt(((this.def.projectile.GetDamageAmount(1,null) / 3) * pwrVal)* arcaneDmg);  //projectile = 16
-                if (Settings.Instance.AIHardMode && this.launcher is Pawn && !pawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && this.launcher is Pawn && !pawn.IsColonist)
                 {
                     dmg += 10;
                 }

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using RimWorld;
-using TorannMagic.ModOptions;
 
 
 namespace TorannMagic
@@ -224,7 +223,7 @@ namespace TorannMagic
                 ThingDef fog = TorannMagicDefOf.Fog_Shadows;
                 fog.gas.expireSeconds.min = 2;
                 fog.gas.expireSeconds.max = 3;
-                GenExplosion.DoExplosion(caster.Position, caster.Map, radius, TMDamageDefOf.DamageDefOf.TM_Toxin, caster, 0, 0, TMDamageDefOf.DamageDefOf.TM_Toxin.soundExplosion, null, null, null, fog, 1f, 1, null, false, null, 0f, 0, 0.0f, false);
+                GenExplosion.DoExplosion(caster.Position, caster.Map, radius, TMDamageDefOf.DamageDefOf.TM_Toxin, caster, 0, 0, TMDamageDefOf.DamageDefOf.TM_Toxin.soundExplosion, null, null, null, fog, 1f, 1, null, null, 0, false, null, 0f, 0, 0.0f, false);
 
                 for (int i = 0; i < 6; i++)
                 {
@@ -288,7 +287,8 @@ namespace TorannMagic
             CompAbilityUserMight comp = pawn.GetCompAbilityUserMight();
             int pwrVal = comp.MightData.MightPowerSkill_ShadowStrike.FirstOrDefault((MightPowerSkill x) => x.label == "TM_ShadowStrike_pwr").level;
             float dmg = comp.weaponDamage;
-            if (!pawn.IsColonist && Settings.Instance.AIHardMode)
+            
+            if (!pawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
             {
                 dmg += 5;
             }

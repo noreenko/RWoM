@@ -165,6 +165,7 @@ namespace TorannMagic
             verVal = TM_Calc.GetSkillVersatilityLevel(pawn, TorannMagicDefOf.TM_ValiantCharge);
             //pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_ValiantCharge.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ValiantCharge_pwr");
             //ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_ValiantCharge.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ValiantCharge_ver");
+            //
             //pwrVal = pwr.level;
             //verVal = ver.level;
             //if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -174,7 +175,7 @@ namespace TorannMagic
             //    pwrVal = mpwr.level;
             //    verVal = mver.level;
             //}
-            //if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            //if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             //{
             //    pwrVal = 3;
             //    verVal = 3;
@@ -199,8 +200,14 @@ namespace TorannMagic
             this.Initialize();
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
+
+        }
+
+        protected override void TickInterval(int delta)
+        {
+
             //base.Tick();
             Vector3 exactPosition = this.ExactPosition;
             this.ticksToImpact--;
@@ -229,7 +236,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null;
             if (flag)
@@ -249,7 +256,7 @@ namespace TorannMagic
                         return;
                     }
                     Pawn pawn = this.flyingThing as Pawn;
-                    pawn.Drawer.DrawAt(this.DrawPos);
+                    pawn.Drawer.renderer.RenderPawnAt(this.DrawPos);
                     if (wingDisplay)
                     {
                         if (wingDelay < 5)
@@ -364,7 +371,7 @@ namespace TorannMagic
                 bool flag4 = this.explosion;
                 if (flag4)
                 {
-                    GenExplosion.DoExplosion(base.Position, base.Map, 0.9f, DamageDefOf.Stun, this, -1, 0, null, null, null, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
+                    GenExplosion.DoExplosion(base.Position, base.Map, 0.9f, DamageDefOf.Stun, this, -1, 0, null, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0f, false);
                 }
             }
             try

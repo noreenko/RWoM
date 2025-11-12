@@ -203,6 +203,9 @@ namespace TorannMagic
             base.ExposeData();
             Scribe_Values.Look<float>(ref this.manaReq, "manaReq", 0f, false);
             Scribe_Collections.Look<Pawn>(ref this.mageList, "mageList", LookMode.Reference);
+            Scribe_Values.Look<bool>(ref this.isActive, "isActive", false);
+            Scribe_Values.Look<int>(ref this.activeDuration, "activeDuration");
+            Scribe_Values.Look<int>(ref this.circleRotation, "circleRotation");
             Scribe_Defs.Look<MagicRecipeDef>(ref this.magicRecipeDef, "magicRecipeDef");
         }
 
@@ -361,7 +364,7 @@ namespace TorannMagic
             //LessonAutoActivator.TeachOpportunity(ConceptDef.Named("TM_Portals"), OpportunityType.GoodToKnow);
         }
 
-        public override void Tick()
+        protected override void Tick()
         { 
             bool billsActionable = false;
             if (this.suspendReset)
@@ -670,62 +673,6 @@ namespace TorannMagic
             return false;
         }
 
-        //public bool CanDoJob(CompAbilityUserMagic abilityUser, MagicRecipeDef mrDef, Thing workTable)
-        //{
-        //    if (mrDef.mageCount == 0)
-        //    {
-        //        manaReq = mrDef.manaCost;
-        //    }
-        //    else
-        //    {
-        //        manaReq = mrDef.manaCost / mrDef.mageCount;
-        //    }
-        //    if (!this.hasPendingJob && !this.isActive && abilityUser.Mana != null && abilityUser.Mana.CurLevel >= manaReq)
-        //    {
-        //        this.mageList = new List<Pawn>();
-        //        this.mageList.Clear();
-        //        mageList.Add(abilityUser.Pawn);
-        //        if (mrDef.mageCount > 1)
-        //        {
-        //            List<Pawn> magePawnsInRange = TM_Calc.FindNearbyMages(workTable.Position, workTable.Map, workTable.Faction, 40, true);
-        //            if (magePawnsInRange != null && magePawnsInRange.Count > 0)
-        //            {
-        //                //Log.Message("Found " + magePawnsInRange.Count + " mages");
-        //                if (magePawnsInRange.Count >= mrDef.mageCount)
-        //                {
-        //                    for (int i = 0; i < magePawnsInRange.Count; i++)
-        //                    {
-        //                        Pawn p = magePawnsInRange[i];
-        //                        CompAbilityUserMagic comp = p.GetCompAbilityUserMagic();
-        //                        if (p != abilityUser.Pawn && p.workSettings.WorkIsActive(TorannMagicDefOf.TM_Magic) && comp != null && comp.Mana != null && comp.Mana.CurLevel >= manaReq && p.GetPosture() == PawnPosture.Standing && !p.InMentalState)
-        //                        {
-        //                            //Log.Message("" + p.LabelShort + " available to work recipe " + mrDef.defName);
-        //                            mageList.Add(p);
-        //                            if (mageList.Count >= mrDef.mageCount)
-        //                            {
-        //                                //Log.Message("" + mrDef.mageCount + " of " + mageList.Count + " found");                                        
-        //                                //this.hasPendingJob = true;
-        //                                this.mageList.Clear();
-        //                                return true;
-        //                                //break;
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            //else
-        //            //{
-        //            //    Log.Message("no mages found");
-        //            //}
-        //        }
-        //        else
-        //        {
-        //            this.hasPendingJob = true;
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
 
         public virtual void IssueAssistJob(Pawn pawn)
         {
@@ -770,7 +717,7 @@ namespace TorannMagic
 
         public virtual void ScanForRepeatJob()
         {
-            List<Pawn> allPawns = this.Map.mapPawns.AllPawnsSpawned;
+            List<Pawn> allPawns = this.Map.mapPawns.AllPawnsSpawned.ToList();
             if(allPawns != null && allPawns.Count > 0)
             {
                 for(int i = 0; i < allPawns.Count; i++)
@@ -1137,7 +1084,7 @@ namespace TorannMagic
 
         public static void TryApplyHediff(HediffDef hediff, Faction faction, Map map, Pawn caster, float sev, int count = 0, bool checkResistance = false, bool friendly = false, bool enemy = false, bool neutral = false, bool nullFaction = false, ThingDef mote = null)
         {
-            List<Pawn> allPawns = map.mapPawns.AllPawnsSpawned;
+            List<Pawn> allPawns = map.mapPawns.AllPawnsSpawned.ToList();
             allPawns.Shuffle();
             if (allPawns != null && allPawns.Count > 0)
             {

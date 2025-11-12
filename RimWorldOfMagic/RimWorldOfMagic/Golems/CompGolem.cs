@@ -18,8 +18,8 @@ namespace TorannMagic.Golems
         public int age = 0;
         private int nextActionTick = 0;
         public int actionTickAverage80 = 300;
-        public IntVec3 dormantPosition = new IntVec3();
-        public Map dormantMap;
+        public IntVec3 dormantPosition = IntVec3.Zero;
+        public Map dormantMap = null;
         public Building_TMGolemBase dormantThing;
         public Rot4 dormantRotation;        
 
@@ -97,33 +97,30 @@ namespace TorannMagic.Golems
                 {
                     return false;
                 }
+                if (target.Thing.Map != source.Map)
+                {
+                    return false;                                       
+                }
+                if (!target.Cell.InAllowedArea(Pawn))
+                {
+                    return false;
+                }
                 if (targetThing is Pawn p)
                 {
                     if (p.Dead || p.Downed)
                     {
-                        return false;
+                        return false;                        
                     }
-                    if (checkThreatPath && p.CanReach(source, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.PassDoors))
+                    if (!GenHostility.HostileTo(source, targetThing))
                     {
                         return false;
                     }
+                    if (!p.CanReach(source, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
+                    {
+                        return false;
+                    }
+                    return true;
                 }
-                if (!GenHostility.HostileTo(source, targetThing))
-                {
-                    return false;
-                }
-            }
-            if (target.Thing != null && target.Thing.Map == Pawn.Map)
-            {
-                if (target.Cell.DistanceToEdge(source.Map) < 8)
-                {
-                    return false;
-                }
-                if (checkThreatPath && !target.Cell.InAllowedArea(Pawn))
-                {
-                    return false;
-                }
-                return true;
             }
             return false;
         }
@@ -749,7 +746,10 @@ namespace TorannMagic.Golems
                 rndPos.z += Rand.Range(-1f, 1f);
                 FleckMaker.ThrowSmoke(rndPos, Pawn.Map, Rand.Range(.6f, 1.2f));                
             }
-            Find.CameraDriver.shaker.DoShake(.25f);
+            if (ModOptions.Settings.Instance.golemScreenShake)
+            {
+                Find.CameraDriver.shaker.DoShake(.25f);
+            }
             Building_TMGolemBase spawnedThing = null;
             IntVec3 despawnPos = Pawn.Position;
             if((dormantPosition - despawnPos).LengthHorizontal <= 1.4f)
@@ -801,9 +801,9 @@ namespace TorannMagic.Golems
             base.PostDestroy(mode, previousMap);
         }
 
-        public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
+        public override void PostPreApplyDamage(ref DamageInfo dinfo, out bool absorbed)
         {
-            base.PostPreApplyDamage(dinfo, out absorbed);
+            base.PostPreApplyDamage(ref dinfo, out absorbed);
         }
 
         public void TryUseAbilities()

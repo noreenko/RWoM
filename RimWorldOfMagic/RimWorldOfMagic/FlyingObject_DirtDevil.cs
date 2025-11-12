@@ -38,7 +38,7 @@ namespace TorannMagic
 
         private bool initialized = true;
 
-        protected new int StartingTicksToImpact
+        protected int StartingTicksToImpact
         {
             get
             {
@@ -52,7 +52,7 @@ namespace TorannMagic
             }
         }
 
-        protected new IntVec3 DestinationCell
+        protected IntVec3 DestinationCell
         {
             get
             {
@@ -60,7 +60,7 @@ namespace TorannMagic
             }
         }
 
-        public new Vector3 ExactPosition
+        public override Vector3 ExactPosition
         {
             get
             {
@@ -69,7 +69,7 @@ namespace TorannMagic
             }
         }
 
-        public new Quaternion ExactRotation
+        public override Quaternion ExactRotation
         {
             get
             {
@@ -205,21 +205,24 @@ namespace TorannMagic
             allThings.Clear();
             allFilth.Clear();
             List<IntVec3> cellsAround = GenRadial.RadialCellsAround(this.Position, 1.4f, true).ToList();
-            for(int i =0; i < cellsAround.Count; i++)
+            if (cellsAround != null)
             {
-                allThings = cellsAround[i].GetThingList(this.Map);
-                for(int j = 0; j < allThings.Count; j++)
+                for (int i = 0; i < cellsAround.Count; i++)
                 {
-                    if(allThings[j].def.category == ThingCategory.Filth || allThings[j].def.IsFilth)
+                    allThings = cellsAround[i].GetThingList(this.Map);                   
+                    for (int j = 0; j < allThings.Count; j++)
                     {
-                        allFilth.Add(allThings[j]);
+                        if (allThings[j].def.category == ThingCategory.Filth || allThings[j].def.IsFilth)
+                        {
+                            allFilth.Add(allThings[j]);
+                        }
                     }
                 }
-            }
-            for(int i = 0; i < allFilth.Count; i++)
-            {
-                CleanGraphics(allFilth[i]);
-                allFilth[i].Destroy(DestroyMode.Vanish);
+                for (int i = 0; i < allFilth.Count; i++)
+                {
+                    CleanGraphics(allFilth[i]);
+                    allFilth[i].Destroy(DestroyMode.Vanish);
+                }
             }
         }
 
@@ -230,7 +233,10 @@ namespace TorannMagic
             TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_ThickDust, filth.DrawPos, this.Map, Rand.Range(.4f, .6f), .1f, .05f, .25f, -200, 2, (Quaternion.AngleAxis(90, Vector3.up) * angle).ToAngleFlat(), Rand.Range(0,360));
         }
 
-        public override void Tick()
+        protected override void Tick()
+        {
+        }
+        protected override void TickInterval(int delta)
         {
             //base.Tick();
 
@@ -273,7 +279,9 @@ namespace TorannMagic
                     rndVec.x += Rand.Range(-1f, 1f);
                     rndVec.z += Rand.Range(-1f, 1f);
                     Vector3 angle = TM_Calc.GetVector(rndVec, this.ExactPosition);
-                    TM_MoteMaker.ThrowGenericFleck(FleckDefOf.Smoke, rndVec, this.Map, Rand.Range(.8f, 1.5f), .1f, .05f, .15f, -300, 2, (Quaternion.AngleAxis(90, Vector3.up) * angle).ToAngleFlat(), Rand.Range(0, 360));
+                    TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_Base_Smoke, rndVec, base.Map, Rand.Range(.8f, 1.5f), .1f, .05f, .15f, -300, 2, (Quaternion.AngleAxis(90, Vector3.up) * angle).ToAngleFlat(), Rand.Range(0, 360));
+                    //TM_MoteMaker.ThrowGenericFleck(FleckDefOf.Smoke, rndVec, base.Map, Rand.Range(.8f, 1.5f), .1f, .05f, .15f, -300, 2, (Quaternion.AngleAxis(90, Vector3.up) * angle).ToAngleFlat(), Rand.Range(0, 360));
+                    
                 }
                 if(this.searchDelay < 0)
                 {
@@ -340,7 +348,7 @@ namespace TorannMagic
                 bool flag4 = this.explosion;
                 if (flag4)
                 {
-                    GenExplosion.DoExplosion(base.Position, base.Map, 0.9f, DamageDefOf.Stun, this, -1, 0, null, null, null, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
+                    GenExplosion.DoExplosion(base.Position, base.Map, 0.9f, DamageDefOf.Stun, this, -1, 0, null, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0f, false);
                 }
             }
 

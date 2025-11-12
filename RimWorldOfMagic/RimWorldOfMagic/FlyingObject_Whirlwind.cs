@@ -115,7 +115,8 @@ namespace TorannMagic
                 SoundDefOf.Ambient_AltitudeWind.sustainFadeoutTime.Equals(30.0f);
                 FleckMaker.ThrowDustPuff(this.origin, this.Map, Rand.Range(1.2f, 1.8f));
                 weaponDmg = GetWeaponDmg(pawn);
-                if (!pawn.IsColonist && Settings.Instance.AIHardMode)
+                
+                if (!pawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
                 {
                     weaponDmg += 10;
                 }
@@ -157,7 +158,12 @@ namespace TorannMagic
             this.Initialize();
         }
 
-        public override void Tick()
+        protected override void Tick()
+        {
+
+        }
+
+        protected override void TickInterval(int delta)
         {
             //base.Tick();
             Vector3 exactPosition = this.ExactPosition;
@@ -273,7 +279,7 @@ namespace TorannMagic
             return (int)Mathf.Max(5, dmgNum);
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null;
             if (flag)
@@ -293,7 +299,7 @@ namespace TorannMagic
                         return;
                     }
                     Pawn pawn = this.flyingThing as Pawn;
-                    pawn.Drawer.DrawAt(this.DrawPos);
+                    pawn.Drawer.renderer.RenderPawnAt(this.DrawPos);
                     DrawCleaving(this.DrawPos, 10);
                 }
                 else
@@ -371,7 +377,7 @@ namespace TorannMagic
                 bool flag4 = this.explosion;
                 if (flag4)
                 {
-                    GenExplosion.DoExplosion(base.Position, base.Map, 0.9f, DamageDefOf.Stun, this, -1, 0, null, null, null, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
+                    GenExplosion.DoExplosion(base.Position, base.Map, 0.9f, DamageDefOf.Stun, this, -1, 0, null, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0f, false);
                 }
             }
             GenSpawn.Spawn(this.flyingThing, base.Position, base.Map);

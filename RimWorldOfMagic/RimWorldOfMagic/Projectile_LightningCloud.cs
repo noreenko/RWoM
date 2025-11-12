@@ -54,6 +54,8 @@ namespace TorannMagic
 
             Pawn pawn = this.launcher as Pawn;
             
+            
+            
             if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
             {
                 MightPowerSkill mpwr = pawn.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr");
@@ -72,7 +74,7 @@ namespace TorannMagic
                 this.arcaneDmg = comp.arcaneDmg;
             }
             
-            if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
@@ -196,7 +198,7 @@ namespace TorannMagic
             explosion.StartExplosion(explosionSound, null);
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

@@ -72,7 +72,8 @@ namespace TorannMagic
                 verVal = ver.level;
                 pwrVal = pwr.level;
                 this.arcaneDmg = comp.arcaneDmg;
-                if (Settings.Instance.AIHardMode && !caster.IsColonist)
+                
+                if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
                 {
                     pwrVal = 1;
                     verVal = 1;
@@ -104,7 +105,7 @@ namespace TorannMagic
                     TM_MoteMaker.MakePowerBeamMoteColor(smitePos[j], base.Map, this.radius * 3f, 2f, .5f, .1f, .5f, colorInt.ToColor);
                     this.caster = this.launcher as Pawn;
                     CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
-                    GenExplosion.DoExplosion(smitePos[j], map, 3f, TMDamageDefOf.DamageDefOf.TM_Overwhelm, this.launcher as Pawn, Mathf.RoundToInt((12 + TMDamageDefOf.DamageDefOf.TM_Overwhelm.defaultDamage + 3*pwrVal) * this.arcaneDmg), 0, TorannMagicDefOf.TM_Lightning, def, this.equipmentDef, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
+                    GenExplosion.DoExplosion(smitePos[j], map, 3f, TMDamageDefOf.DamageDefOf.TM_Overwhelm, this.launcher as Pawn, Mathf.RoundToInt((12 + TMDamageDefOf.DamageDefOf.TM_Overwhelm.defaultDamage + 3*pwrVal) * this.arcaneDmg), 0, TorannMagicDefOf.TM_Lightning, def, this.equipmentDef, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0f, false);
                 }
             }
         }
@@ -122,18 +123,22 @@ namespace TorannMagic
 
         public void GetAffectedPawns(IntVec3 center, Map map)
         {
-            foreach (IntVec3 curCell in GenRadial.RadialCellsAround(center, def.projectile.explosionRadius, true))
+            foreach(Pawn p in map.mapPawns.AllPawnsSpawned)
             {
-                if (!curCell.InBoundsWithNullCheck(map) || !curCell.IsValid) return;
-                Pawn victim = curCell.GetFirstPawn(map);
-                if (victim == null || victim.Dead) return;
-
-                if (victim.Faction == caster.Faction)
+                if (p.DestroyedOrNull()) continue;
+                if (p.Dead) continue;
+                if (TM_Calc.IsUndead(p))
+                {
+                    TM_Action.DamageUndead(p, Rand.Range(5f, 12f) * this.arcaneDmg, this.launcher);
+                    continue;
+                }
+                if (p.Faction != caster.Faction) continue;
+                if(p.Position.DistanceTo(center) <= def.projectile.explosionRadius)
                 {
                     if (verVal >= 1)
                     {
-                        HealthUtility.AdjustSeverity(victim, TorannMagicDefOf.TM_HediffTimedInvulnerable, 1f);
-                        Hediff hd = victim.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_HediffTimedInvulnerable);
+                        HealthUtility.AdjustSeverity(p, TorannMagicDefOf.TM_HediffTimedInvulnerable, 1f);
+                        Hediff hd = p.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_HediffTimedInvulnerable);
                         HediffComp_Disappears hdc = hd.TryGetComp<HediffComp_Disappears>();
                         if (hdc != null)
                         {
@@ -142,9 +147,9 @@ namespace TorannMagic
                     }
                     if (verVal >= 2)
                     {
-                        if (!victim.Dead && !TM_Calc.IsUndead(victim))
+                        if (!p.Dead && !TM_Calc.IsUndead(p))
                         {
-                            IEnumerable<Hediff_Injury> injuries = victim.health.hediffSet.hediffs
+                            IEnumerable<Hediff_Injury> injuries = p.health.hediffSet.hediffs
                                 .OfType<Hediff_Injury>()
                                 .Where(injury => injury.CanHealNaturally())
                                 .DistinctBy(injury => injury.Part)
@@ -154,27 +159,22 @@ namespace TorannMagic
                             foreach (Hediff_Injury injury in injuries)
                             {
                                 injury.Heal(healAmount);
-                                TM_MoteMaker.ThrowRegenMote(victim.Position.ToVector3Shifted(), victim.Map, .6f);
-                                TM_MoteMaker.ThrowRegenMote(victim.Position.ToVector3Shifted(), victim.Map, .4f);
+                                TM_MoteMaker.ThrowRegenMote(p.Position.ToVector3Shifted(), p.Map, .6f);
+                                TM_MoteMaker.ThrowRegenMote(p.Position.ToVector3Shifted(), p.Map, .4f);
                             }
                         }
-                    }                
+                    }
                     if (verVal >= 3)
                     {
-                        HealthUtility.AdjustSeverity(victim, HediffDef.Named("BestowMightHD"), 1f);
+                        HealthUtility.AdjustSeverity(p, HediffDef.Named("BestowMightHD"), 1f);
                     }
-
                 }
-                if(TM_Calc.IsUndead(victim))
-                {
-                    TM_Action.DamageUndead(victim, Rand.Range(5f, 12f) * this.arcaneDmg, this.launcher);
-                }
-            }
+            }            
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
             for (int i = 0; i < smitePos.Count; i++)
             {
                 if (wrathAge[i] >= 0 && wrathAge[i] <= this.timeToSmite/this.strikeNum)
@@ -220,7 +220,7 @@ namespace TorannMagic
             Graphics.DrawMesh(MeshPool.plane10, matrix3, Projectile_HolyWrath.BombardMat, 0, null, 0, Projectile_HolyWrath.MatPropertyBlock);
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

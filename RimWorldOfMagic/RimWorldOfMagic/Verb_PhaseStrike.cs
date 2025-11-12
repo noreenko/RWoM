@@ -5,7 +5,6 @@ using AbilityUser;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-using TorannMagic.ModOptions;
 
 
 namespace TorannMagic
@@ -85,7 +84,8 @@ namespace TorannMagic
             {
                 TMAbilityDef ad = (TMAbilityDef)this.Ability.Def;
                 this.dmgNum = Mathf.RoundToInt(comp.weaponDamage * ad.weaponDamageFactor);
-                if (!this.CasterPawn.IsColonist && Settings.Instance.AIHardMode)
+                
+                if (!this.CasterPawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
                 {
                     this.dmgNum += 10;
                 }

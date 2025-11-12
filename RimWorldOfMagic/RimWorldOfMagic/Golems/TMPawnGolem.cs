@@ -16,8 +16,8 @@ namespace TorannMagic.Golems
         public List<GolemDrawClass> drawTempMesh = new List<GolemDrawClass>();
 
         public List<GolemVerbTracker> verbList = new List<GolemVerbTracker>();
-
         public bool rangedToggle = false;
+        public float maxAvailableRange = 0;
         public Dictionary<Verb, Command_VerbTarget> verbCommands = null;
         public Command_VerbTarget GetCommandVerbs(Verb verb)
         {
@@ -79,6 +79,7 @@ namespace TorannMagic.Golems
                             {
                                 if(this.RaceProps.body.AllParts.Where(x => x.groups.Contains(v.verbProps.linkedBodyPartsGroup)).Contains(bpr) && v.verbProps.defaultProjectile == gu.golemUpgradeDef.verbProjectile && !validRangedVerbs.Contains(v))
                                 {
+                                    this.maxAvailableRange = maxAvailableRange < v.verbProps.range ? v.verbProps.range : this.maxAvailableRange;
                                     validRangedVerbs.Add(v);
                                 }                                
                             }
@@ -99,7 +100,7 @@ namespace TorannMagic.Golems
                     if((Golem.HasEnergyForAbilities || v.verbProps.consumeFuelPerShot == 0) && Golem.Energy.CurLevel > v.verbProps.consumeFuelPerShot)
                     {
                         if ((v.LastShotTick + (v.verbProps.defaultCooldownTime * 60f)) < Find.TickManager.TicksGame)
-                        {
+                        {                            
                             return v;
                         }
                     }
@@ -113,6 +114,16 @@ namespace TorannMagic.Golems
             get
             {
                 return this.TryGetComp<CompGolem>();
+            }
+        }
+
+        private TM_GolemDef golemDef = null;
+        public TM_GolemDef GolemDef
+        {
+            get
+            {
+                if (golemDef == null) golemDef = TM_GolemUtility.GetGolemDefFromThing(this);
+                return golemDef;
             }
         }
 
@@ -169,7 +180,7 @@ namespace TorannMagic.Golems
 
         public virtual void PostGolemActivate()
         {
-
+            SetGolemWorkPrioritiesAndSkills();
         }
 
         public virtual void PostGolemDeActivate()
@@ -177,7 +188,7 @@ namespace TorannMagic.Golems
 
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             if (Spawned && this.drafter == null)
             {
@@ -201,8 +212,16 @@ namespace TorannMagic.Golems
             if (this.workSettings == null)
             {
                 this.workSettings = new Pawn_WorkSettings(this);
+                this.workSettings.EnableAndInitialize();
             }
-            base.Tick();
+            if(this.skills == null)
+            {
+                this.skills = new Pawn_SkillTracker(this);
+            }
+            if (this.Spawned && this.Map != null)
+            {
+                base.Tick();
+            }
             if(Downed && !Dead)
             {
                 Kill(null, null);
@@ -242,9 +261,10 @@ namespace TorannMagic.Golems
         }
 
         List<GolemDrawClass> removeGDC = new List<GolemDrawClass>();
-        public override void Draw()
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
             List<DrawMesh> tmpMesh = new List<DrawMesh>();
             foreach(DrawMesh mesh in drawQueue)
             {
@@ -345,7 +365,7 @@ namespace TorannMagic.Golems
                     }
 
                     Vector3 vector = this.DrawPos;
-                    vector.y = Altitudes.AltitudeFor(AltitudeLayer.Pawn);
+                    //vector.y = Altitudes.AltitudeFor(AltitudeLayer.Pawn); had to remove for v1.5, seems to have broken drawing
                     vector += vecOffset;
 
                     Vector3 s = new Vector3(gu.golemUpgradeDef.drawSize, this.DrawPos.y, gu.golemUpgradeDef.drawSize);
@@ -445,38 +465,38 @@ namespace TorannMagic.Golems
         {
             var gizmoList = base.GetGizmos().ToList();
 
-            if (drafter != null)
-            {
-                Command_Toggle command_Toggle = new Command_Toggle();
-                command_Toggle.hotKey = KeyBindingDefOf.Command_ColonistDraft;
-                command_Toggle.isActive = (() => Drafted);
-                command_Toggle.toggleAction = delegate
-                {
-                    this.drafter.Drafted = !Drafted;
-                    if (verbCommands != null)
-                    {
-                        verbCommands.Clear();
-                    }
-                };
-                command_Toggle.defaultDesc = "CommandToggleDraftDesc".Translate();
-                command_Toggle.icon = TexCommand.Draft;
-                command_Toggle.turnOnSound = SoundDefOf.DraftOn;
-                command_Toggle.turnOffSound = SoundDefOf.DraftOff;
-                command_Toggle.defaultLabel = (Drafted ? "CommandUndraftLabel" : "CommandDraftLabel").Translate();
-                if (this.Downed)
-                {
-                    command_Toggle.Disable("IsIncapped".Translate(this.LabelShort, this));
-                }
-                if (!Drafted)
-                {
-                    command_Toggle.tutorTag = "Draft";
-                }
-                else
-                {
-                    command_Toggle.tutorTag = "Undraft";
-                }
-                gizmoList.Add(command_Toggle);
-            }
+            //if (drafter != null)
+            //{
+            //    Command_Toggle command_Toggle = new Command_Toggle();
+            //    command_Toggle.hotKey = KeyBindingDefOf.Command_ColonistDraft;
+            //    command_Toggle.isActive = (() => Drafted);
+            //    command_Toggle.toggleAction = delegate
+            //    {
+            //        this.drafter.Drafted = !Drafted;
+            //        if (verbCommands != null)
+            //        {
+            //            verbCommands.Clear();
+            //        }
+            //    };
+            //    command_Toggle.defaultDesc = "CommandToggleDraftDesc".Translate();
+            //    command_Toggle.icon = TexCommand.Draft;
+            //    command_Toggle.turnOnSound = SoundDefOf.DraftOn;
+            //    command_Toggle.turnOffSound = SoundDefOf.DraftOff;
+            //    command_Toggle.defaultLabel = (Drafted ? "CommandUndraftLabel" : "CommandDraftLabel").Translate();
+            //    if (this.Downed)
+            //    {
+            //        command_Toggle.Disable("IsIncapped".Translate(this.LabelShort, this));
+            //    }
+            //    if (!Drafted)
+            //    {
+            //        command_Toggle.tutorTag = "Draft";
+            //    }
+            //    else
+            //    {
+            //        command_Toggle.tutorTag = "Undraft";
+            //    }
+            //    gizmoList.Add(command_Toggle);
+            //}
 
             Command_Action command_Despawn = new Command_Action();
             command_Despawn.defaultLabel = "TM_DeActivateGolem".Translate();
@@ -557,6 +577,157 @@ namespace TorannMagic.Golems
             }
 
             return gizmoList;
+        }
+
+        public void SetGolemWorkPrioritiesAndSkills()
+        {
+            IEnumerable<WorkTypeDef> wtds = from def in DefDatabase<WorkTypeDef>.AllDefs
+                                            where (true)
+                                            select def;
+            foreach(WorkTypeDef wtd in wtds)
+            {
+                this.workSettings.SetPriority(wtd, 0);
+            }
+
+            foreach(TM_GolemDef.GolemWorkTypes gwt in this.GolemDef.golemWorkTypes)
+            {
+                if (gwt.enabled && (!gwt.requiresUpgrade || this.Golem.Upgrades.Any((TM_GolemUpgrade x) => x.golemUpgradeDef == gwt.golemUpgradeDef && x.currentLevel > 0)))
+                {
+                    this.workSettings.SetPriority(gwt.workTypeDef, gwt.priority);
+                }          
+                else
+                {
+                    this.workSettings.SetPriority(gwt.workTypeDef, 0);
+                }
+            }
+
+            foreach (TM_GolemDef.GolemWorkTypes gwt in this.GolemDef.golemWorkTypes)
+            {
+                if (gwt.upgradedSkill != null)
+                {
+                    skills.GetSkill(gwt.upgradedSkill).levelInt = gwt.initialSkillLevel;
+                    foreach (TM_GolemUpgrade gu in this.Golem.Upgrades)
+                    {
+                        if (gu.golemUpgradeDef == gwt.golemUpgradeDef && gu.currentLevel > 0)
+                        {
+                            skills.GetSkill(gwt.upgradedSkill).levelInt = gwt.initialSkillLevel + (gwt.skillBonusPerUpgrade * gu.currentLevel);
+                        }
+                    }
+                }
+            }
+        }
+
+        private List<WorkGiver> workGiversCache = null;
+
+        public List<WorkGiver> GetWorkGivers()
+        {
+            if (workGiversCache != null)
+            {
+                return workGiversCache;
+            }
+            List<WorkTypeDef> list = new List<WorkTypeDef>();
+            List<WorkTypeDef> allDefsListForReading = DefDatabase<WorkTypeDef>.AllDefsListForReading;
+            int num = 999;
+            try
+            {
+                for (int i = 0; i < allDefsListForReading.Count; i++)
+                {
+                    WorkTypeDef val = allDefsListForReading[i];
+                    int priority = GetPriority(val);
+                    if (priority > 0)
+                    {
+                        if (priority < num)
+                        {
+                            num = priority;
+                        }
+                        list.Add(val);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            try
+            {
+                GenList.InsertionSort<WorkTypeDef>((IList<WorkTypeDef>)list, (Comparison<WorkTypeDef>)delegate (WorkTypeDef a, WorkTypeDef b)
+                {
+                    float value = (float)(a.naturalPriority + (4 - GetPriority(a)) * 100000);
+                    return ((float)(b.naturalPriority + (4 - GetPriority(b)) * 100000)).CompareTo(value);
+                });
+            }
+            catch (Exception ex2)
+            {
+                
+            }
+            List<WorkGiver> list2 = new List<WorkGiver>();
+            for (int j = 0; j < list.Count; j++)
+            {
+                WorkTypeDef val2 = list[j];
+                for (int k = 0; k < val2.workGiversByPriority.Count; k++)
+                {
+                    try
+                    {
+                        WorkGiver worker = val2.workGiversByPriority[k].Worker;
+                        list2.Add(worker);
+                    }
+                    catch (Exception ex3)
+                    {
+                        if (val2.workGiversByPriority[k].defName != null)
+                        {
+                            Log.Error("The WorkTypeDef '" + val2.workGiversByPriority[k].defName.ToString() + "' threw an error when requesting the Worker: " + ex3.Message + Environment.NewLine + ex3.StackTrace);
+                        }
+                        else
+                        {
+                            Log.Error("The WorkTypeDef 'null' threw an error when requesting the Worker: " + ex3.Message + Environment.NewLine + ex3.StackTrace);
+                        }
+                    }
+                }
+            }
+            if (list2 != null && list2.Count > 0)
+            {
+                workGiversCache = list2;
+            }
+            return list2;
+        }
+
+        public bool CanDoWorktype(WorkTypeDef workTypeDef)
+        {
+            if (GolemDef == null) return false;
+            int num = (workTypeDef != null && workTypeDef.relevantSkills != null) ? workTypeDef.relevantSkills.Count : 0;
+            if (num == 0) return true;
+            int num2 = 0;
+            foreach (SkillDef sd in workTypeDef.relevantSkills)
+            {
+                foreach (SkillRecord gs in this.skills.skills)
+                {
+                    if (gs.def == sd)
+                    {
+                        num2++;
+                    }
+                }
+                if (num <= num2)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private int GetPriority(WorkTypeDef workTypeDef)
+        {
+            if (Golem?.Golem?.golemDef == null)
+            {
+                return 0;
+            }
+            foreach (TMDefs.TM_GolemDef.GolemWorkTypes golemWorkType in Golem.Golem.golemDef.golemWorkTypes)
+            {
+                if (golemWorkType.workTypeDef == workTypeDef && golemWorkType.enabled)
+                {
+                    return golemWorkType.priority;
+                }
+            }
+            return 0;
         }
     }
 }

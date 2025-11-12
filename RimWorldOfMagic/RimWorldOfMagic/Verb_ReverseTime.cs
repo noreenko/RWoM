@@ -51,6 +51,7 @@ namespace TorannMagic
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             //MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_ReverseTime.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ReverseTime_pwr");
             //MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_ReverseTime.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ReverseTime_ver");
+            //
             //pwrVal = pwr.level;
             //verVal = ver.level;
             //arcaneDmg = comp.arcaneDmg;
@@ -61,7 +62,7 @@ namespace TorannMagic
             //    pwrVal = mpwr.level;
             //    verVal = mver.level;
             //}
-            //if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            //if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             //{
             //    pwrVal = 3;
             //    verVal = 3;
@@ -223,7 +224,6 @@ namespace TorannMagic
             {
                 if(apparelThing.WornByCorpse)
                 {
-                    apparelThing.Notify_PawnResurrected();
                     Traverse.Create(root: apparelThing).Field(name: "wornByCorpseInt").SetValue(false);
                 }
             }
@@ -251,7 +251,7 @@ namespace TorannMagic
                     {
                         TransmutateEffects(corpse.Position, 10);
                         Pawn innerPawn = corpse.InnerPawn;
-                        ResurrectionUtility.ResurrectWithSideEffects(innerPawn);
+                        ResurrectionUtility.TryResurrectWithSideEffects(innerPawn);
                         AgePawn(innerPawn, Mathf.RoundToInt((6*2500) * (1 + (.1f * verVal))), false);
                         HealthUtility.AdjustSeverity(innerPawn, TorannMagicDefOf.TM_DeathReversalHD, 1f);
                         Projectile_Resurrection.ApplyHealthDefects(innerPawn, .25f, .3f);

@@ -16,7 +16,7 @@ namespace TorannMagic
         public bool boostJoy = false;
 
                 
-        public override void Tick()
+        protected override void Tick()
         {
             if(!initialized)
             {
@@ -60,7 +60,7 @@ namespace TorannMagic
                             Pawn p = pList[i];
                             if (p.needs != null && p.needs.joy != null)
                             {
-                                Need joy = p.needs.TryGetNeed(NeedDefOf.Joy);
+                                Need joy = p.needs.TryGetNeed(TorannMagicDefOf.Joy);
                                 if(joy != null)
                                 {
                                     joy.CurLevel += Rand.Range(.01f, .02f);

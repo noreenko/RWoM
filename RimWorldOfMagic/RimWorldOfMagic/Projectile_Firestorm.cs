@@ -47,9 +47,10 @@ namespace TorannMagic
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Firestorm.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Firestorm_pwr");
             ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Firestorm.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Firestorm_ver");
+            
             pwrVal = pwr.level;
             verVal = ver.level;
-            if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 1;
                 verVal = 1;
@@ -101,7 +102,7 @@ namespace TorannMagic
             {
                 if (ticksTillHeavy[i] == 0)
                 {
-                    GenExplosion.DoExplosion(shrapnelPos[heavyCount], map, .4f, TMDamageDefOf.DamageDefOf.TM_Firestorm_Small, this.launcher, Rand.Range(5, this.def.projectile.GetDamageAmount(1,null)), 0, SoundDefOf.BulletImpact_Ground, def, this.equipmentDef, null, null, 0f, 1, null, false, null, 0f, 1, 0.2f, false);
+                    GenExplosion.DoExplosion(shrapnelPos[heavyCount], map, .4f, TMDamageDefOf.DamageDefOf.TM_Firestorm_Small, this.launcher, Rand.Range(5, this.def.projectile.GetDamageAmount(1,null)), 0, SoundDefOf.BulletImpact_Ground, def, this.equipmentDef, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.2f, false);
                     ticksTillHeavy[i]--;
                 }
                 else
@@ -120,7 +121,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

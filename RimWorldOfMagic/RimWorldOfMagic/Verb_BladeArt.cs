@@ -2,7 +2,6 @@
 using Verse;
 using AbilityUser;
 using System.Linq;
-using TorannMagic.ModOptions;
 
 
 namespace TorannMagic
@@ -22,7 +21,8 @@ namespace TorannMagic
                 {
                     HealthUtility.AdjustSeverity(pawn, TorannMagicDefOf.TM_BladeArtHD, -5f);
                     HealthUtility.AdjustSeverity(pawn, TorannMagicDefOf.TM_BladeArtHD, (.5f)+ pwr.level);
-                    if (!pawn.IsColonist && Settings.Instance.AIHardMode)
+                    
+                    if (!pawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
                     {
                         HealthUtility.AdjustSeverity(pawn, TorannMagicDefOf.TM_BladeArtHD, 4);
                     }

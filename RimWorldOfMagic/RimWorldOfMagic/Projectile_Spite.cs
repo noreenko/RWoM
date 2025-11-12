@@ -3,7 +3,6 @@ using Verse;
 using AbilityUser;
 using UnityEngine;
 using RimWorld;
-using TorannMagic.ModOptions;
 
 namespace TorannMagic
 {
@@ -18,6 +17,7 @@ namespace TorannMagic
             Map map = base.Map;
             base.Impact(hitThing);
             ThingDef def = this.def;
+            
 
             Pawn pawn = this.launcher as Pawn;
             Pawn victim = hitThing as Pawn;
@@ -34,7 +34,7 @@ namespace TorannMagic
                 verVal = mver.level;
             }
             this.arcaneDmg = comp.mightPwr;
-            if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
@@ -56,7 +56,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
 
             TM_MoteMaker.ThrowGenericMote(TorannMagicDefOf.Mote_SpiritFlame, this.DrawPos, this.Map, Rand.Range(.3f, .4f), .05f, 0.05f, .1f, Rand.Range(-300, 300), Rand.Range(.2f, .6f), Rand.Range(0, 360), Rand.Range(0, 360));

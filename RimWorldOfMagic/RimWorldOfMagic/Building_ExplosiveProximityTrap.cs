@@ -58,7 +58,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             if (this.Armed)
             {
@@ -106,7 +106,8 @@ namespace TorannMagic
 
         public new virtual void Spring(Pawn p)
         {
-            SoundDefOf.EnergyShield_Broken.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
+            
+            TorannMagicDefOf.EnergyShield_Broken.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
             this.trapPawn = p;
             this.trapSprung = true;
         }
@@ -123,11 +124,11 @@ namespace TorannMagic
             return Mathf.Clamp01(UnclampedSpringChance(p));
         }
 
-        public override ushort PathFindCostFor(Pawn p)
-        {
-            if (!this.Armed && this.KnowsOfTrap(p)) return 800;
-            return 0;
-        }
+        //public override ushort PathFindCostFor(Pawn p)
+        //{
+        //    if (!this.Armed && this.KnowsOfTrap(p)) return 800;
+        //    return 0;
+        //}
 
         public override ushort PathWalkCostFor(Pawn p)
         {

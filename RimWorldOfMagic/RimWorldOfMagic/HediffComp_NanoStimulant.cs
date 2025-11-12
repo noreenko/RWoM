@@ -68,9 +68,10 @@ namespace TorannMagic
                 if (pawn == null) return;
                 TM_MoteMaker.ThrowRegenMote(pawn.DrawPos, pawn.Map, 1f);
 
+                
                 int injuriesToHeal;
                 int injuriesPerBodyPart;
-                if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
                 {
                     injuriesToHeal = 5;
                     injuriesPerBodyPart = 5;

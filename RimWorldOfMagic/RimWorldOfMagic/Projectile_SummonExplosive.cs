@@ -2,7 +2,6 @@
 using AbilityUser;
 using Verse;
 using System.Linq;
-using TorannMagic.ModOptions;
 
 namespace TorannMagic
 {
@@ -15,7 +14,7 @@ namespace TorannMagic
         private int verVal;
         private int pwrVal;
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -44,6 +43,7 @@ namespace TorannMagic
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_SummonExplosive.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_SummonExplosive_pwr");
             MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_SummonExplosive.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_SummonExplosive_ver");
+            
             pwrVal = pwr.level;
             verVal = ver.level;
             if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -53,7 +53,7 @@ namespace TorannMagic
                 pwrVal = mpwr.level;
                 verVal = mver.level;
             }
-            if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;

@@ -102,7 +102,7 @@ namespace TorannMagic
                 {
                     if(isExplosion)
                     {
-                        GenExplosion.DoExplosion(curCell, this.Pawn.Map, .4f, damageType, this.Pawn, damageAmount, Rand.Range(0, damageAmount), TorannMagicDefOf.TM_SoftExplosion, null, null, null, null, 0f, 1, null, false, null, 0f, 0, 0.0f, false);
+                        GenExplosion.DoExplosion(curCell, this.Pawn.Map, .4f, damageType, this.Pawn, damageAmount, Rand.Range(0, damageAmount), TorannMagicDefOf.TM_SoftExplosion, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 0, 0.0f, false);
                     }
                     else
                     {
@@ -148,7 +148,7 @@ namespace TorannMagic
                     if (knockbackPawn != null && knockbackPawn != this.Pawn)
                     {
                         IntVec3 targetCell = knockbackPawn.Position + (force * force * launchVector).ToIntVec3();
-                        bool flag = targetCell != null && targetCell != default(IntVec3);
+                        bool flag = targetCell != default(IntVec3);
                         if (flag)
                         {
                             if (knockbackPawn.Spawned && knockbackPawn.Map != null && !knockbackPawn.Dead)
@@ -211,7 +211,7 @@ namespace TorannMagic
             this.nextTaunt = this.Props.tauntCooldownTicks + Find.TickManager.TicksGame;
             if (map != null)
             {
-                List<Pawn> threatPawns = map.mapPawns.AllPawnsSpawned;
+                List<Pawn> threatPawns = map.mapPawns.AllPawnsSpawned.ToList();
                 bool anyPawnsTaunted = false;
                 if (threatPawns != null && threatPawns.Count > 0)
                 {
@@ -291,7 +291,7 @@ namespace TorannMagic
                 {
                     if (this.Props.alwaysManhunter || this.Pawn.Faction != Faction.OfPlayer)
                     {
-                        this.Pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.ManhunterPermanent, null, true, false, null);
+                        this.Pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.ManhunterPermanent);
                     }
                     if (this.Pawn.def.defName == "TM_DemonR" || this.Pawn.def.defName == "TM_LesserDemonR")
                     {
@@ -436,7 +436,7 @@ namespace TorannMagic
                         {
                             if (this.Props.alwaysManhunter)
                             {
-                                this.Pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.ManhunterPermanent, null, true, false, null);
+                                this.Pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.ManhunterPermanent);
                             }
                         }
 
@@ -452,7 +452,7 @@ namespace TorannMagic
                         {
                             CellRect cellRect = CellRect.CenteredOn(this.Pawn.Position, 3);
                             cellRect.ClipInsideMap(this.Pawn.Map);
-                            GenExplosion.DoExplosion(cellRect.RandomCell, this.Pawn.Map, 2f, DamageDefOf.Burn, this.Pawn, Rand.Range(6, 12), -1, DamageDefOf.Bomb.soundExplosion, null, null, null, null, 0f, 1, null, false, null, 0f, 0, 0.2f, true);
+                            GenExplosion.DoExplosion(cellRect.RandomCell, this.Pawn.Map, 2f, DamageDefOf.Burn, this.Pawn, Rand.Range(6, 12), -1, DamageDefOf.Bomb.soundExplosion, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 0, 0.2f, true);
                             DamageEntities(this.Pawn, 10f, TMDamageDefOf.DamageDefOf.TM_Shadow, this.Pawn);
                             deathOnce = true;
                         }
@@ -473,9 +473,9 @@ namespace TorannMagic
             base.PostDestroy(mode, previousMap);
         }
 
-        public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
+        public override void PostPreApplyDamage(ref DamageInfo dinfo, out bool absorbed)
         {
-            base.PostPreApplyDamage(dinfo, out absorbed);
+            base.PostPreApplyDamage(ref dinfo, out absorbed);
             if (dinfo.Instigator is Building instigatorThing)
             {
                 if (instigatorThing is Building)
@@ -495,7 +495,7 @@ namespace TorannMagic
                 this.closeThreats.Clear();
                 this.farThreats.Clear();
                 this.meleeThreats.Clear();
-                List<Pawn> allPawns = this.Pawn.Map.mapPawns.AllPawnsSpawned;
+                List<Pawn> allPawns = this.Pawn.Map.mapPawns.AllPawnsSpawned.ToList();
                 for (int i = 0; i < allPawns.Count(); i++)
                 {
                     if (!allPawns[i].DestroyedOrNull() && allPawns[i] != this.Pawn)

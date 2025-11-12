@@ -3,7 +3,6 @@ using Verse;
 using AbilityUser;
 using System.Linq;
 using System.Collections.Generic;
-using TorannMagic.ModOptions;
 using UnityEngine;
 
 
@@ -48,6 +47,7 @@ namespace TorannMagic
             caster = this.launcher as Pawn;
             pwr = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Poison.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Poison_pwr");
             ver = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Poison.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Poison_ver");
+            
             pwrVal = pwr.level;
             verVal = ver.level;
             if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -58,7 +58,7 @@ namespace TorannMagic
                 verVal = mver.level;
             }
             this.arcaneDmg = caster.GetCompAbilityUserMagic().arcaneDmg;
-            if (Settings.Instance.AIHardMode && !caster.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
@@ -177,7 +177,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

@@ -63,13 +63,14 @@ namespace TorannMagic
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
             pwrVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_EarthernHammer.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EarthernHammer_pwr").level;
             verVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_EarthernHammer.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_EarthernHammer_ver").level;
+            
             if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
             {
                 pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
                 verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;
             }
             this.arcaneDmg = comp.arcaneDmg;
-            if (Settings.Instance.AIHardMode && !caster.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
@@ -92,7 +93,7 @@ namespace TorannMagic
                         {
                             if (cellList[j].def.designationCategory != null)
                             {
-                                if (cellList[j].def.designationCategory == DesignationCategoryDefOf.Structure || cellList[j].def.altitudeLayer == AltitudeLayer.Building || cellList[j].def.altitudeLayer == AltitudeLayer.Item || cellList[j].def.altitudeLayer == AltitudeLayer.ItemImportant)
+                                if (cellList[j].def.designationCategory == TorannMagicDefOf.Structure || cellList[j].def.altitudeLayer == AltitudeLayer.Building || cellList[j].def.altitudeLayer == AltitudeLayer.Item || cellList[j].def.altitudeLayer == AltitudeLayer.ItemImportant)
                                 {
                                     invalidCell = true;
                                 }
@@ -212,7 +213,7 @@ namespace TorannMagic
             cellRect.ClipInsideMap(this.caster.Map);
             IntVec3 destination = cellRect.RandomCell;
 
-            if (launchableThing != null && destination != null)
+            if (launchableThing != null && destination.IsValid)
             {                
                 float launchAngle = (Quaternion.AngleAxis(90, Vector3.up) * TM_Calc.GetVector(origin, destination)).ToAngleFlat();
                 for (int m = 0; m < 4; m++)
@@ -225,7 +226,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

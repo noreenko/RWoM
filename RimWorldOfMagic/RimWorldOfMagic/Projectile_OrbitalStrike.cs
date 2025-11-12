@@ -71,7 +71,8 @@ namespace TorannMagic
                 verVal = ver.level;
                 pwrVal = pwr.level;
                 this.arcaneDmg = comp.arcaneDmg;
-                if (Settings.Instance.AIHardMode && !caster.IsColonist)
+                
+                if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -100,7 +101,7 @@ namespace TorannMagic
             if (this.age == (this.targettingAge + this.beamDuration))
             {
                 TM_MoteMaker.MakePowerBeamMoteColor(this.strikePos, base.Map, this.radius * 4f, 2f, .5f, .1f, .5f, colorInt.ToColor);                
-                GenExplosion.DoExplosion(this.strikePos, map, this.def.projectile.explosionRadius, DamageDefOf.Bomb, this.launcher as Pawn, Mathf.RoundToInt((25 + 5*pwrVal) * this.arcaneDmg), 0, null, def, this.equipmentDef, null, null, 0f, 1, null, false, null, 0f, 1, 0f, false);
+                GenExplosion.DoExplosion(this.strikePos, map, this.def.projectile.explosionRadius, DamageDefOf.Bomb, this.launcher as Pawn, Mathf.RoundToInt((25 + 5*pwrVal) * this.arcaneDmg), 0, null, def, this.equipmentDef, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0f, false);
                 Effecter OSEffect = TorannMagicDefOf.TM_OSExplosion.Spawn();
                 OSEffect.Trigger(new TargetInfo(this.strikePos, this.Map, false), new TargetInfo(this.strikePos, this.Map, false));
                 OSEffect.Cleanup();
@@ -113,11 +114,11 @@ namespace TorannMagic
                 }
             }
             
-        }        
+        }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
             if (this.age >= this.targettingAge)
             {
                 DrawSmiteBeams(this.strikePos, this.beamAge);
@@ -160,7 +161,7 @@ namespace TorannMagic
             Graphics.DrawMesh(MeshPool.plane10, matrix3, Projectile_OrbitalStrike.BombardMat, 0, null, 0, Projectile_OrbitalStrike.MatPropertyBlock);
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

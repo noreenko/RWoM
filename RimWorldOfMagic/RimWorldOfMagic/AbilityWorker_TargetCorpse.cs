@@ -19,6 +19,7 @@ namespace TorannMagic
 
         public virtual Corpse PickClosestCorpse(AbilityAIDef abilityDef, Pawn pawn)
         {
+
             return GenRadial.RadialCellsAround(pawn.Position, 6f, true)
                 .Where(cell => cell.InBoundsWithNullCheck(pawn.Map) && cell.IsValid)
                 .Select(cell => cell.GetThingList(pawn.Map).OfType<Corpse>().FirstOrDefault())

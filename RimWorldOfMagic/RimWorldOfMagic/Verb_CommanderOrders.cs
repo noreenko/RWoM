@@ -62,7 +62,8 @@ namespace TorannMagic
                     if (!caster.IsColonist)
                     {
                         rChance = Mathf.Clamp(socialChance * 3f, .5f, 1f);
-                        if(Settings.Instance.AIHardMode)
+                        
+                        if(ModOptions.Settings.Instance.AIHardMode)
                         {
                             socialChance = 1f;
                         }

@@ -95,6 +95,7 @@ namespace TorannMagic
             float sev = this.parent.Severity;
             Pawn caster = this.Pawn;
             CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
+            
 
             if (comp != null)
             {
@@ -103,7 +104,7 @@ namespace TorannMagic
                 {
                     this.removeNow = true;
                 }
-                else if(!this.Pawn.IsColonist && Settings.Instance.AIHardMode)
+                else if(!this.Pawn.IsColonist && ModOptions.Settings.Instance.AIHardMode)
                 {
                     this.parent.Severity = 5;
                 }

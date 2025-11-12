@@ -11,6 +11,7 @@ using AbilityUser;
 using TorannMagic.TMDefs;
 using TorannMagic.Golems;
 using TorannMagic.ModOptions;
+using TorannMagic.Ideology;
 
 namespace TorannMagic.AutoCast
 {
@@ -116,12 +117,12 @@ namespace TorannMagic.AutoCast
                         if (canReach && phaseToCell.IsValid && phaseToCell.InBoundsWithNullCheck(caster.Map) && phaseToCell.Walkable(caster.Map) && !phaseToCell.Fogged(caster.Map))// && ((phaseToCell - caster.Position).LengthHorizontal < distanceToTarget))
                         {
 
-                            PawnPath ppc = caster.Map.pathFinder.FindPath(caster.Position, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), PathEndMode.ClosestTouch);
+                            PawnPath ppc = caster.Map.pathFinder.FindPathNow(caster.Position, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), null, PathEndMode.ClosestTouch);
                             float currentCost = ppc.TotalCost;
                             float futureCost = currentCost;
                             ppc.ReleaseToPool();
 
-                            PawnPath ppf = caster.Map.pathFinder.FindPath(phaseToCell, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), PathEndMode.ClosestTouch);
+                            PawnPath ppf = caster.Map.pathFinder.FindPathNow(phaseToCell, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), null, PathEndMode.ClosestTouch);
                             futureCost = ppf.TotalCost;
                             ppf.ReleaseToPool();
                             isCloser = currentCost > futureCost;
@@ -1154,12 +1155,12 @@ namespace TorannMagic.AutoCast
 
                             if (canReach && blinkToCell.IsValid && blinkToCell.InBoundsWithNullCheck(caster.Map) && blinkToCell.Walkable(caster.Map) && !blinkToCell.Fogged(caster.Map))// && ((blinkToCell - caster.Position).LengthHorizontal < distanceToTarget))
                             {
-                                PawnPath ppc = caster.Map.pathFinder.FindPath(caster.Position, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), PathEndMode.ClosestTouch);
+                                PawnPath ppc = caster.Map.pathFinder.FindPathNow(caster.Position, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), null, PathEndMode.ClosestTouch);
                                 float currentCost = ppc.TotalCost;
                                 float futureCost = currentCost;
                                 ppc.ReleaseToPool();
 
-                                PawnPath ppf = caster.Map.pathFinder.FindPath(blinkToCell, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), PathEndMode.ClosestTouch);
+                                PawnPath ppf = caster.Map.pathFinder.FindPathNow(blinkToCell, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), null, PathEndMode.ClosestTouch);
                                 futureCost = ppf.TotalCost;
                                 ppf.ReleaseToPool();
                                 isCloser = currentCost > futureCost;
@@ -1231,8 +1232,12 @@ namespace TorannMagic.AutoCast
                 //GenClamor.DoClamor(caster, 2f, ClamorDefOf.Ability);
 
                 if (casterComp != null && casterComp.IsMagicUser)
-                {
-                    casterComp.MagicUserXP -= (int)((casterComp.ActualManaCost(abilitydef) * 300 * .7f * casterComp.xpGain * Settings.Instance.xpMultiplier));
+                {                    
+                    casterComp.MagicUserXP -= (int)((casterComp.ActualManaCost(abilitydef) * 300 * .7f * casterComp.xpGain * ModOptions.Settings.Instance.xpMultiplier));
+                    TM_EventRecords er = new TM_EventRecords();
+                    er.eventPower = casterComp.ActualManaCost(abilitydef);
+                    er.eventTick = Find.TickManager.TicksGame;
+                    casterComp.MagicUsed.Add(er);
                     ability.PostAbilityAttempt();
                 }
                 if(selectCaster)
@@ -1293,7 +1298,7 @@ namespace TorannMagic.AutoCast
                 }
                 else
                 {
-                    if (caster.CurJob.targetA.Thing.InteractionCell != null && caster.CurJob.targetA.Cell != caster.CurJob.targetA.Thing.InteractionCell)
+                    if (caster.CurJob.targetA.Cell != caster.CurJob.targetA.Thing.InteractionCell)
                     {
                         jobTarget = caster.CurJob.targetA.Thing.InteractionCell;
                     }
@@ -1495,12 +1500,12 @@ namespace TorannMagic.AutoCast
 
                         if (canReach && blinkToCell.IsValid && blinkToCell.InBoundsWithNullCheck(caster.Map) && blinkToCell.Walkable(caster.Map) && !blinkToCell.Fogged(caster.Map))
                         {
-                            PawnPath ppc = caster.Map.pathFinder.FindPath(caster.Position, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), PathEndMode.ClosestTouch);
+                            PawnPath ppc = caster.Map.pathFinder.FindPathNow(caster.Position, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly),null, PathEndMode.ClosestTouch);
                             float currentCost = ppc.TotalCost;
                             float futureCost = currentCost;
                             ppc.ReleaseToPool();
 
-                            PawnPath ppf = caster.Map.pathFinder.FindPath(blinkToCell, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly), PathEndMode.ClosestTouch);
+                            PawnPath ppf = caster.Map.pathFinder.FindPathNow(blinkToCell, jobTarget.Cell, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly),null, PathEndMode.ClosestTouch);
                             futureCost = ppf.TotalCost;
                             ppf.ReleaseToPool();
                             isCloser = currentCost > futureCost;

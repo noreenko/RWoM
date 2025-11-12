@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System;
 using RimWorld;
 using HarmonyLib;
-using TorannMagic.ModOptions;
 
 
 namespace TorannMagic
@@ -53,7 +52,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -68,6 +67,7 @@ namespace TorannMagic
             Pawn caster = this.launcher as Pawn;
             if (!this.initialized)
             {
+                
                 CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
 
                 pwrVal = comp.MagicData.MagicPowerSkill_Sabotage.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Sabotage_pwr").level;
@@ -80,7 +80,7 @@ namespace TorannMagic
                     verVal = mver.level;
                 }
                 this.arcaneDmg = comp.arcaneDmg;
-                if (Settings.Instance.AIHardMode && !caster.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;

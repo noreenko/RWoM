@@ -47,7 +47,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -63,6 +63,7 @@ namespace TorannMagic
                 CompAbilityUserMagic comp = casterPawn.GetCompAbilityUserMagic();
                 MagicPowerSkill pwr = comp.MagicData.MagicPowerSkill_ChronostaticField.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ChronostaticField_pwr");
                 MagicPowerSkill ver = comp.MagicData.MagicPowerSkill_ChronostaticField.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_ChronostaticField_ver");
+                
                 pwrVal = pwr.level;
                 verVal = ver.level;
                 if (this.casterPawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -73,7 +74,7 @@ namespace TorannMagic
                     verVal = mver.level;
                 }
                 this.arcaneDmg = comp.arcaneDmg;
-                if (Settings.Instance.AIHardMode && !casterPawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !casterPawn.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -123,7 +124,7 @@ namespace TorannMagic
 
         public void LaunchFlyingObect(IntVec3 targetCell, Pawn pawn, int force, int duration)
         {
-            bool flag = targetCell != null && targetCell != default(IntVec3);
+            bool flag = targetCell.IsValid && targetCell != default(IntVec3);
             if (flag)
             {
                 if (pawn != null && pawn.Position.IsValid && pawn.Spawned && pawn.Map != null && !pawn.Downed && !pawn.Dead)

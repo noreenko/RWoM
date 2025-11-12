@@ -197,15 +197,15 @@ namespace TorannMagic
                 {
                     float energy = 80000 * this.arcaneDmg;
                     GenTemperature.PushHeat(this.strikePos, this.Map, energy);
-                    GenExplosion.DoExplosion(this.strikePos, this.Map, this.radius/(4-this.expandingTick), DamageDefOf.Bomb, this.launcher, Mathf.RoundToInt(Rand.Range(this.damage *.7f, this.damage*.9f)), 1, DamageDefOf.Bomb.soundExplosion, null, null, null, null, 0, 0, null, false, null, 0, 0, .4f, true);
+                    GenExplosion.DoExplosion(this.strikePos, this.Map, this.radius/(4-this.expandingTick), DamageDefOf.Bomb, this.launcher, Mathf.RoundToInt(Rand.Range(this.damage *.7f, this.damage*.9f)), 1, DamageDefOf.Bomb.soundExplosion, null, null, null, null, 0, 0, null, null, 0, false, null, 0, 0, .4f, true);
                 }
             }
             this.Destroy(DestroyMode.Vanish);
-        }        
+        }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
             if (initialized)
             {
                 if (this.age <= (int)(this.duration * .6f))
@@ -264,7 +264,7 @@ namespace TorannMagic
             Graphics.DrawMesh(MeshPool.plane10, matrix2, Projectile_Explosion.BeamEndMat, 0, null, 0, Projectile_Explosion.MatPropertyBlock);
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

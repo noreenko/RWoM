@@ -18,6 +18,10 @@ namespace TorannMagic.Golems
             CompGolem cg = pawn.TryGetComp<CompGolem>();
             TMPawnGolem pg = pawn as TMPawnGolem;
             Thing meleeThreat = pg.TargetCurrentlyAimingAt.Thing;
+            if(!(meleeThreat is Pawn))
+            {
+                meleeThreat = null;
+            }
             if (meleeThreat == null)
             {
                 meleeThreat = cg.ActiveThreat;
@@ -32,7 +36,7 @@ namespace TorannMagic.Golems
             }
             if (meleeThreat is Pawn meleeThreatPawn)
             {
-                if (meleeThreatPawn.IsInvisible())
+                if (meleeThreatPawn.IsPsychologicallyInvisible())
                 {
                     return null;
                 }
@@ -58,7 +62,7 @@ namespace TorannMagic.Golems
                 return null;
             }
             if (!pawn.WorkTagIsDisabled(WorkTags.Violent))
-            {
+            {                
                 if(pg.verbCommands != null && !pg.rangedToggle && pg.ValidRangedVerbs() != null && pg.ValidRangedVerbs().Count > 0)
                 {
                     Verb v = pg.GetBestVerb;

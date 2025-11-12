@@ -78,7 +78,7 @@ namespace TorannMagic
             //LessonAutoActivator.TeachOpportunity(ConceptDef.Named("TM_Portals"), OpportunityType.GoodToKnow);
         }
                 
-        public override void Tick()
+        protected override void Tick()
         {
             if(!initialized)
             {
@@ -164,13 +164,13 @@ namespace TorannMagic
             if (this.rnd < 2) //earth
             {
                 //berserk random animal
-                List<Pawn> animalList = this.Map.mapPawns.AllPawnsSpawned;
+                List<Pawn> animalList = this.Map.mapPawns.AllPawnsSpawned.ToList();
                 for (int i = 0; i < animalList.Count; i++)
                 {
                     int j = Rand.Range(0, animalList.Count);
                     if (animalList[j].RaceProps.Animal && !animalList[j].IsColonist && !animalList[j].def.defName.Contains("Elemental") && animalList[j].Faction == null)
                     {
-                        animalList[j].mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.ManhunterPermanent, null, true, false, null);
+                        animalList[j].mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.ManhunterPermanent);
                         i = animalList.Count;
                     }
                 }                
@@ -203,7 +203,7 @@ namespace TorannMagic
             {                
                 FindGoodCenterLocation();
                 Map.weatherManager.eventHandler.AddEvent(new WeatherEvent_LightningStrike(this.Map, this.centerLocation.ToIntVec3));
-                GenExplosion.DoExplosion(this.centerLocation.ToIntVec3, this.Map, this.areaRadius, DamageDefOf.Bomb, null, Rand.Range(6, 16), 0, SoundDefOf.Thunder_OffMap, null, null, null, null, 0f, 1, null, false, null, 0f, 1, 0.1f, true);
+                GenExplosion.DoExplosion(this.centerLocation.ToIntVec3, this.Map, this.areaRadius, DamageDefOf.Bomb, null, Rand.Range(6, 16), 0, SoundDefOf.Thunder_OffMap, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.1f, true);
 
             }
         }
@@ -338,7 +338,7 @@ namespace TorannMagic
         {
             //end conditions
             List<Pawn> elementalPawns = new List<Pawn>();
-            List<Pawn> pList = this.Map.mapPawns.AllPawnsSpawned;
+            List<Pawn> pList = this.Map.mapPawns.AllPawnsSpawned.ToList();
             for (int i = 0; i < pList.Count; i++)
             {
                 if (!pList[i].DestroyedOrNull() && !pList[i].Dead && pList[i].def.defName.Contains("Elemental") && pList[i].Faction == this.Faction)
@@ -399,8 +399,9 @@ namespace TorannMagic
             {
                 wealthMultiplier = 2.5f;
             }
+            
             float geChance = 0.007f * wealthMultiplier;
-            float riftChallenge = Mathf.Min(Settings.Instance.riftChallenge, 1f);
+            float riftChallenge = Mathf.Min(ModOptions.Settings.Instance.riftChallenge, 1f);
             float difficultyMod = 1f;
             if(riftChallenge >=3f)
             {
@@ -415,7 +416,7 @@ namespace TorannMagic
                 difficultyMod = .65f;
             }
 
-            if (Settings.Instance.riftChallenge > 1 )
+            if (ModOptions.Settings.Instance.riftChallenge > 1 )
             {
                 geChance *= (difficultyMod * riftChallenge);
             }  
@@ -626,7 +627,7 @@ namespace TorannMagic
                             if (flag4)
                             {
                                 //LordJob_AssaultColony lordJob = new LordJob_AssaultColony(newPawn.Faction, false, false, false, true, false);
-                                LordJob_DefendBase lordJob = new LordJob_DefendBase(newPawn.Faction, this.Position);
+                                LordJob_DefendBase lordJob = new LordJob_DefendBase(newPawn.Faction, this.Position, 0, false);
                                 
                                 lord = LordMaker.MakeNewLord(faction, lordJob, this.Map, null);
                             }
@@ -641,9 +642,9 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
 
             Vector3 vector = base.DrawPos;
             vector.y = Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead);

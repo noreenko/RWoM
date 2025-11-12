@@ -5,7 +5,6 @@ using RimWorld;
 using AbilityUser;
 using Verse;
 using HarmonyLib;
-using TorannMagic.ModOptions;
 using UnityEngine;
 using TorannMagic.Utils;
 
@@ -54,7 +53,8 @@ namespace TorannMagic
                 if (pawn.Spawned && map != null && pawn.health?.hediffSet != null)
                 {
                     int injuriesToHeal = 2 + Mathf.RoundToInt(.3f * verVal);
-                    int injuriesPerBodyPart = !CasterPawn.IsColonist && Settings.Instance.AIHardMode ? 5 : 1 + Mathf.RoundToInt(.2f * verVal);
+                    
+                    int injuriesPerBodyPart = !CasterPawn.IsColonist && ModOptions.Settings.Instance.AIHardMode ? 5 : 1 + Mathf.RoundToInt(.2f * verVal);
 
                     IEnumerable<Hediff_Injury> injuries = pawn.health.hediffSet.hediffs
                         .OfType<Hediff_Injury>()

@@ -69,11 +69,11 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
-        {
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {            
             if (!initialized)
             {
-                base.Draw();
+                base.DrawAt(drawLoc, flip);
             }
         }
 
@@ -85,6 +85,7 @@ namespace TorannMagic
                 this.initialized = true;
                 this.BF = new List<BloodFire>();
                 this.BF.Clear();
+                
                 Pawn pawn = this.launcher as Pawn;
                 CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
                 MagicPowerSkill bpwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_BloodGift.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_BloodGift_pwr");
@@ -102,14 +103,14 @@ namespace TorannMagic
                 this.arcaneDmg = comp.arcaneDmg;
                 this.arcaneDmg *= (1 + (.1f * bpwr.level));
                 this.spreadRate -= 2 * verVal;
-                if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
                 }
                 this.bloodTypes = new List<ThingDef>();
                 this.bloodTypes.Clear();
-                if (Settings.Instance.unrestrictedBloodTypes)
+                if (ModOptions.Settings.Instance.unrestrictedBloodTypes)
                 {
                     this.pawnBloodDef = pawn.RaceProps.BloodDef;
                     this.bloodTypes = TM_Calc.GetAllRaceBloodTypes();
@@ -169,7 +170,7 @@ namespace TorannMagic
                     }
                 }
                 this.BF[i] = new BloodFire(this.BF[i].position, this.BF[i].pulseCount + 1);
-                GenExplosion.DoExplosion(this.BF[i].position, this.Map, .2f + (.4f * BF[i].pulseCount), TMDamageDefOf.DamageDefOf.TM_BloodBurn, this.launcher, Mathf.RoundToInt((Rand.Range(2.8f, 4.5f) * (1 + (.12f * pwrVal))) * this.arcaneDmg), .5f, TorannMagicDefOf.TM_FireWooshSD, null, null, null, null, 0f, 1, null, false, null, 0f, 1, 0.0f, false);
+                GenExplosion.DoExplosion(this.BF[i].position, this.Map, .2f + (.4f * BF[i].pulseCount), TMDamageDefOf.DamageDefOf.TM_BloodBurn, this.launcher, Mathf.RoundToInt((Rand.Range(2.8f, 4.5f) * (1 + (.12f * pwrVal))) * this.arcaneDmg), .5f, TorannMagicDefOf.TM_FireWooshSD, null, null, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.0f, false);
                 if(this.BF[i].pulseCount >= 3)
                 {                    
                     this.BF.Remove(this.BF[i]);
@@ -212,7 +213,7 @@ namespace TorannMagic
         }
         
 
-        public override void Tick()
+        protected override void Tick()
         {
             if (!this.initialized)
             {

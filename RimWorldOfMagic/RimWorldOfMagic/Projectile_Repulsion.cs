@@ -5,7 +5,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using RimWorld;
-using TorannMagic.ModOptions;
 
 
 namespace TorannMagic
@@ -49,7 +48,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -68,6 +67,7 @@ namespace TorannMagic
                 CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
                 MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Repulsion.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Repulsion_pwr");
                 MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Repulsion.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Repulsion_ver");
+                
                 pwrVal = pwr.level;
                 verVal = ver.level;
                 if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -78,7 +78,7 @@ namespace TorannMagic
                     verVal = mver.level;
                 }
                 this.arcaneDmg = comp.arcaneDmg;
-                if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -135,7 +135,7 @@ namespace TorannMagic
 
         public void LaunchFlyingObect(IntVec3 targetCell, Pawn pawn, int force)
         {
-            bool flag = targetCell != null && targetCell != default(IntVec3);
+            bool flag = targetCell.IsValid && targetCell != default(IntVec3);
             if (flag)
             {
                 if (pawn != null && pawn.Position.IsValid && pawn.Spawned && pawn.Map != null && !pawn.Downed && !pawn.Dead)

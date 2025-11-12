@@ -152,6 +152,8 @@ namespace TorannMagic
             pawn = launcher as Pawn;
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
 
+            
+
             this.arcaneDmg = comp.arcaneDmg;
             pwrVal = TM_Calc.GetSkillPowerLevel(pawn, TorannMagicDefOf.TM_ShadowBolt, true);
             verVal = TM_Calc.GetSkillVersatilityLevel(pawn, TorannMagicDefOf.TM_ShadowBolt, true);
@@ -167,7 +169,7 @@ namespace TorannMagic
             //    pwrVal = mpwr.level;
             //    verVal = mver.level;
             //}
-            //if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            //if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             //{
             //    pwrVal = 3;
             //    verVal = 3;
@@ -193,7 +195,10 @@ namespace TorannMagic
             this.Initialize();
         }
 
-        public override void Tick()
+        protected override void Tick()
+        {
+        }
+        protected override void TickInterval(int delta)
         {
             //base.Tick();
             age++;
@@ -236,7 +241,7 @@ namespace TorannMagic
             TM_MoteMaker.ThrowShadowMote(effectVec, map, Rand.Range(.6f, 1f));
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null;
             if (flag)

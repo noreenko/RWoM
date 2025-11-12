@@ -154,8 +154,12 @@ namespace TorannMagic
             this.Initialize();
         }
 
-        public override void Tick()
-        {            
+        protected override void Tick()
+        {
+        }
+        protected override void TickInterval(int delta)
+        {
+
             if (this.ticksToImpact >= 0 && Find.TickManager.TicksGame % 3 == 0)
             {
                 IEnumerable<IntVec3> effectRadial = GenRadial.RadialCellsAround(this.ExactPosition.ToIntVec3(), 2 + (.2f * verVal), true);
@@ -325,7 +329,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null;
             if (flag)

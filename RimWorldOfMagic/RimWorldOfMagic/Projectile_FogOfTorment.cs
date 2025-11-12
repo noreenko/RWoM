@@ -29,7 +29,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -48,6 +48,7 @@ namespace TorannMagic
             {
                 MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_FogOfTorment.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_FogOfTorment_pwr");
                 MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_FogOfTorment.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_FogOfTorment_ver");
+                
                 pwrVal = pwr.level;
                 verVal = ver.level;
                 if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
@@ -58,7 +59,7 @@ namespace TorannMagic
                     verVal = mver.level;
                 }
                 this.arcaneDmg = comp.arcaneDmg;
-                if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -78,7 +79,7 @@ namespace TorannMagic
 
                 fog.gas.expireSeconds.min = this.duration/60;
                 fog.gas.expireSeconds.max = this.duration/60;
-                GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius + verVal, TMDamageDefOf.DamageDefOf.TM_Torment, this.launcher, 0, 0, this.def.projectile.soundExplode, def, this.equipmentDef, null, fog, 1f, 1, null, false, null, 0f, 0, 0.0f, false);
+                GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius + verVal, TMDamageDefOf.DamageDefOf.TM_Torment, this.launcher, 0, 0, this.def.projectile.soundExplode, def, this.equipmentDef, null, fog, 1f, 1, null, null, 0, false, null, 0f, 0, 0.0f, false);
                 
                 this.initialized = true;
             }
@@ -94,9 +95,9 @@ namespace TorannMagic
                     if (curCell.InBoundsWithNullCheck(map) && curCell.IsValid)
                     {
                         victim = curCell.GetFirstPawn(map);
-                        if(victim != null && !victim.Dead && victim.RaceProps.IsFlesh)
+                        if(victim != null && !victim.Dead && victim.RaceProps.FleshType.isOrganic)
                         {
-                            if(TM_Calc.IsUndead(victim) || victim.needs.food == null)
+                            if(TM_Calc.IsUndead(victim))
                             {
                                 //heals undead
                                 Hediff_Injury injuryToHeal = victim.health.hediffSet.hediffs

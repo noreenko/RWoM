@@ -18,6 +18,7 @@ namespace TorannMagic
             if (this.currentTarget != null && base.CasterPawn != null)
             {                
                 Map map = this.CasterPawn.Map;
+                
                 if(this.currentTarget.Thing != null && this.currentTarget.Thing == base.CasterPawn)
                 {
                     if (comp.mageLightActive == true)

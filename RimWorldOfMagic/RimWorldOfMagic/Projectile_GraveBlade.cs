@@ -52,7 +52,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -72,8 +72,9 @@ namespace TorannMagic
                 //verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_GraveBlade.FirstOrDefault((MightPowerSkill x) => x.label == "TM_GraveBlade_ver").level;
                 //verVal = TM_Calc.GetMightSkillLevel(caster, comp.MightData.MightPowerSkill_GraveBlade, "TM_GraveBlade", "_ver", true);
                 //pwrVal = TM_Calc.GetMightSkillLevel(caster, comp.MightData.MightPowerSkill_GraveBlade, "TM_GraveBlade", "_pwr", true);
+                //
                 this.arcaneDmg = comp.mightPwr;
-                //if (Settings.Instance.AIHardMode && !caster.IsColonist)
+                //if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
                 //{
                 //    pwrVal = 3;
                 //    verVal = 3;

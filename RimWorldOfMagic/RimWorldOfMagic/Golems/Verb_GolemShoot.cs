@@ -60,10 +60,10 @@ namespace TorannMagic.Golems
 
         protected override bool TryCastShot()
         {
-            TMPawnGolem pg = this.CasterPawn as TMPawnGolem;
-            if(pg != null)
+            if (GolemPawn?.Golem?.Energy != null)
             {
-                pg.drawTickFlag = false;
+                GolemPawn.drawTickFlag = false;
+                GolemPawn.Golem.Energy.SubtractEnergy(GolemPawn.activeVerb.verbProps.consumeFuelPerShot);
             }
             return base.TryCastShot();
         }

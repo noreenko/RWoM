@@ -20,6 +20,8 @@ namespace TorannMagic
             base.Impact_Override(hitThing);
 
             Pawn pawn = this.launcher as Pawn;
+                       
+            
             
             if (pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless))
             {
@@ -32,14 +34,19 @@ namespace TorannMagic
             else
             {
                 CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
-                MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_LightningBolt.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_LightningBolt_pwr");
-                MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_LightningBolt.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_LightningBolt_ver");
-                pwrVal = pwr.level;
-                verVal = ver.level;
-                this.arcaneDmg = comp.arcaneDmg;
+                pwrVal = 1;
+                verVal = 1;
+                if (comp != null)
+                {
+                    MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_LightningBolt.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_LightningBolt_pwr");
+                    MagicPowerSkill ver = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_LightningBolt.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_LightningBolt_ver");
+                    pwrVal = pwr.level;
+                    verVal = ver.level;
+                    this.arcaneDmg = comp.arcaneDmg;
+                }
             }
             
-            if (Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if (ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
@@ -59,7 +66,7 @@ namespace TorannMagic
                 bool flag2 = this.canStartFire && Rand.Range(0f, 1f) > this.startFireChance;
                 if (flag2)
                 {
-                    hitThing.TryAttachFire(0.05f);
+                    hitThing.TryAttachFire(0.05f, null);
                 }
                 Pawn hitTarget;
                 bool flag3 = (hitTarget = (hitThing as Pawn)) != null;

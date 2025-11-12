@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using AbilityUser;
-using TorannMagic.ModOptions;
 using Verse;
 using UnityEngine;
 
@@ -22,7 +21,8 @@ namespace TorannMagic
             MagicPowerSkill pwr = base.CasterPawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Prediction.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Prediction_pwr");
             pwrVal = pwr.level;
             CompAbilityUserMagic comp = base.CasterPawn.GetCompAbilityUserMagic();
-            if (Settings.Instance.AIHardMode && !this.CasterPawn.IsColonist)
+            
+            if (ModOptions.Settings.Instance.AIHardMode && !this.CasterPawn.IsColonist)
             {
                 pwrVal = 4;
             }

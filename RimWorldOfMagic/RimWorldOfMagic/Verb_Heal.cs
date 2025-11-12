@@ -73,7 +73,8 @@ namespace TorannMagic
 
             if (!TM_Calc.IsUndead(pawn))
             {
-                int injuriesPerBodyPart = !CasterPawn.IsColonist && Settings.Instance.AIHardMode ? 5 : 1 + verVal;
+                
+                int injuriesPerBodyPart = !CasterPawn.IsColonist && ModOptions.Settings.Instance.AIHardMode ? 5 : 1 + verVal;
 
                 IEnumerable<Hediff_Injury> injuries = pawn.health.hediffSet.hediffs
                     .OfType<Hediff_Injury>()

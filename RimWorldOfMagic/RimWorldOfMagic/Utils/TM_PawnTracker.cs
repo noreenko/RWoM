@@ -21,21 +21,8 @@ namespace TorannMagic.Utils
             if (magicComp == null) return;
 
             magicComp.IsFaceless = magicComp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
-            if (magicComp.SetIsMagicUser())
-            {
-                if (magicComp.Pawn.Spawned && !magicComp.Pawn.IsWildMan() && !magicComp.IsFaceless)
-                {
-                    magicComp.TickConditionsMet = true;
-                }
-                else
-                {
-                    magicComp.TickConditionsMet = false;
-                }
-            }
-            else
-            {
-                magicComp.TickConditionsMet = false;
-            }
+            magicComp.TickConditionsMet =
+                magicComp.SetIsMagicUser() && !magicComp.Pawn.IsWildMan() && !magicComp.IsFaceless;
         }
 
         public static void ResolveMightComp(CompAbilityUserMight mightComp)
@@ -43,21 +30,7 @@ namespace TorannMagic.Utils
             if (mightComp == null) return;
 
             mightComp.IsFaceless = mightComp.Pawn.story.traits.HasTrait(TorannMagicDefOf.Faceless);
-            if (mightComp.SetIsMightUser())
-            {
-                if (mightComp.Pawn.Spawned && !mightComp.Pawn.NonHumanlikeOrWildMan())
-                {
-                    mightComp.TickConditionsMet = true;
-                }
-                else
-                {
-                    mightComp.TickConditionsMet = false;
-                }
-            }
-            else
-            {
-                mightComp.TickConditionsMet = false;
-            }
+            mightComp.TickConditionsMet = mightComp.SetIsMightUser() && !mightComp.Pawn.NonHumanlikeOrWildMan();
         }
     }
 

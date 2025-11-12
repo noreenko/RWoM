@@ -38,8 +38,9 @@ namespace TorannMagic.Conditions
         }
 
         public override void Init()
-        {
-            if (Settings.Instance.riftChallenge > 0)
+        {           
+                        
+            if (ModOptions.Settings.Instance.riftChallenge > 0)
             {
                 base.Init();
                 this.disabled = false;
@@ -86,17 +87,18 @@ namespace TorannMagic.Conditions
                 }
                 z++;
             }
+            
             if (!this.disabled)
             {
                 Thing thing = null;
                 thing = ThingMaker.MakeThing(ThingDef.Named("Jade"));
-                thing.stackCount = Rand.Range(35 * (int)Settings.Instance.riftChallenge, 60 * (int)Settings.Instance.riftChallenge);
+                thing.stackCount = Rand.Range(35 * (int)ModOptions.Settings.Instance.riftChallenge, 60 * (int)ModOptions.Settings.Instance.riftChallenge);
                 if (thing != null)
                 {
                     GenPlace.TryPlaceThing(thing, thingLoc, this.SingleMap, ThingPlaceMode.Near, null);
                 }
 
-                int totalMarketValue = Mathf.RoundToInt(1000f * (Settings.Instance.riftChallenge * Settings.Instance.riftChallenge));
+                int totalMarketValue = Mathf.RoundToInt(1000f * (ModOptions.Settings.Instance.riftChallenge * ModOptions.Settings.Instance.riftChallenge));
                 List<Thing> list = new List<Thing>();
                 ItemCollectionGenerator_Gemstones itc_g = new ItemCollectionGenerator_Gemstones();
                 list = itc_g.Generate(totalMarketValue, list);

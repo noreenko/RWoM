@@ -121,9 +121,8 @@ namespace TorannMagic
                 }
             }
         }
-        
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             DrawLance(launchPosition);
         }
@@ -153,7 +152,7 @@ namespace TorannMagic
             Graphics.DrawMesh(MeshPool.plane10, matrix4, Projectile_LightLance.BeamEndMat, 0, null, 0, Projectile_LightLance.MatPropertyBlock);            
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

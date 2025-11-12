@@ -29,12 +29,13 @@ namespace TorannMagic
 			ThingDef def = this.def;
 
             //GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius, DamageDefOf.Bomb, this.launcher, SoundDefOf.PlanetkillerImpact, def, this.equipmentDef, null, 0f, 1, false, null, 0f, 1);
-            GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius, DamageDefOf.Bomb, this.launcher, Mathf.RoundToInt(Rand.Range(this.def.projectile.GetDamageAmount(1,null)/2, this.def.projectile.GetDamageAmount(1,null)) * this.arcaneDmg), 0, TorannMagicDefOf.TM_SoftExplosion, def, this.equipmentDef, null, null, 0f, 1, null, false, null, 0f, 1, 0.1f, true);
+            GenExplosion.DoExplosion(base.Position, map, this.def.projectile.explosionRadius, DamageDefOf.Bomb, this.launcher, Mathf.RoundToInt(Rand.Range(this.def.projectile.GetDamageAmount(1,null)/2, this.def.projectile.GetDamageAmount(1,null)) * this.arcaneDmg), 0, TorannMagicDefOf.TM_SoftExplosion, def, this.equipmentDef, null, null, 0f, 1, null, null, 0, false, null, 0f, 1, 0.1f, true);
 
             //GenExplosion.DoExplosion(Position, Map,this.def.projectile.explosionRadius, DamageDefOf.Bomb, Launcher, Mathf.RoundToInt(Rand.Range(this.def.projectile.GetDamageAmount(1, null) / 2, this.def.projectile.GetDamageAmount(1, null)) * this.arcaneDmg), 0f, TorannMagicDefOf.TM_SoftExplosion)
                 
             CellRect cellRect = CellRect.CenteredOn(base.Position, 5);
 			cellRect.ClipInsideMap(map);
+            
             Pawn pawn = this.launcher as Pawn;
             CompAbilityUserMagic comp = pawn.GetCompAbilityUserMagic();
             MagicPowerSkill pwr = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Fireball.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Fireball_pwr");
@@ -49,7 +50,7 @@ namespace TorannMagic
                 verVal = mver.level;
             }
             this.arcaneDmg = comp.arcaneDmg;
-            if(Settings.Instance.AIHardMode && !pawn.IsColonist)
+            if(ModOptions.Settings.Instance.AIHardMode && !pawn.IsColonist)
             {
                 pwrVal = 3;
                 verVal = 3;
@@ -125,7 +126,7 @@ namespace TorannMagic
             
 		}
 
-        public override void Tick()
+        protected override void Tick()
         {
             Vector3 rndPos = this.DrawPos;
             rndPos.x += Rand.Range(-.4f, .4f);

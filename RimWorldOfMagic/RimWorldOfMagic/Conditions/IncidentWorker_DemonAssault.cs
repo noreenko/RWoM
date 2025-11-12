@@ -20,7 +20,8 @@ namespace TorannMagic.Conditions
             {
                 tempAllow = true;
             }
-            if (Settings.Instance.demonAssaultChallenge > 0 || tempAllow)
+            
+            if (ModOptions.Settings.Instance.demonAssaultChallenge > 0 || tempAllow)
             {
                 string str = "";
                 

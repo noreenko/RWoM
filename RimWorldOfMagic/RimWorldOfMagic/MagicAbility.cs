@@ -93,7 +93,9 @@ namespace TorannMagic
         public override void PostAbilityAttempt()  //commented out in CompAbilityUserMagic
         {
             //base.PostAbilityAttempt();
-            if (!this.Pawn.IsColonist && Settings.Instance.AIAggressiveCasting)// for AI
+            
+            
+            if (!this.Pawn.IsColonist && ModOptions.Settings.Instance.AIAggressiveCasting)// for AI
             {
                 this.CooldownTicksLeft = Mathf.RoundToInt(this.MaxCastingTicks/2f);
             }
@@ -105,17 +107,15 @@ namespace TorannMagic
             {
                 this.CooldownTicksLeft = 4;
             }
-            bool flag = this.magicDef != null;
-            if (flag)
+            if (this.magicDef != null)
             {
                 if (this.Pawn.IsColonist)
                 {
                     Find.HistoryEventsManager.RecordEvent(new HistoryEvent(TorannMagicDefOf.TM_UsedMagic, this.Pawn.Named(HistoryEventArgsNames.Doer), this.Pawn.Named(HistoryEventArgsNames.Subject), this.Pawn.Named(HistoryEventArgsNames.AffectedFaction), this.Pawn.Named(HistoryEventArgsNames.Victim)), true);
                 }
-                bool flag3 = this.MagicUser.Mana != null;
-                if (flag3)
+                if (this.MagicUser.Mana != null)
                 {
-                    if(!this.Pawn.IsColonist && Settings.Instance.AIAggressiveCasting)// for AI
+                    if(!this.Pawn.IsColonist && ModOptions.Settings.Instance.AIAggressiveCasting)// for AI
                     {
                         this.MagicUser.Mana.UseMagicPower(this.MagicUser.ActualManaCost(magicDef)/2f);
                     }
@@ -126,7 +126,7 @@ namespace TorannMagic
                                        
                     if(this.magicDef != TorannMagicDefOf.TM_TransferMana && magicDef.abilityHediff == null)
                     {                        
-                        this.MagicUser.MagicUserXP += (int)((magicDef.manaCost * 300) * this.MagicUser.xpGain * Settings.Instance.xpMultiplier);
+                        this.MagicUser.MagicUserXP += Mathf.Clamp((int)((magicDef.manaCost * 300) * this.MagicUser.xpGain * ModOptions.Settings.Instance.xpMultiplier), 0, 9999);
                     }
 
                     TM_EventRecords er = new TM_EventRecords();
@@ -150,9 +150,17 @@ namespace TorannMagic
                 {
                     CompAbilityUserMight mightComp = this.MagicUser.Pawn.GetCompAbilityUserMight();
                     mightComp.Stamina.UseMightPower(magicDef.manaCost);
-                    mightComp.MightUserXP += (int)((magicDef.manaCost * 180) * mightComp.xpGain * Settings.Instance.xpMultiplier);
+                    mightComp.MightUserXP += Mathf.Clamp((int)((magicDef.manaCost * 180) * mightComp.xpGain * ModOptions.Settings.Instance.xpMultiplier),0,9999);
                 }
-
+                if (this.magicDef.staminaCost != 0)
+                {
+                    CompAbilityUserMight mightComp = this.Pawn.GetCompAbilityUserMight();
+                    if (mightComp != null && mightComp.Stamina != null)
+                    {
+                        mightComp.Stamina.UseMightPower(magicDef.staminaCost);
+                        //this.MagicUser.Mana.UseMagicPower(this.MagicUser.ActualManaCost(magicDef)
+                    }
+                }
                 if (this.magicDef.bloodCost != 0)
                 {
                     HealthUtility.AdjustSeverity(this.Pawn, HediffDef.Named("TM_BloodHD"), -100 * this.ActualBloodCost);
@@ -163,7 +171,7 @@ namespace TorannMagic
                     if (reqHediff != null)
                     {
                         reqHediff.Severity -= ActualHediffCost(magicDef, this.MagicUser);
-                        this.MagicUser.MagicUserXP += (int)((magicDef.hediffXPFactor * this.MagicUser.xpGain * Settings.Instance.xpMultiplier) * magicDef.hediffCost);
+                        this.MagicUser.MagicUserXP += Mathf.Clamp((int)((magicDef.hediffXPFactor * this.MagicUser.xpGain * ModOptions.Settings.Instance.xpMultiplier) * magicDef.hediffCost),0,9999);
                     }
                     else
                     {
@@ -176,7 +184,7 @@ namespace TorannMagic
                     {
                         Need nd = this.Pawn.needs.TryGetNeed(this.magicDef.requiredNeed);
                         nd.CurLevel -= ActualNeedCost(magicDef, this.MagicUser);
-                        this.MagicUser.MagicUserXP += (int)((magicDef.needXPFactor * this.MagicUser.xpGain * Settings.Instance.xpMultiplier) * magicDef.needCost);
+                        this.MagicUser.MagicUserXP += Mathf.Clamp((int)((magicDef.needXPFactor * this.MagicUser.xpGain * ModOptions.Settings.Instance.xpMultiplier) * magicDef.needCost),0,9999);
                     }
                     else
                     {
@@ -419,6 +427,21 @@ namespace TorannMagic
                             );
                             result = false;
                             return result;
+                        }
+                        if (magicDef.staminaCost > 0f)
+                        {
+                            CompAbilityUserMight compMight = base.Pawn.GetCompAbilityUserMight();
+                            if(compMight != null && compMight.Stamina != null)
+                            {
+                                if(magicDef.staminaCost > compMight.Stamina.CurLevel)
+                                {
+                                    reason = "TM_NotEnoughStamina".Translate(
+                                    base.Pawn.LabelShort
+                                    );
+                                    result = false;
+                                    return result;
+                                }
+                            }
                         }
                         if (magicDef.bloodCost > 0f)
                         {

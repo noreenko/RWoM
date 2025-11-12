@@ -42,7 +42,7 @@ namespace TorannMagic
             Scribe_Defs.Look<ThingDef>(ref this.fog, "fog");        
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             if (rearming)
             {
@@ -52,11 +52,11 @@ namespace TorannMagic
             }
             else
             {
-                base.Draw();
+                base.DrawAt(drawLoc, flip);
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             if (this.triggered)
             {
@@ -160,7 +160,7 @@ namespace TorannMagic
         private void CheckForAgent()
         {
             this.destroyAfterUse = true;
-            List<Pawn> pList = this.Map.mapPawns.AllPawnsSpawned;
+            List<Pawn> pList = this.Map.mapPawns.AllPawnsSpawned.ToList();
             if (pList == null || pList.Count <= 0) return;
 
             for (int i = 0; i < pList.Count; i++)
@@ -190,7 +190,7 @@ namespace TorannMagic
             fog = TorannMagicDefOf.Fog_Poison;
             fog.gas.expireSeconds.min = this.duration / 60;
             fog.gas.expireSeconds.max = this.duration / 60;
-            GenExplosion.DoExplosion(base.Position, base.Map, this.radius, TMDamageDefOf.DamageDefOf.TM_Poison, this, 0, 0, SoundDef.Named("TinyBell"), def, null, null, fog, 1f, 1, null, false, null, 0f, 0, 0.0f, false);
+            GenExplosion.DoExplosion(base.Position, base.Map, this.radius, TMDamageDefOf.DamageDefOf.TM_Poison, this, 0, 0, SoundDef.Named("TinyBell"), def, null, null, fog, 1f, 1, null, null, 0, false, null, 0f, 0, 0.0f, false);
             this.triggered = true;
         }
 

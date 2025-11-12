@@ -284,7 +284,7 @@ namespace TorannMagic
             return Building_TMPortal.portableCells;
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             if (Find.TickManager.TicksGame % 10 == 0)
             {
@@ -330,9 +330,10 @@ namespace TorannMagic
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            base.Draw();
+            base.DrawAt(drawLoc, flip);
+
             if (this.isPaired)
             {
                 Vector3 vector = base.DrawPos;

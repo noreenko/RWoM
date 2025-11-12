@@ -39,9 +39,11 @@ namespace TorannMagic.Weapon
             age++;
             if(age >= actionTick)
             {
+
                 actionTick = age + Rand.Range(15, 25);                
                 DamageThingsAtPosition();
-                SnowUtility.AddSnowRadial(this.ExactPosition.ToIntVec3(), this.Map, .4f, .2f);                
+                WeatherBuildupUtility.AddSnowRadial(this.ExactPosition.ToIntVec3(), this.Map, .4f, .2f);   
+                
             }           
         }
 
@@ -64,7 +66,7 @@ namespace TorannMagic.Weapon
             {
                 if (hitList[j] is Pawn && hitList[j] != this.launcher)
                 {
-                    DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, this.def.projectile.GetDamageAmount(this.weaponDamageMultiplier), 1, -1, this.launcher);                    
+                    DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, 6f, 1, -1, this.launcher);                    
                     hitList[j].TakeDamage(dinfo);
                     hitThing = hitList[j];
                 }
@@ -91,7 +93,7 @@ namespace TorannMagic.Weapon
             TM_MoteMaker.ThrowGenericMote(this.moteDef, effectVec, this.Map, Rand.Range(.15f, .45f), Rand.Range(.05f, .1f), .03f, Rand.Range(.2f, .3f), Rand.Range(-200, 200), Rand.Range(1f, 6f), moteAngle + Rand.Range(-20,20), Rand.Range(0, 360));
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             bool flag = this.flyingThing != null;
             if (flag)

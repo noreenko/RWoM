@@ -81,7 +81,8 @@ namespace TorannMagic
                     verVal = mver.level;
                 }
                 this.arcaneDmg = comp.arcaneDmg;
-                if (!caster.IsColonist && Settings.Instance.AIHardMode)
+                
+                if (!caster.IsColonist && ModOptions.Settings.Instance.AIHardMode)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -182,7 +183,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;

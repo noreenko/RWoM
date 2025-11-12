@@ -52,7 +52,8 @@ namespace TorannMagic
             //verVal = ver.level;
             //pwrVal = pwr.level;
             //effVal = eff.level;
-            //if(Settings.Instance.AIHardMode && !p.IsColonist)
+            //
+            //if(ModOptions.Settings.Instance.AIHardMode && !p.IsColonist)
             //{
             //    verVal = 3;
             //    pwrVal = 3;

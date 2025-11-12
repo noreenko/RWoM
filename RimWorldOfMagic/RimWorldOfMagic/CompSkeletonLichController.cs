@@ -127,7 +127,7 @@ namespace TorannMagic
                 cellRect.ClipInsideMap(this.Pawn.Map);
                 IntVec3 destination = cellRect.RandomCell;
 
-                if (destination != null)
+                if (destination.IsValid)
                 {
                     Thing launchedThing = new Thing()
                     {
@@ -227,7 +227,7 @@ namespace TorannMagic
                                 {
                                     if (victim.mindState != null && victim.RaceProps != null && victim.RaceProps.Humanlike)
                                     {
-                                        victim.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Berserk, "cursed", true, false, null);
+                                        victim.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Berserk, "cursed", true, false, false, null);
                                         FleckMaker.ThrowMicroSparks(victim.DrawPos, victim.Map);
                                         MoteMaker.ThrowText(victim.DrawPos, victim.Map, "Berserk", -1);
                                     }
@@ -263,7 +263,7 @@ namespace TorannMagic
         private void StartChargeAttack(IntVec3 t)
         {
             this.nextChargeAttack = this.Props.chargeCooldownTicks + Find.TickManager.TicksGame;
-            bool flag = t != null && t.DistanceToEdge(this.Pawn.Map) > 6;
+            bool flag = t.IsValid && t.DistanceToEdge(this.Pawn.Map) > 6;
             if (flag && t.InBoundsWithNullCheck(this.Pawn.Map) && t.IsValid && t.Walkable(this.Pawn.Map) && Pawn.Position.DistanceTo(t) <= 60)
             {
                 this.castingCompleteTick = Find.TickManager.TicksGame + this.Props.chargeAttackDelay;
@@ -602,9 +602,9 @@ namespace TorannMagic
             base.PostDestroy(mode, previousMap);
         }
 
-        public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
+        public override void PostPreApplyDamage(ref DamageInfo dinfo, out bool absorbed)
         {
-            base.PostPreApplyDamage(dinfo, out absorbed);
+            base.PostPreApplyDamage(ref dinfo, out absorbed);
             //Log.Message("taking damage");
             if (dinfo.Instigator is Building instigatorThing)
             {
@@ -622,7 +622,7 @@ namespace TorannMagic
             //Log.Message("checking threats - lich");
             this.closeThreats.Clear();
             this.farThreats.Clear();
-            List<Pawn> allPawns = this.Pawn.Map.mapPawns.AllPawnsSpawned;
+            List<Pawn> allPawns = this.Pawn.Map.mapPawns.AllPawnsSpawned.ToList();
             for (int i = 0; i < allPawns.Count; i++)
             {
                 if (!allPawns[i].DestroyedOrNull() && allPawns[i] != this.Pawn)
@@ -755,7 +755,7 @@ namespace TorannMagic
         public void LearnAndShareBuildingThreats()
         {
             //Log.Message("sharing threats");
-            List<Pawn> allPawns = this.Pawn.Map.mapPawns.AllPawnsSpawned;
+            List<Pawn> allPawns = this.Pawn.Map.mapPawns.AllPawnsSpawned.ToList();
             for(int i =0; i < allPawns.Count; i++)
             {
                 Pawn p = allPawns[i];

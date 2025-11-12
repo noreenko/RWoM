@@ -7,7 +7,6 @@ using RimWorld;
 using Verse.AI;
 using Verse.AI.Group;
 using System;
-using TorannMagic.ModOptions;
 
 
 namespace TorannMagic
@@ -58,9 +57,10 @@ namespace TorannMagic
                 this.oldPosition = caster.Position;
                 MightPowerSkill pwr = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Possess.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Possess_pwr");
                 MightPowerSkill ver = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Possess.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Possess_ver");
+                
                 pwrVal = pwr.level;
                 verVal = ver.level;
-                if (Settings.Instance.AIHardMode && !caster.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -225,7 +225,7 @@ namespace TorannMagic
             }
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
@@ -292,7 +292,7 @@ namespace TorannMagic
                             Find.LetterStack.ReceiveLetter("LetterLabelPossessedCaughtStealing".Translate(), "TM_PossessedCaughtStealing".Translate(
                                 hitPawn.Faction,
                                 hitPawn.LabelShort
-                                ), LetterDefOf.NegativeEvent, null);
+                                ), LetterDefOf.NegativeEvent, null, null);
                         }
                         if (hitPawn.IsColonist)
                         {

@@ -60,7 +60,7 @@ namespace TorannMagic
             set => curLevelInt = Mathf.Clamp(value, 0f, 2f*this.pawn.GetCompAbilityUserMagic().maxMP);            
         }
 
-        public override float MaxLevel => this.pawn.GetCompAbilityUserMagic().maxMP;
+        public override float MaxLevel => this.pawn.ageTracker.AgeBiologicalYears < 13 ? this.pawn.GetCompAbilityUserMagic().maxMP - ((12f - this.pawn.ageTracker.AgeBiologicalYearsFloat) / 12f) : this.pawn.GetCompAbilityUserMagic().maxMP;
 
         public override void ExposeData()
         {
@@ -216,9 +216,10 @@ namespace TorannMagic
                     }
                     else
                     {
+                                                
                         MagicPowerSkill manaRegen = pawn.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_global_regen.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_global_regen_pwr");
-                        this.baseManaGain = (amount * (0.0012f) * Settings.Instance.needMultiplier);
-                        amount *= (((0.0012f * comp.mpRegenRate)) * Settings.Instance.needMultiplier);
+                        this.baseManaGain = (amount * (0.0012f) * ModOptions.Settings.Instance.needMultiplier);
+                        amount *= (((0.0012f * comp.mpRegenRate)) * ModOptions.Settings.Instance.needMultiplier);
                         this.modifiedManaGain = amount - this.baseManaGain;
 
                         if (pawn.health != null && pawn.health.hediffSet != null)
@@ -326,9 +327,9 @@ namespace TorannMagic
                         {
                             List<Thing> paracyteBushes = this.pawn.Map.listerThings.ThingsOfDef(TorannMagicDefOf.TM_Plant_Paracyte);
                             int paracyteCount = paracyteBushes.Count;
-                            List<Pawn> mapPawns = this.pawn.Map.mapPawns.AllPawnsSpawned;
+                            List<Pawn> mapPawns = this.pawn.Map.mapPawns.AllPawnsSpawned.ToList();
                             int mageCount = 0;
-                            if (Settings.Instance.paracyteMagesCount)
+                            if (ModOptions.Settings.Instance.paracyteMagesCount)
                             {
                                 for (int i = 0; i < mapPawns.Count; i++)
                                 {
@@ -344,9 +345,9 @@ namespace TorannMagic
                             }
 
                             int mapManaDrainerCount = paracyteCount + (2 * mageCount);
-                            if (mapManaDrainerCount > Settings.Instance.paracyteSoftCap)
+                            if (mapManaDrainerCount > ModOptions.Settings.Instance.paracyteSoftCap)
                             {
-                                mapManaDrainerCount -= Mathf.RoundToInt(Settings.Instance.paracyteSoftCap);
+                                mapManaDrainerCount -= Mathf.RoundToInt(ModOptions.Settings.Instance.paracyteSoftCap);
                             }
                             else
                             {
@@ -385,7 +386,7 @@ namespace TorannMagic
                         int necroCount = 0;
                         float undeadCount = 0;
 
-                        if (Settings.Instance.undeadUpkeepMultiplier > 0f && comp.supportedUndead != null && comp.supportedUndead.Count > 0)
+                        if (ModOptions.Settings.Instance.undeadUpkeepMultiplier > 0f && comp.supportedUndead != null && comp.supportedUndead.Count > 0)
                         {
                             Apparel orb = TM_Calc.GetNecroticOrb(this.pawn);
                             float orbEnergy = 0;
@@ -487,8 +488,14 @@ namespace TorannMagic
                             {
                                 orbReduction = .75f;
                             }
+                            float shroudMultiplier = 1f;
+                            if(pawn.health.hediffSet.HasHediff(TorannMagicDefOf.TM_ShroudOfUndeathHD))
+                            {
+                                Hediff hd = pawn.health.hediffSet.GetFirstHediffOfDef(TorannMagicDefOf.TM_ShroudOfUndeathHD);
+                                shroudMultiplier = 1f - hd.Severity;
+                            }
                             
-                            necroReduction = (((0.0012f * (.15f - (.15f * (.1f * eff.level))) * undeadCount) * orbReduction) * Settings.Instance.undeadUpkeepMultiplier);
+                            necroReduction = (((0.0012f * (.15f - (.15f * (.1f * eff.level))) * undeadCount) * orbReduction) * ModOptions.Settings.Instance.undeadUpkeepMultiplier * shroudMultiplier);
                             this.drainUndead = necroReduction;
                             amount -= necroReduction;
                             //Log.Message("" + pawn.LabelShort + " is 1 of " + necroCount + " contributing necros and had necro reduction of " + necroReduction);
@@ -499,7 +506,7 @@ namespace TorannMagic
                             this.drainUndead = 0;
                         }
 
-                        if (this.CurLevel < .01f && amount < 0)
+                        if (this.CurLevel < .01f && amount < 0 && pawn.Map != null && pawn.Spawned)
                         {
                             float pain = pawn.health.hediffSet.PainTotal;
                             float con = pawn.health.capacities.GetLevel(PawnCapacityDefOf.Consciousness);
@@ -557,8 +564,9 @@ namespace TorannMagic
             //    {
             //        if (comp.IsMagicUser && comp.Mana != null)
             //        {
+            //            
             //            MagicPowerSkill manaRegen = comp.MagicData.MagicPowerSkill_global_regen.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_global_regen_pwr");
-            //            amount *= ((0.0012f + 0.00006f * manaRegen.level) * comp.mpRegenRate * Settings.Instance.needMultiplier);
+            //            amount *= ((0.0012f + 0.00006f * manaRegen.level) * comp.mpRegenRate * ModOptions.Settings.Instance.needMultiplier);
             //            amount = Mathf.Min(amount, this.MaxLevel - this.CurLevel);
             //            comp.Mana.CurLevel = Mathf.Max(comp.Mana.CurLevel += amount, 0f);
             //        }

@@ -58,12 +58,13 @@ namespace TorannMagic
                 CompAbilityUserMagic comp = caster.GetCompAbilityUserMagic();
                 pwrVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Encase.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Encase_pwr").level;
                 verVal = caster.GetCompAbilityUserMagic().MagicData.MagicPowerSkill_Encase.FirstOrDefault((MagicPowerSkill x) => x.label == "TM_Encase_ver").level;
+                
                 if (caster.story.traits.HasTrait(TorannMagicDefOf.Faceless))
                 {
                     pwrVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_pwr").level;
                     verVal = caster.GetCompAbilityUserMight().MightData.MightPowerSkill_Mimic.FirstOrDefault((MightPowerSkill x) => x.label == "TM_Mimic_ver").level;
                 }
-                if (Settings.Instance.AIHardMode && !caster.IsColonist)
+                if (ModOptions.Settings.Instance.AIHardMode && !caster.IsColonist)
                 {
                     pwrVal = 3;
                     verVal = 3;
@@ -123,7 +124,7 @@ namespace TorannMagic
                             cellList = wall[k].position.GetThingList(caster.Map);
                             for (int i = 0; i < cellList.Count(); i++)
                             {
-                                if (cellList[i].def.designationCategory == DesignationCategoryDefOf.Structure || cellList[i].def.altitudeLayer == AltitudeLayer.Building || cellList[i].def.altitudeLayer == AltitudeLayer.Item || cellList[i].def.altitudeLayer == AltitudeLayer.ItemImportant)
+                                if (cellList[i].def.designationCategory == TorannMagicDefOf.Structure || cellList[i].def.altitudeLayer == AltitudeLayer.Building || cellList[i].def.altitudeLayer == AltitudeLayer.Item || cellList[i].def.altitudeLayer == AltitudeLayer.ItemImportant)
                                 {
                                     if (!cellList[i].def.EverHaulable)
                                     {
@@ -223,7 +224,7 @@ namespace TorannMagic
 
         public void LaunchFlyingObect(IntVec3 targetCell, Thing thing)
         {
-            bool flag = targetCell != null && targetCell != default(IntVec3);
+            bool flag = targetCell.IsValid && targetCell != default(IntVec3);
             if (flag)
             {
                 if (thing != null && thing.Position.IsValid && !this.Destroyed && thing.Spawned && thing.Map != null)
@@ -263,7 +264,7 @@ namespace TorannMagic
             return direction;
         }
 
-        public override void Tick()
+        protected override void Tick()
         {
             base.Tick();
             this.age++;
